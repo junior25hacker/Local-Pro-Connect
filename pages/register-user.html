@@ -178,12 +178,16 @@
 
                         <!-- Registration Form -->
                         <!-- BACKEND: POST to /api/auth/register/user with name, email, phone, address, password -->
-                        <form id="registerForm" onsubmit="handleRegistration(event)" novalidate>
+                        <form method="post" action="/accounts/auth/" novalidate>
+
+                            <input type="hidden" name="action" value="signup">
                             <div class="form-group">
-                                <label for="name">Full Name *</label>
-                                <input type="text" id="name" name="name" placeholder="John Doe" required>
-                                <!-- BACKEND: Validate name (min 2 characters) -->
-                                <div class="error-message">Please enter a valid name (at least 2 characters)</div>
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" placeholder="you@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password *</label>
+                                <input type="password" id="password" name="password" placeholder="At least 6 characters" required>
                             </div>
 
                             <div class="form-group">
@@ -228,16 +232,10 @@
                                 <!-- BACKEND: Store consent agreement in users table -->
                             </div>
 
-                            <button type="submit" class="register-btn" id="registerBtn">
-                                <span id="registerBtnText">Create My Account</span>
-                            </button>
-                            <!-- BACKEND: POST to /api/auth/register/user with all form data. Send verification email. Create user in database -->
+                            <button type="submit" class="register-btn">Create My Account</button>
                         </form>
 
-                        <!-- Error Message Container -->
-                        <!-- BACKEND: Display validation/registration errors here -->
-                        <div id="registerError" style="color: #e74c3c; margin-top: 1rem; text-align: center; display: none;">
-                        </div>
+                        <!-- Error Message Container (handled by Django messages) -->
 
                         <div class="login-link">
                             Already have an account? <a href="login.html">Sign in here</a>
@@ -305,114 +303,5 @@
             } else {
                 addressGroup.classList.remove('error');
             }
-            
-            // Validate Password
-            const passwordGroup = document.getElementById('password').closest('.form-group');
-            if (password.length < 6) {
-                passwordGroup.classList.add('error');
-                isValid = false;
-            } else {
-                passwordGroup.classList.remove('error');
+            <!-- Registration Handler removed: now handled by Django backend -->
             }
-            
-            // Validate Password Match
-            const confirmGroup = document.getElementById('confirmPassword').closest('.form-group');
-            if (password !== confirmPassword) {
-                confirmGroup.classList.add('error');
-                isValid = false;
-            } else {
-                confirmGroup.classList.remove('error');
-            }
-            
-            // Validate Agreement
-            if (!agreeCheckbox.checked) {
-                registerError.textContent = 'Please agree to the Terms of Service and Privacy Policy';
-                registerError.style.display = 'block';
-                isValid = false;
-            }
-            
-            if (!isValid) {
-                return;
-            }
-            
-            // Show loading state
-            registerBtn.disabled = true;
-            registerBtnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating Account...';
-            
-            // BACKEND: Send to /api/auth/register/user endpoint
-            // Expected payload: {
-            //     name: string,
-            //     email: string,
-            //     phone: string (optional),
-            //     address: string,
-            //     password: string (will be hashed),
-            //     agreeToTerms: boolean
-            // }
-            // Expected response: { success: true, message: "Check your email", userId: "..." } or { success: false, message: "..." }
-            
-            setTimeout(() => {
-                // Mock implementation - replace with actual API call
-                // try {
-                //     const response = await fetch('/api/auth/register/user', {
-                //         method: 'POST',
-                //         headers: { 'Content-Type': 'application/json' },
-                //         body: JSON.stringify({
-                //             name: name,
-                //             email: email,
-                //             phone: phone,
-                //             address: address,
-                //             password: password,
-                //             agreeToTerms: agreeCheckbox.checked
-                //         })
-                //     });
-                //     const result = await response.json();
-                //     
-                //     if (result.success) {
-                //         successMessage.style.display = 'block';
-                //         document.getElementById('registerForm').reset();
-                //         // Optionally redirect after 3 seconds
-                //         setTimeout(() => window.location.href = '/pages/login.html', 3000);
-                //     } else {
-                //         registerError.textContent = result.message || 'Registration failed';
-                //         registerError.style.display = 'block';
-                //     }
-                // } catch (error) {
-                //     registerError.textContent = 'An error occurred. Please try again.';
-                //     registerError.style.display = 'block';
-                // }
-                
-                registerBtn.disabled = false;
-                registerBtnText.textContent = 'Create My Account';
-                registerError.textContent = 'Demo mode: Backend not connected yet';
-                registerError.style.display = 'block';
-            }, 1500);
-        }
-        
-        // Real-time validation
-        document.getElementById('name').addEventListener('input', function() {
-            if (this.value.trim().length >= 2) {
-                this.closest('.form-group').classList.remove('error');
-            }
-        });
-        
-        document.getElementById('email').addEventListener('input', function() {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (emailRegex.test(this.value.trim())) {
-                this.closest('.form-group').classList.remove('error');
-            }
-        });
-        
-        document.getElementById('password').addEventListener('input', function() {
-            if (this.value.length >= 6) {
-                this.closest('.form-group').classList.remove('error');
-            }
-        });
-        
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            if (this.value === document.getElementById('password').value) {
-                this.closest('.form-group').classList.remove('error');
-            }
-        });
-    </script>
-</body>
-</html>
