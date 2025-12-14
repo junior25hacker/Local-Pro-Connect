@@ -1,6 +1,10 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
+
+def home(request):
+    return render(request, 'pages/index.html')
 
 def auth_view(request):
     if request.method == 'POST':
