@@ -3,7 +3,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+<<<<<<< HEAD
 SECRET_KEY = 'django-insecure-please-change-this-key'
+=======
+SECRET_KEY = 'replace-this-with-a-secure-key'
+>>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
 DEBUG = True
 ALLOWED_HOSTS = []
 
@@ -14,7 +18,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'rest_framework',
+=======
+>>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
     'accounts',
 ]
 
@@ -33,7 +40,11 @@ ROOT_URLCONF = 'locapro_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+<<<<<<< HEAD
         'DIRS': [],
+=======
+        'DIRS': [BASE_DIR / 'accounts' / 'templates'],
+>>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,8 +84,16 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
+<<<<<<< HEAD
 USE_TZ = True
 
 STATIC_URL = '/static/'
+=======
+USE_L10N = True
+USE_TZ = True
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'assets']
+>>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

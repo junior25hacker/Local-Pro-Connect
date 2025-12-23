@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up</title>
+</head>
+<body>
+    <h2>Sign Up</h2>
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <form method="post" action="/accounts/auth/">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="signup">
+        <label>Email:</label><input type="email" name="email" required><br>
+        <label>Password:</label><input type="password" name="password" required><br>
+        <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="/accounts/auth/" onclick="event.preventDefault(); document.getElementById('signin-form').submit();">Sign In</a></p>
+    <form id="signin-form" method="post" action="/accounts/auth/" style="display:none;">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="signin">
+    </form>
+</body>
+</html>
