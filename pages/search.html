@@ -384,9 +384,8 @@
     
     <!-- Search Handler -->
     <script>
-        function handleSearch(event) {
+        async function handleSearch(event) {
             event.preventDefault();
-            
             const serviceType = document.getElementById('serviceType').value;
             const location = document.getElementById('location').value.trim();
             const searchBtn = document.querySelector('.search-btn');
@@ -395,93 +394,29 @@
             const resultsSection = document.getElementById('resultsSection');
             const noResultsSection = document.getElementById('noResultsSection');
             const resultsContainer = document.getElementById('resultsContainer');
-            
             searchError.style.display = 'none';
-            
             if (!serviceType || !location) {
                 searchError.textContent = 'Please select a service type and enter a location';
                 searchError.style.display = 'block';
                 return;
             }
-            
-            // Show loading state
             searchBtn.disabled = true;
             searchBtnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
-            
-            // BACKEND: POST to /api/search endpoint
-            // Payload: { serviceType: string, location: string }
-            // Response: Array of professionals {
-            //     id: string,
-            //     name: string,
-            //     serviceType: string,
-            //     rating: number (1-5, from Sprint 2),
-            //     reviewCount: number,
-            //     distance: number (km, calculated in Sprint 2 from coordinates),
-            //     phone: string,
-            //     description: string,
-            //     address: string
-            // }
-            
-            setTimeout(() => {
-                // Mock implementation - replace with actual API call
-                // try {
-                //     const response = await fetch('/api/search', {
-                //         method: 'POST',
-                //         headers: { 'Content-Type': 'application/json' },
-                //         body: JSON.stringify({
-                //             serviceType: serviceType,
-                //             location: location
-                //         })
-                //     });
-                //     const results = await response.json();
-                //     displaySearchResults(results, serviceType, location);
-                // } catch (error) {
-                //     searchError.textContent = 'Search failed. Please try again.';
-                //     searchError.style.display = 'block';
-                // }
-                
-                // Mock search results
-                const mockResults = [
-                    {
-                        id: 1,
-                        name: "John's Plumbing Services",
-                        serviceType: 'plumbing',
-                        rating: 4.8,
-                        reviewCount: 47,
-                        distance: 2.3,
-                        phone: '+1 (555) 123-4567',
-                        description: '20+ years of professional plumbing experience',
-                        address: 'Downtown'
-                    },
-                    {
-                        id: 2,
-                        name: 'Pro Plumbing Solutions',
-                        serviceType: 'plumbing',
-                        rating: 4.5,
-                        reviewCount: 32,
-                        distance: 3.8,
-                        phone: '+1 (555) 234-5678',
-                        description: 'Fast, reliable, and affordable plumbing services',
-                        address: 'Midtown'
-                    },
-                    {
-                        id: 3,
-                        name: 'Expert Emergency Plumbing',
-                        serviceType: 'plumbing',
-                        rating: 4.7,
-                        reviewCount: 56,
-                        distance: 1.5,
-                        phone: '+1 (555) 345-6789',
-                        description: '24/7 emergency plumbing - Same day service available',
-                        address: 'West Side'
-                    }
-                ];
-                
-                displaySearchResults(mockResults, serviceType, location);
-                
-                searchBtn.disabled = false;
-                searchBtnText.textContent = 'Search';
-            }, 1500);
+            resultsContainer.innerHTML = '<div class="loading-spinner"><span class="spinner-border"></span></div>';
+            try {
+                // Fetch from Django API
+                const response = await fetch(`/api/providers/?serviceType=${encodeURIComponent(serviceType)}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const results = await response.json();
+                displaySearchResults(results, serviceType, location);
+            } catch (error) {
+                searchError.textContent = 'Search failed. Please try again.';
+                searchError.style.display = 'block';
+                resultsSection.style.display = 'none';
+                noResultsSection.style.display = 'none';
+            }
+            searchBtn.disabled = false;
+            searchBtnText.textContent = 'Search';
         }
         
         function displaySearchResults(results, serviceType, location) {
@@ -490,26 +425,20 @@
             const resultsContainer = document.getElementById('resultsContainer');
             const resultsCount = document.getElementById('resultsCount');
             const searchQuery = document.getElementById('searchQuery');
-            
             resultsContainer.innerHTML = '';
-            
             if (results.length === 0) {
                 resultsSection.style.display = 'none';
                 noResultsSection.style.display = 'block';
                 return;
             }
-            
             noResultsSection.style.display = 'none';
             resultsSection.style.display = 'block';
             resultsCount.textContent = results.length;
             searchQuery.textContent = `${serviceType} in ${location}`;
-            
-            // BACKEND: Dynamically generate professional cards from API response
             results.forEach(professional => {
                 const rating = professional.rating || 0;
                 const reviewCount = professional.reviewCount || 0;
                 const starsHtml = generateStars(rating);
-                
                 const card = document.createElement('div');
                 card.className = 'professional-card';
                 card.innerHTML = `
@@ -523,9 +452,7 @@
                             <span class="stars">${starsHtml}</span>
                         </div>
                     </div>
-                    
                     <p style="color: #666; margin-bottom: 1rem;">${professional.description}</p>
-                    
                     <div class="professional-details">
                         <div class="detail-item">
                             <div class="detail-label">Rating</div>
@@ -533,29 +460,44 @@
                             <div style="font-size: 0.9rem; color: #999;">${reviewCount} reviews</div>
                         </div>
                         <div class="detail-item">
-                            <div class="detail-label">Distance</div>
-                            <div class="detail-value">${professional.distance.toFixed(1)} km</div>
-                            <div style="font-size: 0.9rem; color: #999;">Away</div>
-                        </div>
-                        <div class="detail-item">
                             <div class="detail-label">Location</div>
                             <div class="detail-value">${professional.address}</div>
                         </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phone</div>
+                            <div class="detail-value">${professional.phone}</div>
+                        </div>
                     </div>
-                    
-                    <a href="tel:${professional.phone}" class="call-now-btn">
-                        <i class="fas fa-phone"></i> Call Now
-                    </a>
-                    
                     <div class="profile-link">
-                        <a href="provider-profile.html?id=${professional.id}">View Full Profile</a>
-                        <a href="#">Read Reviews</a>
+                        <a href="provider-profile.html?id=${professional.id}" class="btn btn-outline-primary btn-sm">View Profile</a>
+                        <button class="btn btn-success btn-sm book-btn" data-id="${professional.id}" data-name="${professional.name}">Book</button>
                     </div>
                 `;
-                
                 resultsContainer.appendChild(card);
             });
+            // Add event listeners for Book buttons
+            document.querySelectorAll('.book-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('Booking request sent for ' + this.dataset.name + '!');
+                });
+            });
         }
+                // Auto-select service and trigger search if ?service= in URL
+                document.addEventListener('DOMContentLoaded', function() {
+                    const params = new URLSearchParams(window.location.search);
+                    const service = params.get('service');
+                    if (service) {
+                        const serviceTypeSelect = document.getElementById('serviceType');
+                        serviceTypeSelect.value = service;
+                        // Set a default location if empty
+                        const locationInput = document.getElementById('location');
+                        if (!locationInput.value) {
+                            locationInput.value = 'All';
+                        }
+                        // Automatically trigger the search
+                        document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+                    }
+                });
         
         function generateStars(rating) {
             const fullStars = Math.floor(rating);
