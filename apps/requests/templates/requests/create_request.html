@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Create Request{% endblock %}
+
+{% block content %}
+<h1>REQUEST</h1>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <label for="description">Describe problem</label>
+    <textarea id="description" name="description" rows="4" placeholder="Describe your issue..."></textarea>
+    
+    <label for="datetime">Date/time</label>
+    <input type="datetime-local" id="datetime" name="datetime">
+    
+    <label for="price">Price (FCFA)</label>
+    <input type="number" id="price" name="price" placeholder="Enter price in FCFA" min="500" max="40000">
+    
+    <label for="urgent">Urgent</label>
+    <select id="urgent" name="urgent">
+        <option value="no">No</option>
+        <option value="yes">Yes</option>
+    </select>
+    
+    <label for="photos">Photos</label>
+    <input type="file" id="photos" name="photos" multiple>
+    
+    <div class="buttons">
+        <button type="submit" class="request-btn">Request</button>
+        <button type="button" class="back-btn" onclick="history.back()">Back</button>
+    </div>
+</form>
+{% endblock %}
