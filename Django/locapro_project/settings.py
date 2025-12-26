@@ -32,7 +32,7 @@ ROOT_URLCONF = 'locapro_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'accounts' / 'templates'],
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'accounts' / 'templates', BASE_DIR.parent / 'pages'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,5 +77,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'assets']
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Pages directory for static HTML files
+PAGES_ROOT = BASE_DIR.parent / 'pages'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

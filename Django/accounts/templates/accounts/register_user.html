@@ -1,0 +1,96 @@
+{% extends 'simple_base.html' %}
+{% load static %}
+
+{% block title %}Sign up as User{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <h2>Create an account</h2>
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        {% if form.username.errors %}
+          <input type="text" name="username" class="form-control is-invalid" value="{{ form.username.value|default:'' }}">
+          <div class="invalid-feedback d-block">
+            {% for error in form.username.errors %}{{ error }}{% endfor %}
+          </div>
+        {% else %}
+          <input type="text" name="username" class="form-control" value="{{ form.username.value|default:'' }}" required>
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        {% if form.email.errors %}
+          <input type="email" name="email" class="form-control is-invalid" value="{{ form.email.value|default:'' }}">
+          <div class="invalid-feedback d-block">
+            {% for error in form.email.errors %}{{ error }}{% endfor %}
+          </div>
+        {% else %}
+          <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}">
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">First name</label>
+        {% if form.first_name.errors %}
+          <input type="text" name="first_name" class="form-control is-invalid" value="{{ form.first_name.value|default:'' }}">
+          <div class="invalid-feedback d-block">
+            {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+          </div>
+        {% else %}
+          <input type="text" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}">
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Last name</label>
+        {% if form.last_name.errors %}
+          <input type="text" name="last_name" class="form-control is-invalid" value="{{ form.last_name.value|default:'' }}">
+          <div class="invalid-feedback d-block">
+            {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+          </div>
+        {% else %}
+          <input type="text" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        {% if form.password1.errors %}
+          <input type="password" name="password1" class="form-control is-invalid" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.password1.errors %}{{ error }}{% endfor %}
+          </div>
+        {% else %}
+          <input type="password" name="password1" class="form-control" required>
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Confirm password</label>
+        {% if form.password2.errors %}
+          <input type="password" name="password2" class="form-control is-invalid" required>
+          <div class="invalid-feedback d-block">
+            {% for error in form.password2.errors %}{{ error }}{% endfor %}
+          </div>
+        {% else %}
+          <input type="password" name="password2" class="form-control" required>
+        {% endif %}
+      </div>
+      
+      <button class="btn btn-primary w-100" type="submit">Sign up</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

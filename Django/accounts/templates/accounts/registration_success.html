@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Registration Success{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+      <div class="alert alert-success" role="alert">
+        {{ message }}
+      </div>
+      <p>You will be redirected shortly...</p>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(function(){
+      window.location = '{{ next_url }}';
+    }, 5000);
+  </script>
+
+{% endblock %}

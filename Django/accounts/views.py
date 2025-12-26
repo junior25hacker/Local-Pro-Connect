@@ -2,41 +2,217 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
+from .forms import UserRegistrationForm, ProviderRegistrationForm
+from .models import ProviderProfile, UserProfile
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from urllib.parse import urlencode
+import json
 
-def home(request):
-    return render(request, 'pages/index.html')
+def login_view(request):
+    return render(request, 'login.html')
 
+@require_http_methods(['GET', 'POST'])
 def auth_view(request):
     if request.method == 'POST':
         action = request.POST.get('action')
+        username = request.POST.get('username')
         email = request.POST.get('email')
         password = request.POST.get('password')
 
         if action == 'signup':
             if User.objects.filter(email=email).exists():
-                messages.error(request, 'User already exists. Please sign in.')
-                return render(request, 'login.html', {'switch_to': 'signin'})
+                return JsonResponse({'error': 'Account already exists. Please sign in.'}, status=400)
             else:
                 username = email.split('@')[0]
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
-                messages.success(request, 'Account has been created successfully. Please sign in.')
-                return render(request, 'login.html', {'switch_to': 'signin'})
+                return JsonResponse({'success': 'Account has been created successfully. Please sign in.'})
 
         elif action == 'signin':
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
-                messages.error(request, "Email doesn't have an account yet. Please sign up.")
-                return render(request, 'register-user.html', {'switch_to': 'signup'})
+            user = None
+            if username:
+                try:
+                    # First, try to get the user by username
+                    user = User.objects.get(username=username)
+                except User.DoesNotExist:
+                    # if that fails, maybe what they entered as username is actually an email
+                    try:
+                        user = User.objects.get(email=username)
+                    except User.DoesNotExist:
+                        pass  # user not found by username or email-as-username
 
-            user = auth.authenticate(username=user.username, password=password)
-            if user is not None:
-                auth.login(request, user)
-                messages.success(request, 'Signed in successfully.')
-                return redirect('home')
+            if user is None and email:
+                # If no user yet, try to get by email field
+                try:
+                    user = User.objects.get(email=email)
+                except User.DoesNotExist:
+                    pass  # user not found by email either
+
+            if user is None:
+                return JsonResponse({'error': 'No account found with the provided credentials. Please check your username/email or sign up.'}, status=404)
+
+            # Now, authenticate with the found user's username and the provided password
+            user_auth = auth.authenticate(request, username=user.username, password=password)
+
+            if user_auth is not None:
+                auth.login(request, user_auth)
+                is_provider = ProviderProfile.objects.filter(user=user_auth).exists()
+                if is_provider:
+                    return JsonResponse({
+                        'success': 'Login successful! Redirecting to provider profile...',
+                        'user_type': 'provider',
+                        'redirect': '/accounts/profile/provider/'
+                    })
+                else:
+                    return JsonResponse({
+                        'success': 'Login successful! Redirecting to user profile...',
+                        'user_type': 'user',
+                        'redirect': '/accounts/profile/user/'
+                    })
             else:
-                messages.error(request, 'Wrong password. Please try again.')
-                return render(request, 'login.html', {'switch_to': 'signin'})
+                return JsonResponse({'error': 'Incorrect password. Please try again.'}, status=401)
 
     return render(request, 'auth_choice.html')
+
+
+@require_http_methods(['GET', 'POST'])
+def register_user(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data.get('email') or '',
+                password=form.cleaned_data['password1'],
+                first_name=form.cleaned_data.get('first_name') or '',
+                last_name=form.cleaned_data.get('last_name') or '',
+            )
+            UserProfile.objects.create(user=user)
+            auth.login(request, user)
+            messages.success(request, f'Welcome {user.first_name or user.username}!')
+            return redirect('user_profile')
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'accounts/register_user.html', {'form': form})
+
+
+@require_http_methods(['GET', 'POST'])
+def register_provider(request):
+    if request.method == 'POST':
+        form = ProviderRegistrationForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data.get('email') or '',
+                password=form.cleaned_data['password1'],
+                first_name=form.cleaned_data.get('first_name') or '',
+                last_name=form.cleaned_data.get('last_name') or '',
+            )
+            ProviderProfile.objects.create(
+                user=user,
+                company_name=form.cleaned_data.get('company_name') or '',
+                service_type=form.cleaned_data.get('service_type') or 'other',
+                phone=form.cleaned_data.get('phone') or '',
+                business_address=form.cleaned_data.get('business_address') or '',
+                city=form.cleaned_data.get('city') or '',
+                state=form.cleaned_data.get('state') or '',
+                zip_code=form.cleaned_data.get('zip_code') or '',
+                bio=form.cleaned_data.get('bio') or '',
+                years_experience=form.cleaned_data.get('years_experience') or 0,
+            )
+            auth.login(request, user)
+            messages.success(request, f'Welcome {user.first_name or user.username}!')
+            return redirect('provider_profile')
+    else:
+        form = ProviderRegistrationForm()
+    return render(request, 'accounts/register_provider.html', {'form': form})
+
+
+def user_profile(request):
+    """Serve user profile HTML page"""
+    if not request.user.is_authenticated:
+        return redirect('register_user')
+    return render(request, 'user-profile.html')
+
+
+def provider_profile(request):
+    """Serve provider profile HTML page"""
+    if not request.user.is_authenticated:
+        return redirect('register_provider')
+    return render(request, 'provider-profile.html')
+
+
+# API Endpoints for fetching profile data
+
+@require_http_methods(['GET'])
+def api_user_profile(request):
+    """API endpoint to get user profile data as JSON"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'Profile not found'}, status=404)
+    
+    data = {
+        'username': request.user.username,
+        'email': request.user.email,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'phone': user_profile.phone,
+        'address': user_profile.address,
+        'city': user_profile.city,
+        'state': user_profile.state,
+        'zip_code': user_profile.zip_code,
+        'created_at': request.user.date_joined.isoformat(),
+        'updated_at': user_profile.updated_at.isoformat(),
+        'date_joined': request.user.date_joined.isoformat(),
+    }
+    return JsonResponse(data)
+
+
+@require_http_methods(['GET'])
+def api_provider_profile(request):
+    """API endpoint to get provider profile data as JSON"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    try:
+        provider_profile = ProviderProfile.objects.get(user=request.user)
+    except ProviderProfile.DoesNotExist:
+        return JsonResponse({'error': 'Provider profile not found'}, status=404)
+    
+    # Get service type display name
+    service_type_display = dict(provider_profile.SERVICE_CHOICES).get(
+        provider_profile.service_type, 
+        'Other'
+    )
+    
+    data = {
+        'username': request.user.username,
+        'email': request.user.email,
+        'first_name': request.user.first_name,
+        'last_name': request.user.last_name,
+        'company_name': provider_profile.company_name,
+        'service_type': provider_profile.service_type,
+        'service_type_display': service_type_display,
+        'phone': provider_profile.phone,
+        'business_address': provider_profile.business_address,
+        'city': provider_profile.city,
+        'state': provider_profile.state,
+        'zip_code': provider_profile.zip_code,
+        'bio': provider_profile.bio,
+        'services_rendered': provider_profile.services_rendered,
+        'years_experience': provider_profile.years_experience,
+        'rating': float(provider_profile.rating),
+        'total_reviews': provider_profile.total_reviews,
+        'is_verified': provider_profile.is_verified,
+        'created_at': provider_profile.created_at.isoformat(),
+        'updated_at': provider_profile.updated_at.isoformat(),
+        'date_joined': request.user.date_joined.isoformat(),
+    }
+    return JsonResponse(data)
+
