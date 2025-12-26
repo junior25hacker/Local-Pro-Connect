@@ -41,10 +41,14 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
 <<<<<<< HEAD
+<<<<<<< HEAD
         'DIRS': [],
 =======
         'DIRS': [BASE_DIR / 'accounts' / 'templates'],
 >>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
+=======
+        'DIRS': [BASE_DIR / 'templates', BASE_DIR / 'accounts' / 'templates', BASE_DIR.parent / 'pages'],
+>>>>>>> main
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,5 +99,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'assets']
 >>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
+
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# Pages directory for static HTML files
+PAGES_ROOT = BASE_DIR.parent / 'pages'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

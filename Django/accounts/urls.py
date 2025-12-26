@@ -23,5 +23,15 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('auth/', views.auth_view, name='auth'),
+<<<<<<< HEAD
 >>>>>>> f9ab2a26f914e776428e2c1383a3ef813a0d9112
+=======
+    path('signup/user/', views.register_user, name='register_user'),
+    path('signup/provider/', views.register_provider, name='register_provider'),
+    path('profile/user/', views.user_profile, name='user_profile'),
+    path('profile/provider/', views.provider_profile, name='provider_profile'),
+    # API Endpoints
+    path('api/user/profile/', views.api_user_profile, name='api_user_profile'),
+    path('api/provider/profile/', views.api_provider_profile, name='api_provider_profile'),
+>>>>>>> main
 ]

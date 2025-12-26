@@ -1,0 +1,732 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Provider Profile - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    
+    .navbar {
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+    }
+    
+    .profile-hero {
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-top: 70px;
+    }
+    
+    .profile-header-card {
+        background: white;
+        border-radius: 12px;
+        margin-top: -30px;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 10;
+    }
+    
+    .profile-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #004C99 0%, #00A65A 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        overflow: hidden;
+    }
+    
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+            margin: 0 auto;
+        }
+    }
+    
+    .profile-info h2 {
+        color: #004C99;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-info p {
+        color: #666;
+        margin: 0.25rem 0;
+    }
+    
+    .profile-rating {
+        background: #FFC300;
+        color: #333;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-rating {
+            width: fit-content;
+            margin: 1rem auto;
+        }
+    }
+    
+    .rating-stars {
+        font-size: 1.2rem;
+        color: #FFB800;
+    }
+    
+    .rating-text {
+        font-size: 0.9rem;
+    }
+    
+    .call-btn-large {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 1rem;
+    }
+    
+    .call-btn-large:hover {
+        background-color: #008a4a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+        color: white;
+    }
+    
+    .section-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section-title {
+        color: #004C99;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .section-title i {
+        color: #00A65A;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .info-item {
+        text-align: center;
+    }
+    
+    .info-label {
+        font-size: 0.9rem;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .info-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #004C99;
+    }
+    
+    .description-text {
+        color: #666;
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .review-item {
+        border-bottom: 1px solid #E8E8E8;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .review-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .reviewer-name {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .review-date {
+        font-size: 0.9rem;
+        color: #999;
+    }
+    
+    .review-stars {
+        color: #FFB800;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .review-text {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .write-review-btn {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+    
+    .write-review-btn:hover {
+        background-color: #008a4a;
+    }
+    
+    .breadcrumb {
+        background: transparent;
+        margin: 1rem 0;
+    }
+    
+    .breadcrumb a {
+        color: #004C99;
+    }
+    
+    .verification-badge {
+        background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+        border-left: 4px solid #00A65A;
+    }
+    
+    .verification-badge i {
+        font-size: 2.5rem;
+        color: #00A65A;
+        margin-bottom: 1rem;
+    }
+    
+    .verification-badge h4 {
+        color: #004C99;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-btn-large {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 0.75rem;
+    }
+    
+    .action-btn-large:hover {
+        background-color: #008a4a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Hero Section -->
+<div class="profile-hero"></div>
+
+<div class="container py-4">
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if provider_profile and provider_profile.profile_picture %}
+                    <img src="{{ provider_profile.profile_picture.url }}" alt="Profile picture">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+            
+            <div class="profile-info">
+                <h2>{{ provider_profile.company_name }}</h2>
+                <p><strong>Service Type:</strong> {{ provider_profile.get_service_type_display }}</p>
+                <p><strong>Location:</strong> {{ provider_profile.city }}, {{ provider_profile.state }}</p>
+                <p><strong>Experience:</strong> {{ provider_profile.years_experience }}+ years</p>
+            </div>
+            
+            <div class="profile-rating">
+                <div class="rating-text">
+                    <span>{{ provider_profile.rating|default:"0" }}</span>/5
+                </div>
+                <div class="rating-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= provider_profile.rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="rating-text">
+                    <span>{{ provider_profile.total_reviews }}</span> reviews
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <a href="tel:{{ provider_profile.phone }}" class="call-btn-large">
+                <i class="fas fa-phone"></i> Call Now: {{ provider_profile.phone }}
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="call-btn-large" style="background-color: #004C99;">
+                <i class="fas fa-message"></i> Message
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- About Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-briefcase"></i> About Your Business
+                </h3>
+                <p class="description-text">
+                    {{ provider_profile.bio|default:"No business description added yet." }}
+                </p>
+            </div>
+
+            <!-- Company Info Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-building"></i> Company Details
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Services Completed</div>
+                        <div class="info-value">{{ provider_profile.services_rendered }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Total Reviews</div>
+                        <div class="info-value">{{ provider_profile.total_reviews }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Experience</div>
+                        <div class="info-value">{{ provider_profile.years_experience }}+</div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Phone</h6>
+                        <p class="fs-5 fw-bold">{{ provider_profile.phone }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Service Type</h6>
+                        <p class="fs-5 fw-bold">{{ provider_profile.get_service_type_display }}</p>
+                    </div>
+                </div>
+
+                <h6 class="text-muted mb-2 mt-3">Business Address</h6>
+                <p class="fs-5">
+                    {{ provider_profile.business_address }}<br>
+                    <small class="text-muted">{{ provider_profile.city }}, {{ provider_profile.state }} {{ provider_profile.zip_code }}</small>
+                </p>
+            </div>
+
+            <!-- Edit Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-edit"></i> Profile Management
+                </h3>
+                <p class="description-text mb-3">Manage your professional profile and keep your information up to date.</p>
+                <a href="#" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="fas fa-edit me-2"></i> Edit Profile
+                </a>
+                <a href="#" class="btn btn-secondary btn-lg ms-2" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">
+                    <i class="fas fa-camera me-2"></i> Upload Photo
+                </a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Info Card -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Quick Info
+                </h3>
+                <div style="text-align: left;">
+                    <div class="info-label mb-3">Account Status</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">
+                        {% if provider_profile.is_verified %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Verified</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Pending Review</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mb-3">Email</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.email }}</div>
+
+                    <div class="info-label mb-3">Username</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.username }}</div>
+
+                    <div class="info-label mb-3">Member Since</div>
+                    <div style="color: #333; font-weight: 600;">{{ user.date_joined|date:"F d, Y" }}</div>
+                </div>
+            </div>
+
+            <!-- Verification Badge -->
+            <div class="section-card verification-badge text-center">
+                <div>
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Verified Professional</h4>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 0;">
+                        Your profile has been verified and is visible to customers on Local Pro Connect.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sign Out Section -->
+            <div class="section-card text-center">
+                <a href="/accounts/logout/" class="btn btn-outline-danger btn-lg w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Edit profile functionality coming soon.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Photo upload functionality coming soon.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+<!-- Profile Hero Section -->
+<div class="profile-hero"></div>
+
+<div class="container py-4">
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if provider_profile and provider_profile.profile_picture %}
+                    <img src="{{ provider_profile.profile_picture.url }}" alt="Profile picture">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+            
+            <div class="profile-info">
+                <h2>{{ provider_profile.company_name }}</h2>
+                <p><strong>Service Type:</strong> {{ provider_profile.get_service_type_display }}</p>
+                <p><strong>Location:</strong> {{ provider_profile.city }}, {{ provider_profile.state }}</p>
+                <p><strong>Experience:</strong> {{ provider_profile.years_experience }}+ years</p>
+            </div>
+            
+            <div class="profile-rating">
+                <div class="rating-text">
+                    <span>{{ provider_profile.rating|default:"0" }}</span>/5
+                </div>
+                <div class="rating-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= provider_profile.rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="rating-text">
+                    <span>{{ provider_profile.total_reviews }}</span> reviews
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <a href="tel:{{ provider_profile.phone }}" class="action-btn-large">
+                <i class="fas fa-phone"></i> Call Now: {{ provider_profile.phone }}
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="#" class="action-btn-large" style="background-color: #004C99;">
+                <i class="fas fa-message"></i> Message
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- About Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-briefcase"></i> About Your Business
+                </h3>
+                <p class="description-text">
+                    {{ provider_profile.bio|default:"No business description added yet." }}
+                </p>
+            </div>
+
+            <!-- Company Info Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-building"></i> Company Details
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Services Completed</div>
+                        <div class="info-value">{{ provider_profile.services_rendered }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Total Reviews</div>
+                        <div class="info-value">{{ provider_profile.total_reviews }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Experience</div>
+                        <div class="info-value">{{ provider_profile.years_experience }}+</div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Phone</h6>
+                        <p class="fs-5 fw-bold">{{ provider_profile.phone }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Service Type</h6>
+                        <p class="fs-5 fw-bold">{{ provider_profile.get_service_type_display }}</p>
+                    </div>
+                </div>
+
+                <h6 class="text-muted mb-2 mt-3">Business Address</h6>
+                <p class="fs-5">
+                    {{ provider_profile.business_address }}<br>
+                    <small class="text-muted">{{ provider_profile.city }}, {{ provider_profile.state }} {{ provider_profile.zip_code }}</small>
+                </p>
+            </div>
+
+            <!-- Edit Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-edit"></i> Profile Management
+                </h3>
+                <p class="description-text mb-3">Manage your professional profile and keep your information up to date.</p>
+                <a href="#" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="fas fa-edit me-2"></i> Edit Profile
+                </a>
+                <a href="#" class="btn btn-secondary btn-lg ms-2" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">
+                    <i class="fas fa-camera me-2"></i> Upload Photo
+                </a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Info Card -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Quick Info
+                </h3>
+                <div style="text-align: left;">
+                    <div class="info-label mb-3">Account Status</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">
+                        {% if provider_profile.is_verified %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Verified</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Pending Review</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mb-3">Email</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.email }}</div>
+
+                    <div class="info-label mb-3">Username</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.username }}</div>
+
+                    <div class="info-label mb-3">Member Since</div>
+                    <div style="color: #333; font-weight: 600;">{{ user.date_joined|date:"F d, Y" }}</div>
+                </div>
+            </div>
+
+            <!-- Verification Badge -->
+            <div class="section-card verification-badge text-center">
+                <div>
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Verified Professional</h4>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 0;">
+                        Your profile has been verified and is visible to customers on Local Pro Connect.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sign Out Section -->
+            <div class="section-card text-center">
+                <a href="/accounts/logout/" class="btn btn-outline-danger btn-lg w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Edit profile functionality coming soon.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Photo upload functionality coming soon.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

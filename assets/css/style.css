@@ -401,6 +401,25 @@ body {
     color: var(--accent-green);
 }
 
+/* Provider profile edit page */
+.provider-preview {
+    max-width: 220px;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Make forms look cohesive with site style */
+form#provider-edit-form .form-control, form#provider-edit-form .form-select, form#provider-edit-form textarea {
+    border-radius: 8px;
+    border: 1px solid var(--border-gray);
+    padding: 0.6rem 0.8rem;
+}
+
+form#provider-edit-form .form-label {
+    font-weight: 600;
+}
+
 .btn-cta {
     padding: 0.875rem 2rem;
     background-color: var(--accent-green);
