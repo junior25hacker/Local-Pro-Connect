@@ -10,8 +10,8 @@ from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlencode
 import json
 
-def login_view(request):
-    return render(request, 'login.html')
+def home(request):
+    return render(request, 'pages/index.html')
 
 @require_http_methods(['GET', 'POST'])
 def auth_view(request):
@@ -31,48 +31,36 @@ def auth_view(request):
                 return JsonResponse({'success': 'Account has been created successfully. Please sign in.'})
 
         elif action == 'signin':
-            user = None
-            if username:
-                try:
-                    # First, try to get the user by username
-                    user = User.objects.get(username=username)
-                except User.DoesNotExist:
-                    # if that fails, maybe what they entered as username is actually an email
-                    try:
-                        user = User.objects.get(email=username)
-                    except User.DoesNotExist:
-                        pass  # user not found by username or email-as-username
+            # Try to find user by username only
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                return JsonResponse({'error': 'No account found for this username. Please check your username or sign up.'}, status=404)
 
-            if user is None and email:
-                # If no user yet, try to get by email field
-                try:
-                    user = User.objects.get(email=email)
-                except User.DoesNotExist:
-                    pass  # user not found by email either
+            # Check if email matches (if provided)
+            if email and user.email and user.email != email:
+                return JsonResponse({'error': 'Email does not match the username provided.'}, status=400)
 
-            if user is None:
-                return JsonResponse({'error': 'No account found with the provided credentials. Please check your username/email or sign up.'}, status=404)
-
-            # Now, authenticate with the found user's username and the provided password
-            user_auth = auth.authenticate(request, username=user.username, password=password)
-
+            # Authenticate with username and password
+            user_auth = auth.authenticate(username=username, password=password)
             if user_auth is not None:
                 auth.login(request, user_auth)
+                # Check if user is a provider
                 is_provider = ProviderProfile.objects.filter(user=user_auth).exists()
                 if is_provider:
                     return JsonResponse({
                         'success': 'Login successful! Redirecting to provider profile...',
                         'user_type': 'provider',
-                        'redirect': '/accounts/profile/provider/'
+                        'redirect': '/pages/provider-profile.html'
                     })
                 else:
                     return JsonResponse({
                         'success': 'Login successful! Redirecting to user profile...',
                         'user_type': 'user',
-                        'redirect': '/accounts/profile/user/'
+                        'redirect': '/pages/user-profile.html'
                     })
             else:
-                return JsonResponse({'error': 'Incorrect password. Please try again.'}, status=401)
+                return JsonResponse({'error': 'Incorrect password for this username.'}, status=401)
 
     return render(request, 'auth_choice.html')
 
