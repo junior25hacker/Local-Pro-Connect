@@ -130,8 +130,14 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
-            <button type="submit" class="login-btn">Sign In <i class="fas fa-arrow-right ms-2"></i></button>
+            <button type="submit" class="login-btn" id="submitBtn">Sign In <i class="fas fa-arrow-right ms-2"></i></button>
         </form>
+        <div id="countdownBox" style="display:none; text-align:center; margin-top:1.5rem;">
+            <div class="alert alert-success" style="margin-bottom:0;">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="countdownText">Redirecting in 5 seconds...</span>
+            </div>
+        </div>
         <div style="text-align:center; margin-top:2rem; font-size:0.97rem; color:#2C3E50;">
             <span>Don't have an account?</span><br>
             <a href="register-user.html" style="color:#0052CC; font-weight:600; text-decoration:none;">Sign up as a User</a> |
@@ -140,41 +146,169 @@
     </div>
 </div>
 <script>
+let countdownInterval = null;
+let csrfToken = null;
+
+// Get the Django API endpoint dynamically
+function getDjangoEndpoint() {
+    // If running from Live Server on 5500, use localhost:8000
+    // If running from Django dev server, use current origin
+    if (window.location.port === '5500') {
+        return 'http://localhost:8000/accounts/auth/';
+    }
+    return window.location.origin + '/accounts/auth/';
+}
+
+// Fetch CSRF token when page loads
+async function initializeCSRFToken() {
+    try {
+        const response = await fetch(getDjangoEndpoint(), {
+            method: 'GET',
+            credentials: 'include'
+        });
+        
+        // Extract CSRF token from cookie
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) {
+                csrfToken = cookie.substring('csrftoken='.length);
+                console.log('CSRF Token initialized');
+                break;
+            }
+        }
+    } catch (err) {
+        console.log('Note: CSRF token initialization attempted');
+    }
+}
+
 async function loginUser(event) {
     event.preventDefault();
-    const username = document.getElementById('username').value;
-    const email = document.getElementById('email').value;
+    
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const alertBox = document.getElementById('alertBox');
+    const submitBtn = document.getElementById('submitBtn');
+    const countdownBox = document.getElementById('countdownBox');
+    
     alertBox.innerHTML = '';
+    countdownBox.style.display = 'none';
+    
+    // Client-side validation
+    if (!username) {
+        showError('Please enter your username.');
+        return;
+    }
+    if (!password) {
+        showError('Please enter your password.');
+        return;
+    }
+    
+    // Disable submit button during login
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing in...';
+    
     try {
         let body = `action=signin&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         if (email) {
             body += `&email=${encodeURIComponent(email)}`;
         }
-        const response = await fetch('/accounts/auth/', {
+        
+        // Get CSRF token - try multiple sources
+        const token = csrfToken || getCookie('csrftoken');
+        
+        const endpoint = getDjangoEndpoint();
+        console.log('Sending login request to:', endpoint);
+        console.log('Request body:', body);
+        
+        const response = await fetch(endpoint, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': token || ''
             },
             body: body
         });
-        const data = await response.json();
+        
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        let data;
+        try {
+            data = await response.json();
+            console.log('Response data:', data);
+        } catch (parseErr) {
+            console.error('Failed to parse response as JSON:', parseErr);
+            console.log('Response text:', await response.text());
+            throw new Error('Invalid response from server');
+        }
+        
         if (response.ok && data.success) {
-            alertBox.innerHTML = '<div class="alert alert-success">' + data.success + ' Redirecting...</div>';
-            setTimeout(() => {
-                window.location.href = data.redirect;
-            }, 1200);
+            console.log('Login successful!');
+            // Hide form and show countdown
+            document.getElementById('loginForm').style.display = 'none';
+            alertBox.style.display = 'none';
+            countdownBox.style.display = 'block';
+            
+            // Start 5-second countdown
+            startCountdown(data.redirect, data.success);
         } else if (data.error) {
-            alertBox.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+            console.log('Login error from server:', data.error);
+            showError(data.error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right ms-2"></i>';
         } else {
-            alertBox.innerHTML = '<div class="alert alert-danger">Login failed. Please try again.</div>';
+            console.log('Unexpected response:', { ok: response.ok, data: data });
+            showError('Login failed. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right ms-2"></i>';
         }
     } catch (err) {
-        alertBox.innerHTML = '<div class="alert alert-danger">Login failed. Please try again.</div>';
+        console.error('Login error:', err);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+        
+        // Provide more specific error messages
+        let errorMessage = 'An error occurred. Please check your connection and try again.';
+        if (err instanceof TypeError) {
+            errorMessage = 'Network error. Make sure the server is running and accessible.';
+        }
+        
+        showError(errorMessage);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right ms-2"></i>';
     }
 }
+
+function startCountdown(redirectUrl, successMessage) {
+    let timeRemaining = 5;
+    const countdownText = document.getElementById('countdownText');
+    const alertBox = document.getElementById('alertBox');
+    
+    // Show success message
+    alertBox.style.display = 'block';
+    alertBox.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>' + successMessage + '</div>';
+    
+    // Update countdown every second
+    countdownInterval = setInterval(() => {
+        timeRemaining--;
+        countdownText.textContent = `Redirecting in ${timeRemaining} second${timeRemaining !== 1 ? 's' : ''}...`;
+        
+        if (timeRemaining <= 0) {
+            clearInterval(countdownInterval);
+            window.location.href = redirectUrl;
+        }
+    }, 1000);
+}
+
+function showError(message) {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>' + message + '</div>';
+    alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -189,7 +323,22 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-document.getElementById('loginForm').addEventListener('submit', loginUser);
+
+// Initialize CSRF token and form event listener when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize CSRF token
+    initializeCSRFToken();
+    
+    // Add form event listener
+    document.getElementById('loginForm').addEventListener('submit', loginUser);
+});
+
+// Clean up interval on page unload
+window.addEventListener('beforeunload', () => {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+});
 </script>
 </body>
 </html>

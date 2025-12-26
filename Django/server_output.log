@@ -1,0 +1,31 @@
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/assets' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+[26/Dec/2025 17:05:08] "GET / HTTP/1.1" 200 2680
+[26/Dec/2025 17:05:08] "GET / HTTP/1.1" 200 2680
+[26/Dec/2025 17:05:40] "GET / HTTP/1.1" 200 2680
+[26/Dec/2025 17:05:40] "HEAD /accounts/profile/user/ HTTP/1.1" 302 0
+[26/Dec/2025 17:06:16] "GET /accounts/auth/ HTTP/1.1" 200 0
+[26/Dec/2025 17:11:47] "GET /accounts/profile/user/ HTTP/1.1" 302 0
+[26/Dec/2025 17:11:47] "GET /signup/user/ HTTP/1.1" 200 2196
+Not Found: /favicon.ico
+[26/Dec/2025 17:11:47] "GET /favicon.ico HTTP/1.1" 404 5364
+[26/Dec/2025 17:11:48] "GET /signup/user/ HTTP/1.1" 200 2196
+Not Found: /favicon.ico
+[26/Dec/2025 17:11:48] "GET /favicon.ico HTTP/1.1" 404 5364
+[26/Dec/2025 17:12:33] "GET /pages/login.html HTTP/1.1" 304 0
+Not Found: /assets/image/logo.png
+[26/Dec/2025 17:12:34] "GET /assets/image/logo.png HTTP/1.1" 404 5394
+[26/Dec/2025 17:12:34] "GET /accounts/auth/ HTTP/1.1" 200 0
+Not Found: /favicon.ico
+[26/Dec/2025 17:12:34] "GET /favicon.ico HTTP/1.1" 404 5364
+Login attempt with incorrect password for user: testuser
+Unauthorized: /accounts/auth/
+[26/Dec/2025 17:12:50] "POST /accounts/auth/ HTTP/1.1" 401 50
+Login attempt with incorrect password for user: testuser
+Unauthorized: /accounts/auth/
+[26/Dec/2025 17:14:58] "POST /accounts/auth/ HTTP/1.1" 401 50

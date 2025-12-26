@@ -53,3 +53,49 @@ class ProviderRegistrationForm(UserRegistrationForm):
     zip_code = forms.CharField(max_length=10, required=False)
     bio = forms.CharField(widget=forms.Textarea, required=False)
     years_experience = forms.IntegerField(min_value=0, required=False)
+
+
+class UserLoginForm(forms.Form):
+    """Professional user login form with validation"""
+    username = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your username',
+            'autocomplete': 'username',
+            'required': True
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your password',
+            'autocomplete': 'current-password',
+            'required': True
+        })
+    )
+    email = forms.EmailField(
+        required=False,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email (optional)',
+            'autocomplete': 'email'
+        })
+    )
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if not username:
+            raise forms.ValidationError('Username is required.')
+        return username
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if not password:
+            raise forms.ValidationError('Password is required.')
+        return password
+
+
+class ProviderLoginForm(UserLoginForm):
+    """Provider login form (same fields as user for consistency)"""
+    pass

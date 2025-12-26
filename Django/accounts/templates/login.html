@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Local Pro Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #E8F0FE 0%, #E8F5F0 100%);
+            min-height: 100vh;
+        }
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,82,204,0.10), 0 1.5px 8px rgba(44,62,80,0.08);
+            padding: 2.5rem 2.25rem 2.25rem 2.25rem;
+            max-width: 410px;
+            width: 100%;
+            border-top: 6px solid #0052CC;
+        }
+        .login-card h2 {
+            color: #0052CC;
+            font-weight: 800;
+            margin-bottom: 1.2rem;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #2C3E50;
+            margin-bottom: 0.5rem;
+            display: block;
+            letter-spacing: 0.1px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #E8F0FE;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #F9FBFF;
+            color: #2C3E50;
+            transition: all 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #0052CC;
+            box-shadow: 0 0 0 3px rgba(0,82,204,0.10);
+            background: #fff;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: #17B890;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.08rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(23,184,144,0.10);
+            letter-spacing: 0.2px;
+        }
+        .login-btn:hover {
+            background-color: #13a07a;
+            box-shadow: 0 4px 16px rgba(23,184,144,0.18);
+        }
+        .alert {
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .alert-success {
+            background: #E8F5F0;
+            color: #17B890;
+            border: 1.5px solid #17B890;
+        }
+        .alert-danger {
+            background: #FFF6F6;
+            color: #C0392B;
+            border: 1.5px solid #FFC300;
+        }
+        .login-card {
+            position: relative;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 6px;
+            background: linear-gradient(90deg, #0052CC 60%, #17B890 100%);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <div class="login-card">
+        <div style="text-align:center; margin-bottom:1.2rem;">
+            <img src="../assets/image/logo.png" alt="Local Pro Connect Logo" style="height:54px; margin-bottom:0.5rem;">
+        </div>
+        <h2>Sign In</h2>
+        <p style="text-align:center; color:#2C3E50; font-size:1.05rem; margin-bottom:1.5rem; letter-spacing:0.1px;">Access your account to connect with local professionals.</p>
+        <div id="alertBox"></div>
+        <form id="loginForm" autocomplete="on">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" class="login-btn" id="submitBtn">Sign In <i class="fas fa-arrow-right ms-2"></i></button>
+        </form>
+        <div id="countdownBox" style="display:none; text-align:center; margin-top:1.5rem;">
+            <div class="alert alert-success" style="margin-bottom:0;">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="countdownText">Redirecting in 5 seconds...</span>
+            </div>
+        </div>
+        <div style="text-align:center; margin-top:2rem; font-size:0.97rem; color:#2C3E50;">
+            <span>Don't have an account?</span><br>
+            <a href="register-user.html" style="color:#0052CC; font-weight:600; text-decoration:none;">Sign up as a User</a> |
+            <a href="register-provider.html" style="color:#17B890; font-weight:600; text-decoration:none;">Sign up as a Pro</a>
+        </div>
+    </div>
+</div>
+<script>
+let countdownInterval = null;
+let csrfToken = null;
+
+// Get the Django API endpoint dynamically
+function getDjangoEndpoint() {
+    // If running from Live Server on 5500, use localhost:8000
+    // If running from Django dev server, use current origin
+    if (window.location.port === '5500') {
+        return 'http://localhost:8000/accounts/auth/';
+    }
+    return window.location.origin + '/accounts/auth/';
+}
+
+// Fetch CSRF token when page loads
+async function initializeCSRFToken() {
+    try {
+        const response = await fetch(getDjangoEndpoint(), {
+            method: 'GET',
+            credentials: 'include'
+        });
+        
+        // Extract CSRF token from cookie
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) {
+                csrfToken = cookie.substring('csrftoken='.length);
+                console.log('CSRF Token initialized');
+                break;
+            }
+        }
+    } catch (err) {
+        console.log('Note: CSRF token initialization attempted');
+    }
+}
+
+async function loginUser(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const alertBox = document.getElementById('alertBox');
+    const submitBtn = document.getElementById('submitBtn');
+    const countdownBox = document.getElementById('countdownBox');
+    
+    alertBox.innerHTML = '';
+    countdownBox.style.display = 'none';
+    
+    // Client-side validation
+    if (!username) {
+        showError('Please enter your username.');
+        return;
+    }
+    if (!password) {
+        showError('Please enter your password.');
+        return;
+    }
+    
+    // Disable submit button during login
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing in...';
+    
+    try {
+        let body = `action=signin&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+        if (email) {
+            body += `&email=${encodeURIComponent(email)}`;
+        }
+        
+        // Get CSRF token - try multiple sources
+        const token = csrfToken || getCookie('csrftoken');
+        
+        const endpoint = getDjangoEndpoint();
+        console.log('Sending login request to:', endpoint);
+        console.log('Request body:', body);
+        
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': token || ''
+            },
+            body: body
+        });
+        
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        let data;
+        try {
+            data = await response.json();
+            console.log('Response data:', data);
+        } catch (parseErr) {
+            console.error('Failed to parse response as JSON:', parseErr);
+            console.log('Response text:', await response.text());
+            throw new Error('Invalid response from server');
+        }
+        
+        if (response.ok && data.success) {
+            console.log('Login successful!');
+            // Hide form and show countdown
+            document.getElementById('loginForm').style.display = 'none';
+            alertBox.style.display = 'none';
+            countdownBox.style.display = 'block';
+            
+            // Start 5-second countdown
+            startCountdown(data.redirect, data.success);
+        } else if (data.error) {
+            console.log('Login error from server:', data.error);
+            showError(data.error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right ms-2"></i>';
+        } else {
+            console.log('Unexpected response:', { ok: response.ok, data: data });
+            showError('Login failed. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right ms-2"></i>';
+        }
+    } catch (err) {
+        console.error('Login error:', err);
+        console.error('Error message:', err.message);
+        console.error('Error stack:', err.stack);
+        
+        // Provide more specific error messages
+        let errorMessage = 'An error occurred. Please check your connection and try again.';
+        if (err instanceof TypeError) {
+            errorMessage = 'Network error. Make sure the server is running and accessible.';
+        }
+        
+        showError(errorMessage);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Sign In <i class="fas fa-arrow-right ms-2"></i>';
+    }
+}
+
+function startCountdown(redirectUrl, successMessage) {
+    let timeRemaining = 5;
+    const countdownText = document.getElementById('countdownText');
+    const alertBox = document.getElementById('alertBox');
+    
+    // Show success message
+    alertBox.style.display = 'block';
+    alertBox.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>' + successMessage + '</div>';
+    
+    // Update countdown every second
+    countdownInterval = setInterval(() => {
+        timeRemaining--;
+        countdownText.textContent = `Redirecting in ${timeRemaining} second${timeRemaining !== 1 ? 's' : ''}...`;
+        
+        if (timeRemaining <= 0) {
+            clearInterval(countdownInterval);
+            window.location.href = redirectUrl;
+        }
+    }, 1000);
+}
+
+function showError(message) {
+    const alertBox = document.getElementById('alertBox');
+    alertBox.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>' + message + '</div>';
+    alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Initialize CSRF token and form event listener when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize CSRF token
+    initializeCSRFToken();
+    
+    // Add form event listener
+    document.getElementById('loginForm').addEventListener('submit', loginUser);
+});
+
+// Clean up interval on page unload
+window.addEventListener('beforeunload', () => {
+    if (countdownInterval) {
+        clearInterval(countdownInterval);
+    }
+});
+</script>
+</body>
+</html>
