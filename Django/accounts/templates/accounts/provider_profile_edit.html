@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <h2 class="mb-4">Edit Provider Profile</h2>
+
+    <form id="provider-edit-form" method="post" enctype="multipart/form-data" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label">Company name</label>
+        {{ form.company_name.as_widget(attrs={'class':'form-control'}) }}
+        {% for err in form.company_name.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Service type</label>
+          {{ form.service_type.as_widget(attrs={'class':'form-select'}) }}
+          {% for err in form.service_type.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Phone</label>
+          {{ form.phone.as_widget(attrs={'class':'form-control'}) }}
+          {% for err in form.phone.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Business address</label>
+        {{ form.business_address.as_widget(attrs={'class':'form-control'}) }}
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">City</label>
+          {{ form.city.as_widget(attrs={'class':'form-control'}) }}
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">State</label>
+          {{ form.state.as_widget(attrs={'class':'form-control'}) }}
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">ZIP</label>
+          {{ form.zip_code.as_widget(attrs={'class':'form-control'}) }}
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Service description</label>
+        {{ form.service_description.as_widget(attrs={'class':'form-control', 'rows':'3'}) }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Bio</label>
+        {{ form.bio.as_widget(attrs={'class':'form-control', 'rows':'3'}) }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Years of experience</label>
+        {{ form.years_experience.as_widget(attrs={'class':'form-control', 'type':'number', 'min':'0'}) }}
+        {% for err in form.years_experience.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Profile picture</label>
+        {{ form.profile_picture.as_widget(attrs={'class':'form-control'}) }}
+        {% for err in form.profile_picture.errors %}<div class="text-danger small">{{ err }}</div>{% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Current picture</label>
+        <div>
+          {% if provider and provider.profile_picture %}
+            <img id="preview" src="{{ provider.profile_picture.url }}" alt="current" class="img-thumbnail provider-preview" />
+          {% else %}
+            <img id="preview" src="/static/assets/image/Pokecut_1765472355563.jpg" alt="current" class="img-thumbnail provider-preview" />
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary" id="saveProfileBtn">Save changes</button>
+        <a class="btn btn-secondary" href="{% url 'accounts:provider_profile_detail' %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function getCookie(name) {
+    const cookies = document.cookie ? document.cookie.split('; ') : [];
+    for (let i = 0; i < cookies.length; i++) {
+      const parts = cookies[i].split('=');
+      const key = parts.shift();
+      const val = parts.join('=');
+      if (key === name) return decodeURIComponent(val);
+    }
+    return null;
+  }
+
+  // preview file input if user selects a new image
+  document.addEventListener('change', function(e){
+    const input = e.target;
+    if(input.type === 'file' && input.name === 'profile_picture' && input.files && input.files[0]){
+      const reader = new FileReader();
+      reader.onload = function(ev){
+        const img = document.getElementById('preview');
+        if(img) img.src = ev.target.result;
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  });
+
+  // AJAX submit handler: send form via fetch and redirect on success
+  const form = document.getElementById('provider-edit-form');
+  if (form) {
+    form.addEventListener('submit', function(evt){
+      evt.preventDefault();
+      const btn = document.getElementById('saveProfileBtn');
+      btn.disabled = true;
+      const fd = new FormData(form);
+      fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: fd,
+        credentials: 'same-origin'
+      }).then(resp => {
+        if (resp.redirected) {
+          window.location = resp.url;
+          return;
+        }
+        return resp.text().then(text => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
+          const newForm = doc.getElementById('provider-edit-form');
+          if (newForm) {
+            form.replaceWith(newForm);
+          }
+        });
+      }).catch(err => {
+        console.error('Upload error', err);
+      }).finally(()=> btn.disabled = false);
+    });
+  }
+</script>
+
+{% endblock %}

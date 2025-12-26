@@ -1,0 +1,186 @@
+{% extends 'simple_base.html' %}
+{% load static %}
+
+{% block title %}Become a Provider{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <h2>Become a Provider</h2>
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <!-- Username & Email -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Username</label>
+          {% if form.username.errors %}
+            <input type="text" name="username" class="form-control is-invalid" value="{{ form.username.value|default:'' }}" required>
+            <div class="invalid-feedback d-block">{% for error in form.username.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="text" name="username" class="form-control" value="{{ form.username.value|default:'' }}" required>
+          {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Email</label>
+          {% if form.email.errors %}
+            <input type="email" name="email" class="form-control is-invalid" value="{{ form.email.value|default:'' }}">
+            <div class="invalid-feedback d-block">{% for error in form.email.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}">
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Password & Confirm -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Password</label>
+          {% if form.password1.errors %}
+            <input type="password" name="password1" class="form-control is-invalid" required>
+            <div class="invalid-feedback d-block">{% for error in form.password1.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="password" name="password1" class="form-control" required>
+          {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Confirm Password</label>
+          {% if form.password2.errors %}
+            <input type="password" name="password2" class="form-control is-invalid" required>
+            <div class="invalid-feedback d-block">{% for error in form.password2.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="password" name="password2" class="form-control" required>
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Company & Service -->
+      <div class="mb-3">
+        <label class="form-label">Company name</label>
+        {% if form.company_name.errors %}
+          <input type="text" name="company_name" class="form-control is-invalid" value="{{ form.company_name.value|default:'' }}">
+          <div class="invalid-feedback d-block">{% for error in form.company_name.errors %}{{ error }}{% endfor %}</div>
+        {% else %}
+          <input type="text" name="company_name" class="form-control" value="{{ form.company_name.value|default:'' }}">
+        {% endif %}
+      </div>
+      
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Service type *</label>
+          {% if form.service_type.errors %}
+            <select name="service_type" class="form-select is-invalid" required>
+              <option value="">-- Select a service --</option>
+              <option value="plumbing" {% if form.service_type.value == 'plumbing' %}selected{% endif %}>Plumbing</option>
+              <option value="electrical" {% if form.service_type.value == 'electrical' %}selected{% endif %}>Electrical</option>
+              <option value="carpentry" {% if form.service_type.value == 'carpentry' %}selected{% endif %}>Carpentry</option>
+              <option value="cleaning" {% if form.service_type.value == 'cleaning' %}selected{% endif %}>Cleaning</option>
+              <option value="tutoring" {% if form.service_type.value == 'tutoring' %}selected{% endif %}>Tutoring</option>
+              <option value="hvac" {% if form.service_type.value == 'hvac' %}selected{% endif %}>HVAC</option>
+              <option value="roofing" {% if form.service_type.value == 'roofing' %}selected{% endif %}>Roofing</option>
+              <option value="landscaping" {% if form.service_type.value == 'landscaping' %}selected{% endif %}>Landscaping</option>
+              <option value="painting" {% if form.service_type.value == 'painting' %}selected{% endif %}>Painting</option>
+              <option value="other" {% if form.service_type.value == 'other' %}selected{% endif %}>Other</option>
+            </select>
+            <div class="invalid-feedback d-block">{% for error in form.service_type.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <select name="service_type" class="form-select" required>
+              <option value="">-- Select a service --</option>
+              <option value="plumbing" {% if form.service_type.value == 'plumbing' %}selected{% endif %}>Plumbing</option>
+              <option value="electrical" {% if form.service_type.value == 'electrical' %}selected{% endif %}>Electrical</option>
+              <option value="carpentry" {% if form.service_type.value == 'carpentry' %}selected{% endif %}>Carpentry</option>
+              <option value="cleaning" {% if form.service_type.value == 'cleaning' %}selected{% endif %}>Cleaning</option>
+              <option value="tutoring" {% if form.service_type.value == 'tutoring' %}selected{% endif %}>Tutoring</option>
+              <option value="hvac" {% if form.service_type.value == 'hvac' %}selected{% endif %}>HVAC</option>
+              <option value="roofing" {% if form.service_type.value == 'roofing' %}selected{% endif %}>Roofing</option>
+              <option value="landscaping" {% if form.service_type.value == 'landscaping' %}selected{% endif %}>Landscaping</option>
+              <option value="painting" {% if form.service_type.value == 'painting' %}selected{% endif %}>Painting</option>
+              <option value="other" {% if form.service_type.value == 'other' %}selected{% endif %}>Other</option>
+            </select>
+          {% endif %}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Phone</label>
+          {% if form.phone.errors %}
+            <input type="tel" name="phone" class="form-control is-invalid" value="{{ form.phone.value|default:'' }}">
+            <div class="invalid-feedback d-block">{% for error in form.phone.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="tel" name="phone" class="form-control" value="{{ form.phone.value|default:'' }}">
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Address & City -->
+      <div class="mb-3">
+        <label class="form-label">Business address</label>
+        {% if form.business_address.errors %}
+          <input type="text" name="business_address" class="form-control is-invalid" value="{{ form.business_address.value|default:'' }}">
+          <div class="invalid-feedback d-block">{% for error in form.business_address.errors %}{{ error }}{% endfor %}</div>
+        {% else %}
+          <input type="text" name="business_address" class="form-control" value="{{ form.business_address.value|default:'' }}">
+        {% endif %}
+      </div>
+      
+      <div class="row">
+        <div class="col-md-4 mb-3">
+          <label class="form-label">City</label>
+          {% if form.city.errors %}
+            <input type="text" name="city" class="form-control is-invalid" value="{{ form.city.value|default:'' }}">
+            <div class="invalid-feedback d-block">{% for error in form.city.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="text" name="city" class="form-control" value="{{ form.city.value|default:'' }}">
+          {% endif %}
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">State</label>
+          {% if form.state.errors %}
+            <input type="text" name="state" class="form-control is-invalid" value="{{ form.state.value|default:'' }}">
+            <div class="invalid-feedback d-block">{% for error in form.state.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="text" name="state" class="form-control" value="{{ form.state.value|default:'' }}">
+          {% endif %}
+        </div>
+        <div class="col-md-4 mb-3">
+          <label class="form-label">Zip code</label>
+          {% if form.zip_code.errors %}
+            <input type="text" name="zip_code" class="form-control is-invalid" value="{{ form.zip_code.value|default:'' }}">
+            <div class="invalid-feedback d-block">{% for error in form.zip_code.errors %}{{ error }}{% endfor %}</div>
+          {% else %}
+            <input type="text" name="zip_code" class="form-control" value="{{ form.zip_code.value|default:'' }}">
+          {% endif %}
+        </div>
+      </div>
+      
+      <!-- Bio & Experience -->
+      <div class="mb-3">
+        <label class="form-label">Bio</label>
+        {% if form.bio.errors %}
+          <textarea name="bio" class="form-control is-invalid" rows="3">{{ form.bio.value|default:'' }}</textarea>
+          <div class="invalid-feedback d-block">{% for error in form.bio.errors %}{{ error }}{% endfor %}</div>
+        {% else %}
+          <textarea name="bio" class="form-control" rows="3">{{ form.bio.value|default:'' }}</textarea>
+        {% endif %}
+      </div>
+      
+      <div class="mb-3">
+        <label class="form-label">Years experience *</label>
+        {% if form.years_experience.errors %}
+          <input type="number" name="years_experience" class="form-control is-invalid" value="{{ form.years_experience.value|default:0 }}" min="0" required>
+          <div class="invalid-feedback d-block">{% for error in form.years_experience.errors %}{{ error }}{% endfor %}</div>
+        {% else %}
+          <input type="number" name="years_experience" class="form-control" value="{{ form.years_experience.value|default:0 }}" min="0" required>
+        {% endif %}
+      </div>
+      
+      <button class="btn btn-primary w-100" type="submit">Register as Provider</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
