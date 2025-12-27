@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div style="padding: 40px; text-align:center;">
+    <h2>Request Created Successfully ✅</h2>
+    <a href="{% url 'create_request' %}">Create another request</a>
+</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Request Submitted</title>
+</head>
+<body>
+    <h1>Request submitted successfully!</h1>
+</body>
+</html>
+{% endblock %}
