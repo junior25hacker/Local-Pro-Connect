@@ -12,6 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- External CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
+    
 </head>
 <body>
     <!-- ==================== NAVIGATION BAR ==================== -->
@@ -60,7 +61,6 @@
 
     <!-- ==================== HERO SECTION ==================== -->
     <section class="hero-section">
-        
         <div class="container-fluid">
             <div class="hero-content">
                 <h1 class="hero-title">Your Trusted Neighborhood Services</h1>
@@ -68,9 +68,27 @@
                     Connect with verified, highly-rated professionals in your area. From plumbing to tutoring, find the right expert today.
                 </p>
                 <div class="d-flex gap-3 flex-wrap justify-content-center">
-                    <a href="pages/search.html" class="btn btn-cta">
-                        <i class="fas fa-search me-2"></i>Find Professionals
-                    </a>
+                    
+                    <!-- Updated Form for Geolocation & Price -->
+                    <form id="emergency-form" action="pages/search.html" method="GET" class="d-flex gap-2 align-items-center">
+                        <button type="button" id="getLocationBtn" class="btn btn-cta">
+                            <i class="fas fa-map-marker-alt me-2"></i>Use My Location
+                        </button>
+    
+                        <input type="text" id="manualAddress" name="manual_address" placeholder="Enter address manually" class="form-control" style="display:none; max-width:200px;">
+    
+                        <input type="hidden" id="latitude" name="latitude">
+                        <input type="hidden" id="longitude" name="longitude">
+    
+                        <input type="number" id="price" name="price" placeholder="Max Price" class="form-control" style="max-width:120px;">
+    
+                        <button type="submit" class="btn btn-cta-light">
+                            <i class="fas fa-search me-2"></i>Find Professionals
+                        </button>
+    
+                        <p id="locationError" style="color:red; display:none; margin:0 0 0 10px;"></p>
+                    </form>
+    
                     <a href="pages/register-provider.html" class="btn btn-cta-light">
                         <i class="fas fa-briefcase me-2"></i>List Your Service
                     </a>
@@ -78,7 +96,7 @@
             </div>
         </div>
     </section>
-
+    
     <!-- ==================== QUICK SERVICE CATEGORIES ==================== -->
     <section class="categories-section">
         <div class="container">
@@ -368,5 +386,8 @@
     
     <!-- Main Scripts -->
     <script src="assets/js/main.js"></script>
+
+    <!-- Geolocation Script -->
+    <script src="assets/js/geolocation.js"></script>
 </body>
 </html>
