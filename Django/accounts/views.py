@@ -2,24 +2,45 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
-from .forms import UserRegistrationForm, ProviderRegistrationForm
+from .forms import UserRegistrationForm, ProviderRegistrationForm, UserLoginForm, ProviderLoginForm
 from .models import ProviderProfile, UserProfile
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.contrib.auth.decorators import login_required
 from urllib.parse import urlencode
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     return render(request, 'pages/index.html')
 
+def login_page(request):
+    """Serve login page through Django"""
+    return render(request, 'login.html')
+
+def signup_user_page(request):
+    """Serve user signup page through Django"""
+    return render(request, 'register-user.html')
+
+def signup_provider_page(request):
+    """Serve provider signup page through Django"""
+    return render(request, 'register-provider.html')
+
+@csrf_exempt
 @require_http_methods(['GET', 'POST'])
 def auth_view(request):
+    """
+    Professional authentication view handling both signup and signin.
+    Supports both users and providers.
+    """
     if request.method == 'POST':
-        action = request.POST.get('action')
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        action = request.POST.get('action', '').strip()
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
 
         if action == 'signup':
             if User.objects.filter(email=email).exists():
@@ -31,38 +52,77 @@ def auth_view(request):
                 return JsonResponse({'success': 'Account has been created successfully. Please sign in.'})
 
         elif action == 'signin':
-            # Try to find user by username only
-            try:
-                user = User.objects.get(username=username)
-            except User.DoesNotExist:
-                return JsonResponse({'error': 'No account found for this username. Please check your username or sign up.'}, status=404)
-
-            # Check if email matches (if provided)
-            if email and user.email and user.email != email:
-                return JsonResponse({'error': 'Email does not match the username provided.'}, status=400)
-
-            # Authenticate with username and password
-            user_auth = auth.authenticate(username=username, password=password)
-            if user_auth is not None:
-                auth.login(request, user_auth)
-                # Check if user is a provider
-                is_provider = ProviderProfile.objects.filter(user=user_auth).exists()
-                if is_provider:
-                    return JsonResponse({
-                        'success': 'Login successful! Redirecting to provider profile...',
-                        'user_type': 'provider',
-                        'redirect': '/pages/provider-profile.html'
-                    })
-                else:
-                    return JsonResponse({
-                        'success': 'Login successful! Redirecting to user profile...',
-                        'user_type': 'user',
-                        'redirect': '/pages/user-profile.html'
-                    })
-            else:
-                return JsonResponse({'error': 'Incorrect password for this username.'}, status=401)
+            # Professional authentication flow
+            return handle_user_login(request, username, email, password)
 
     return render(request, 'auth_choice.html')
+
+
+def handle_user_login(request, username, email, password):
+    """
+    Handle user login with comprehensive validation and security checks.
+    Returns JSON response with success/error messages and redirect URLs.
+    Supports regular users, providers, and superusers/admins.
+    """
+    # Validate input
+    if not username:
+        return JsonResponse({'error': 'Username is required.'}, status=400)
+    if not password:
+        return JsonResponse({'error': 'Password is required.'}, status=400)
+
+    try:
+        # Check if user exists
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        logger.warning(f'Login attempt with non-existent username: {username}')
+        return JsonResponse({
+            'error': 'No account found for this username. Please check your username or sign up.'
+        }, status=404)
+
+    # Validate email if provided
+    if email and user.email and user.email != email:
+        logger.warning(f'Login attempt with mismatched email for user: {username}')
+        return JsonResponse({
+            'error': 'Email does not match the username provided.'
+        }, status=400)
+
+    # Authenticate user with username and password
+    authenticated_user = auth.authenticate(username=username, password=password)
+    
+    if authenticated_user is None:
+        logger.warning(f'Login attempt with incorrect password for user: {username}')
+        return JsonResponse({
+            'error': 'Incorrect password for this username.'
+        }, status=401)
+
+    # Password is correct, login the user
+    auth.login(request, authenticated_user)
+    logger.info(f'User successfully logged in: {username}')
+
+    # Check if user is a superuser/admin first (highest priority)
+    if authenticated_user.is_superuser and authenticated_user.is_staff:
+        redirect_url = '/admin/'
+        user_type = 'superuser'
+        success_msg = 'Welcome Administrator! You have successfully logged in. Redirecting to admin panel...'
+        logger.info(f'Superuser/Admin logged in: {username}')
+    # Then check if user is a provider
+    elif ProviderProfile.objects.filter(user=authenticated_user).exists():
+        redirect_url = '/accounts/profile/provider/'
+        user_type = 'provider'
+        success_msg = 'You have successfully logged in! Redirecting to your provider profile...'
+    # Otherwise, treat as regular user
+    else:
+        redirect_url = '/accounts/profile/user/'
+        user_type = 'user'
+        success_msg = 'You have successfully logged in! Redirecting to your profile...'
+
+    return JsonResponse({
+        'success': success_msg,
+        'user_type': user_type,
+        'redirect': redirect_url,
+        'username': authenticated_user.username,
+        'first_name': authenticated_user.first_name
+    }, status=200)
 
 
 @require_http_methods(['GET', 'POST'])
@@ -122,21 +182,53 @@ def user_profile(request):
     """Serve user profile HTML page"""
     if not request.user.is_authenticated:
         return redirect('register_user')
-    return render(request, 'user-profile.html')
+    user_profile = UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
+    return render(request, 'accounts/user_profile.html', {'user_profile': user_profile})
 
 
 def provider_profile(request):
     """Serve provider profile HTML page"""
     if not request.user.is_authenticated:
         return redirect('register_provider')
-    return render(request, 'provider-profile.html')
+    provider_profile = ProviderProfile.objects.get(user=request.user) if ProviderProfile.objects.filter(user=request.user).exists() else None
+    return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
+
+
+@login_required(login_url='auth')
+def logout_view(request):
+    """
+    Handle user logout securely.
+    Clears session and redirects to login page.
+    """
+    username = request.user.username
+    auth.logout(request)
+    logger.info(f'User logged out: {username}')
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('auth')
+
+
+@require_http_methods(['POST'])
+def api_logout(request):
+    """
+    API endpoint for logout (AJAX).
+    Returns JSON response for client-side handling.
+    """
+    if request.user.is_authenticated:
+        username = request.user.username
+        auth.logout(request)
+        logger.info(f'User logged out via API: {username}')
+        return JsonResponse({
+            'success': 'You have been successfully logged out.',
+            'redirect': '/pages/login.html'
+        }, status=200)
+    return JsonResponse({'error': 'Not authenticated.'}, status=401)
 
 
 # API Endpoints for fetching profile data
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 def api_user_profile(request):
-    """API endpoint to get user profile data as JSON"""
+    """API endpoint to get/update user profile data as JSON"""
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
@@ -145,6 +237,45 @@ def api_user_profile(request):
     except UserProfile.DoesNotExist:
         return JsonResponse({'error': 'Profile not found'}, status=404)
     
+    # Handle POST requests to update profile
+    if request.method == 'POST':
+        try:
+            # Update user fields
+            if 'first_name' in request.POST:
+                request.user.first_name = request.POST.get('first_name', '')
+            if 'last_name' in request.POST:
+                request.user.last_name = request.POST.get('last_name', '')
+            if 'email' in request.POST:
+                request.user.email = request.POST.get('email', '')
+            
+            request.user.save()
+            
+            # Update user profile fields
+            if 'phone' in request.POST:
+                user_profile.phone = request.POST.get('phone', '')
+            if 'address' in request.POST:
+                user_profile.address = request.POST.get('address', '')
+            if 'city' in request.POST:
+                user_profile.city = request.POST.get('city', '')
+            if 'state' in request.POST:
+                user_profile.state = request.POST.get('state', '')
+            if 'zip_code' in request.POST:
+                user_profile.zip_code = request.POST.get('zip_code', '')
+            
+            user_profile.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Profile updated successfully',
+                'redirect': request.path
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)
+    
+    # Handle GET requests to retrieve profile
     data = {
         'username': request.user.username,
         'email': request.user.email,
@@ -162,9 +293,9 @@ def api_user_profile(request):
     return JsonResponse(data)
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 def api_provider_profile(request):
-    """API endpoint to get provider profile data as JSON"""
+    """API endpoint to get/update provider profile data as JSON"""
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
@@ -173,6 +304,53 @@ def api_provider_profile(request):
     except ProviderProfile.DoesNotExist:
         return JsonResponse({'error': 'Provider profile not found'}, status=404)
     
+    # Handle POST requests to update profile
+    if request.method == 'POST':
+        try:
+            # Handle photo upload
+            if 'profile_picture' in request.FILES:
+                profile_picture = request.FILES['profile_picture']
+                provider_profile.profile_picture = profile_picture
+            
+            # Update provider profile fields
+            if 'company_name' in request.POST:
+                provider_profile.company_name = request.POST.get('company_name', '')
+            if 'service_type' in request.POST:
+                provider_profile.service_type = request.POST.get('service_type', 'other')
+            if 'phone' in request.POST:
+                provider_profile.phone = request.POST.get('phone', '')
+            if 'business_address' in request.POST:
+                provider_profile.business_address = request.POST.get('business_address', '')
+            if 'city' in request.POST:
+                provider_profile.city = request.POST.get('city', '')
+            if 'state' in request.POST:
+                provider_profile.state = request.POST.get('state', '')
+            if 'zip_code' in request.POST:
+                provider_profile.zip_code = request.POST.get('zip_code', '')
+            if 'bio' in request.POST:
+                provider_profile.bio = request.POST.get('bio', '')
+            if 'service_description' in request.POST:
+                provider_profile.service_description = request.POST.get('service_description', '')
+            if 'years_experience' in request.POST:
+                try:
+                    provider_profile.years_experience = int(request.POST.get('years_experience', 0))
+                except ValueError:
+                    pass
+            
+            provider_profile.save()
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Profile updated successfully',
+                'redirect': request.path
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=400)
+    
+    # Handle GET requests to retrieve profile
     # Get service type display name
     service_type_display = dict(provider_profile.SERVICE_CHOICES).get(
         provider_profile.service_type, 
@@ -204,3 +382,36 @@ def api_provider_profile(request):
     }
     return JsonResponse(data)
 
+
+@require_http_methods(['POST'])
+def api_service_request(request):
+    """API endpoint to handle service requests"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    try:
+        # Get form data
+        description = request.POST.get('description', '')
+        preferred_date = request.POST.get('preferred_date', '')
+        preferred_time = request.POST.get('preferred_time', '')
+        contact_phone = request.POST.get('contact_phone', '')
+        
+        # Validate required fields
+        if not description or not preferred_date or not contact_phone:
+            return JsonResponse({
+                'success': False,
+                'error': 'Please fill in all required fields'
+            }, status=400)
+        
+        # TODO: Save service request to database when model is created
+        # For now, we'll just return success
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Service request sent successfully'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)

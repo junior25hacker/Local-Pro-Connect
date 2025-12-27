@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register as Professional - Local Pro Connect</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: #004C99 !important;
+            font-size: 1.5rem;
+        }
+
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0052CC 0%, #00D084 100%);
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .register-container::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 350px;
+            height: 350px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 3rem;
+            max-width: 520px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-card h2 {
+            color: #004C99;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-size: 1.75rem;
+        }
+
+        .register-card h2 i {
+            margin-right: 0.5rem;
+            color: #00D084;
+        }
+
+        .register-card .subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.6rem;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #E8E8E8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background-color: #f8f9fa;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #00D084;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 208, 132, 0.1);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #adb5bd;
+        }
+
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error select {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-check {
+            margin-bottom: 1.5rem;
+            padding: 0;
+        }
+
+        .form-check-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid #E8E8E8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.25rem;
+        }
+
+        .form-check-input:checked {
+            background-color: #00D084;
+            border-color: #00D084;
+        }
+
+        .form-check-input:focus {
+            border-color: #00D084;
+            box-shadow: 0 0 0 0.2rem rgba(0, 208, 132, 0.25);
+        }
+
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .form-check-label a {
+            color: #00D084;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-check-label a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-info {
+            background-color: rgba(0, 208, 132, 0.1);
+            color: #00D084;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-info .btn {
+            margin-top: 0.75rem;
+            width: 100%;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #0052CC 0%, #00D084 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 208, 132, 0.4);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid #E8E8E8;
+            padding-top: 1.5rem;
+            color: #6c757d;
+        }
+
+        .login-link a {
+            color: #00D084;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #0052CC;
+            text-decoration: underline;
+        }
+
+        .login-link br {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 576px) {
+            .register-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .register-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .register-card .subtitle {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark position-absolute w-100">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="fas fa-tools me-2"></i>Local Pro Connect
+            </a>
+        </div>
+    </nav>
+
+    <!-- Registration Container -->
+    <div class="register-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="register-card">
+                        <h2><i class="fas fa-briefcase me-2"></i>Become a Professional</h2>
+                        <p class="subtitle">List your services and connect with customers</p>
+
+                        <form id="registerForm" method="POST" action="/accounts/register/provider/">
+                            {% csrf_token %}
+                            
+                            <!-- Username -->
+                            <div class="form-group">
+                                <label for="username"><i class="fas fa-user me-2"></i>Username</label>
+                                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                                <div class="error-message">Username is required</div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                                <input type="email" id="email" name="email" placeholder="your@email.com">
+                                <div class="error-message">Please enter a valid email</div>
+                            </div>
+
+                            <!-- Company Name -->
+                            <div class="form-group">
+                                <label for="company_name"><i class="fas fa-building me-2"></i>Company Name</label>
+                                <input type="text" id="company_name" name="company_name" placeholder="Your company name">
+                                <div class="error-message">Company name is required</div>
+                            </div>
+
+                            <!-- Service Type -->
+                            <div class="form-group">
+                                <label for="service_type"><i class="fas fa-briefcase me-2"></i>Service Type</label>
+                                <select id="service_type" name="service_type" required>
+                                    <option value="">Select a service type</option>
+                                    <option value="plumbing">Plumbing</option>
+                                    <option value="electrical">Electrical</option>
+                                    <option value="carpentry">Carpentry</option>
+                                    <option value="hvac">HVAC</option>
+                                    <option value="landscaping">Landscaping</option>
+                                    <option value="cleaning">Cleaning</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <div class="error-message">Please select a service type</div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="form-group">
+                                <label for="phone"><i class="fas fa-phone me-2"></i>Phone</label>
+                                <input type="tel" id="phone" name="phone" placeholder="Your phone number">
+                                <div class="error-message">Phone number is required</div>
+                            </div>
+
+                            <!-- Business Address -->
+                            <div class="form-group">
+                                <label for="business_address"><i class="fas fa-map-marker-alt me-2"></i>Business Address</label>
+                                <input type="text" id="business_address" name="business_address" placeholder="Street address">
+                                <div class="error-message">Business address is required</div>
+                            </div>
+
+                            <!-- City, State, Zip -->
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" id="city" name="city" placeholder="City">
+                                </div>
+                                <div class="form-group">
+                                    <label for="state">State</label>
+                                    <input type="text" id="state" name="state" placeholder="State">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="zip_code">Zip Code</label>
+                                <input type="text" id="zip_code" name="zip_code" placeholder="Zip code">
+                                <div class="error-message">Zip code is required</div>
+                            </div>
+
+                            <!-- Years Experience -->
+                            <div class="form-group">
+                                <label for="years_experience"><i class="fas fa-star me-2"></i>Years of Experience</label>
+                                <input type="number" id="years_experience" name="years_experience" placeholder="0" min="0">
+                                <div class="error-message">Years of experience is required</div>
+                            </div>
+
+                            <!-- Bio -->
+                            <div class="form-group">
+                                <label for="bio"><i class="fas fa-pen me-2"></i>Professional Bio</label>
+                                <textarea id="bio" name="bio" placeholder="Tell customers about your services and experience"></textarea>
+                                <div class="error-message">Bio is required</div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group">
+                                <label for="password1"><i class="fas fa-lock me-2"></i>Password</label>
+                                <input type="password" id="password1" name="password1" placeholder="Create a strong password" required>
+                                <div class="error-message">Password must be at least 8 characters</div>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="form-group">
+                                <label for="password2"><i class="fas fa-lock me-2"></i>Confirm Password</label>
+                                <input type="password" id="password2" name="password2" placeholder="Confirm your password" required>
+                                <div class="error-message">Passwords do not match</div>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="agreeCheckbox" required>
+                                <label class="form-check-label" for="agreeCheckbox">
+                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="register-btn" id="registerBtn">
+                                Become a Provider <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </form>
+                         <div class="login-link">
+                            Already have an account? <a href="/accounts/login/">Sign in here</a><br>
+                            Looking for professionals? <a href="/accounts/signup/user/">Sign up as a customer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+
+</body>
+</html>

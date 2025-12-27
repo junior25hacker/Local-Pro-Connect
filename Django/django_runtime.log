@@ -5,29 +5,61 @@ WARNINGS:
 ?: (staticfiles.W004) The directory '/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/assets' in the STATICFILES_DIRS setting does not exist.
 
 System check identified 1 issue (0 silenced).
-/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/accounts/views.py changed, reloading.
+[26/Dec/2025 18:26:31] "GET /profile/provider/ HTTP/1.1" 200 23174
+[26/Dec/2025 18:26:31] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:26:31] "GET /favicon.ico HTTP/1.1" 404 6330
+Not Found: /index.html
+[26/Dec/2025 18:26:33] "GET /index.html HTTP/1.1" 404 6237
+Not Found: /favicon.ico
+[26/Dec/2025 18:26:33] "GET /favicon.ico HTTP/1.1" 404 6330
+Not Found: /pages/index.html
+[26/Dec/2025 18:27:27] "GET /pages/index.html HTTP/1.1" 404 6424
+[26/Dec/2025 18:27:27] "GET /accounts/profile/user/ HTTP/1.1" 302 0
+[26/Dec/2025 18:27:33] "GET /accounts/profile/user/ HTTP/1.1" 302 0
+[26/Dec/2025 18:27:41] "GET /accounts/profile/user/ HTTP/1.1" 302 0
+Not Found: /pages/index.html
+[26/Dec/2025 18:27:57] "GET /pages/index.html HTTP/1.1" 404 6424
+[26/Dec/2025 18:28:16] "GET /profile/provider/ HTTP/1.1" 200 23180
+[26/Dec/2025 18:28:17] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:17] "GET /favicon.ico HTTP/1.1" 404 6330
+Not Found: /pages/index.html
+[26/Dec/2025 18:28:18] "GET /pages/index.html HTTP/1.1" 404 6424
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:18] "GET /favicon.ico HTTP/1.1" 404 6330
+[26/Dec/2025 18:28:27] "GET /profile/provider/ HTTP/1.1" 200 23180
+[26/Dec/2025 18:28:27] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:27] "GET /favicon.ico HTTP/1.1" 404 6330
+[26/Dec/2025 18:28:27] "GET /profile/provider/ HTTP/1.1" 200 23180
+[26/Dec/2025 18:28:28] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:28] "GET /favicon.ico HTTP/1.1" 404 6330
+[26/Dec/2025 18:28:28] "GET /profile/provider/ HTTP/1.1" 200 23180
+[26/Dec/2025 18:28:28] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:28] "GET /favicon.ico HTTP/1.1" 404 6330
+[26/Dec/2025 18:28:28] "GET /profile/provider/ HTTP/1.1" 200 23180
+[26/Dec/2025 18:28:28] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:28] "GET /favicon.ico HTTP/1.1" 404 6330
+[26/Dec/2025 18:28:29] "GET /profile/provider/ HTTP/1.1" 200 23180
+[26/Dec/2025 18:28:29] "GET /static/assets/image/newlogo.png HTTP/1.1" 404 1886
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:29] "GET /favicon.ico HTTP/1.1" 404 6330
+Not Found: /pages/index.html
+[26/Dec/2025 18:28:30] "GET /pages/index.html HTTP/1.1" 404 6424
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:30] "GET /favicon.ico HTTP/1.1" 404 6330
+Not Found: /pages/index.html
+[26/Dec/2025 18:28:56] "GET /pages/index.html HTTP/1.1" 404 6424
+Not Found: /favicon.ico
+[26/Dec/2025 18:28:56] "GET /favicon.ico HTTP/1.1" 404 6330
+/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/locapro_project/urls.py changed, reloading.
 Performing system checks...
 
-December 23, 2025 - 00:43:30
-Django version 5.2.9, using settings 'locapro_project.settings'
-Starting development server at http://0.0.0.0:8000/
-Quit the server with CONTROL-C.
-
-WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
-For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/
-Watching for file changes with StatReloader
-System check identified some issues:
-
-WARNINGS:
-?: (staticfiles.W004) The directory '/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/assets' in the STATICFILES_DIRS setting does not exist.
-
-System check identified 1 issue (0 silenced).
-Forbidden (CSRF cookie not set.): /accounts/auth/
-[23/Dec/2025 00:49:24] "POST /accounts/auth/ HTTP/1.1" 403 2855
-/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/accounts/views.py changed, reloading.
-Performing system checks...
-
-December 23, 2025 - 00:46:04
+December 26, 2025 - 18:26:09
 Django version 5.2.9, using settings 'locapro_project.settings'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CONTROL-C.

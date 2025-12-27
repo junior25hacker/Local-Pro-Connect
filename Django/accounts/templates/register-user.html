@@ -1,28 +1,472 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Sign Up</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up as User - Local Pro Connect</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: #004C99 !important;
+            font-size: 1.5rem;
+        }
+
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0052CC 0%, #E8F0FF 100%);
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .register-container::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 350px;
+            height: 350px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            padding: 3rem;
+            max-width: 480px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-card h2 {
+            color: #004C99;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            font-size: 1.75rem;
+        }
+
+        .register-card .subtitle {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.6rem;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #E8E8E8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #adb5bd;
+        }
+
+        .form-group.error input {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .form-check {
+            margin-bottom: 1.5rem;
+            padding: 0;
+        }
+
+        .form-check-input {
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid #E8E8E8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.25rem;
+        }
+
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+
+        .form-check-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-left: 0.5rem;
+            cursor: pointer;
+        }
+
+        .form-check-label a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-check-label a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-info {
+            background-color: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .alert-info .btn {
+            margin-top: 0.75rem;
+            width: 100%;
+        }
+
+        .success-message {
+            background-color: rgba(0, 166, 90, 0.1);
+            color: #00A65A;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #00A65A;
+            margin-bottom: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .success-message i {
+            margin-right: 0.5rem;
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 2rem 0;
+            color: #ccc;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: #E8E8E8;
+        }
+
+        .divider span {
+            margin: 0 1rem;
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid #E8E8E8;
+            padding-top: 1.5rem;
+            color: #6c757d;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .login-link br {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 576px) {
+            .register-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .register-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .register-card .subtitle {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>Sign Up</h2>
-    {% if messages %}
-        <ul>
-        {% for message in messages %}
-            <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-    <form method="post" action="/accounts/auth/">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="signup">
-        <label>Email:</label><input type="email" name="email" required><br>
-        <label>Password:</label><input type="password" name="password" required><br>
-        <button type="submit">Sign Up</button>
-    </form>
-    <p>Already have an account? <a href="/accounts/auth/" onclick="event.preventDefault(); document.getElementById('signin-form').submit();">Sign In</a></p>
-    <form id="signin-form" method="post" action="/accounts/auth/" style="display:none;">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="signin">
-    </form>
-</body>
-</html>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark position-absolute w-100">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="fas fa-tools me-2"></i>Local Pro Connect
+            </a>
+        </div>
+    </nav>
+
+    <!-- Registration Container -->
+    <div class="register-container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="register-card">
+                        <h2>Create Your Account</h2>
+                        <p class="subtitle">Join Local Pro Connect and find trusted professionals</p>
+
+                        <!-- Success Message -->
+                        <div class="success-message" id="successMessage">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Registration successful! Please check your email to verify your account.
+                        </div>
+
+                        <form id="registerForm" method="POST" action="/accounts/register/user/">
+                            {% csrf_token %}
+                            
+                            <!-- Username -->
+                            <div class="form-group">
+                                <label for="username"><i class="fas fa-user me-2"></i>Username</label>
+                                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                                <div class="error-message">Username is required</div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label for="email"><i class="fas fa-envelope me-2"></i>Email</label>
+                                <input type="email" id="email" name="email" placeholder="your@email.com">
+                                <div class="error-message">Please enter a valid email</div>
+                            </div>
+
+                            <!-- First Name -->
+                            <div class="form-group">
+                                <label for="first_name"><i class="fas fa-user-tag me-2"></i>First Name</label>
+                                <input type="text" id="first_name" name="first_name" placeholder="Your first name">
+                                <div class="error-message">First name is required</div>
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="form-group">
+                                <label for="last_name"><i class="fas fa-user-tag me-2"></i>Last Name</label>
+                                <input type="text" id="last_name" name="last_name" placeholder="Your last name">
+                                <div class="error-message">Last name is required</div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="form-group">
+                                <label for="password1"><i class="fas fa-lock me-2"></i>Password</label>
+                                <input type="password" id="password1" name="password1" placeholder="Create a strong password" required>
+                                <div class="error-message">Password must be at least 8 characters</div>
+                            </div>
+
+                            <!-- Confirm Password -->
+                            <div class="form-group">
+                                <label for="password2"><i class="fas fa-lock me-2"></i>Confirm Password</label>
+                                <input type="password" id="password2" name="password2" placeholder="Confirm your password" required>
+                                <div class="error-message">Passwords do not match</div>
+                            </div>
+
+                            <!-- Terms and Conditions -->
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="agreeCheckbox" required>
+                                <label class="form-check-label" for="agreeCheckbox">
+                                    I agree to the <a href="#" target="_blank">Terms of Service</a> and <a href="#" target="_blank">Privacy Policy</a>
+                                </label>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="register-btn" id="registerBtn">
+                                Create Account <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </form>
+                         <div class="login-link">
+                            Already have an account? <a href="/accounts/login/">Sign in here</a>
+                        </div>
+                        
+                        <div class="login-link" style="border-top: 1px solid #E8E8E8; padding-top: 1rem;">
+                            Are you a professional? <a href="/accounts/signup/provider/">Register as a Pro</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Registration Handler -->
+    <script>
+        function handleRegistration(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const agreeCheckbox = document.getElementById('agreeCheckbox');
+            const registerBtn = document.getElementById('registerBtn');
+            const registerBtnText = document.getElementById('registerBtnText');
+            const successMessage = document.getElementById('successMessage');
+            const registerError = document.getElementById('registerError');
+            
+            let isValid = true;
+            
+            // Clear previous messages
+            successMessage.style.display = 'none';
+            registerError.style.display = 'none';
+            
+            // Validate Name
+            const nameGroup = document.getElementById('name').closest('.form-group');
+            if (name.length < 2) {
+                nameGroup.classList.add('error');
+                isValid = false;
+            } else {
+                nameGroup.classList.remove('error');
+            }
+            
+            // Validate Email
+            const emailGroup = document.getElementById('email').closest('.form-group');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                emailGroup.classList.add('error');
+                isValid = false;
+            } else {
+                emailGroup.classList.remove('error');
+            }
+            
+            // Validate Address
+            const addressGroup = document.getElementById('address').closest('.form-group');
+            if (address.length < 2) {
+                addressGroup.classList.add('error');
+                isValid = false;
+            } else {
+                addressGroup.classList.remove('error');
+            }
+            <!-- Registration Handler removed: now handled by Django backend -->
+            }
