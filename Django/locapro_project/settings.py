@@ -1,5 +1,9 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env from project root (env vars override .env)
+load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -15,6 +19,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'requests',
 ]
 
 MIDDLEWARE = [
@@ -75,7 +80,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'assets']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Media files (uploads)
 MEDIA_URL = '/media/'
@@ -85,3 +90,50 @@ MEDIA_ROOT = BASE_DIR / 'media'
 PAGES_ROOT = BASE_DIR.parent / 'pages'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email Configuration (read from environment variables or derived from provider)
+# Primary envs (can be set directly):
+# - EMAIL_BACKEND (default: smtp backend)
+# - EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
+# - EMAIL_USE_TLS, EMAIL_USE_SSL
+# - DEFAULT_FROM_EMAIL, SERVER_EMAIL
+# Convenience: set SMTP_PROVIDER to 'gmail' or 'outlook' to auto-derive sensible defaults
+SMTP_PROVIDER = os.environ.get('SMTP_PROVIDER', '').lower()
+
+# Defaults for providers (SSL by default as requested)
+if SMTP_PROVIDER == 'gmail':
+    default_host = 'smtp.gmail.com'
+    default_port = 465
+    default_use_ssl = True
+    default_use_tls = False
+elif SMTP_PROVIDER in ('outlook', 'office365', 'microsoft'):  # Outlook also supports TLS:587; honoring SSL per request
+    default_host = 'smtp-mail.outlook.com'
+    default_port = 465
+    default_use_ssl = True
+    default_use_tls = False
+else:
+    default_host = ''
+    default_port = 465
+    default_use_ssl = True
+    default_use_tls = False
+
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', default_host)
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', str(default_port)))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'true' if default_use_tls else 'false').lower() == 'true'
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'true' if default_use_ssl else 'false').lower() == 'true'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@locapro.local')
+SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
+
+# Email timeout (seconds) to avoid hanging requests
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
+
+# In development, default to console backend if no SMTP user provided
+if DEBUG and (not EMAIL_HOST_USER) and os.environ.get('EMAIL_BACKEND') is None:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Site Configuration
+# SITE_URL used for building absolute links when request object is not available
+SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')

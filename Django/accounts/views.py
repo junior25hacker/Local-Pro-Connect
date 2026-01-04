@@ -9,8 +9,12 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
 from urllib.parse import urlencode
+from django.core.mail import send_mail
+from django.conf import settings
 import json
 import logging
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +26,12 @@ def login_page(request):
     return render(request, 'login.html')
 
 def signup_user_page(request):
-    """Serve user signup page through Django"""
-    return render(request, 'register-user.html')
+    """Redirect to the Django form-based user registration page"""
+    return redirect('register_user')
 
 def signup_provider_page(request):
-    """Serve provider signup page through Django"""
-    return render(request, 'register-provider.html')
+    """Redirect to the Django form-based provider registration page"""
+    return redirect('register_provider')
 
 @csrf_exempt
 @require_http_methods(['GET', 'POST'])
@@ -382,6 +386,32 @@ def api_provider_profile(request):
     }
     return JsonResponse(data)
 
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def api_contact(request):
+    name = request.POST.get('name', '').strip()
+    email = request.POST.get('email', '').strip()
+    subject = request.POST.get('subject', '').strip()
+    message = request.POST.get('message', '').strip()
+
+    if not name or not email or not subject or not message:
+        return JsonResponse({'success': False, 'error': 'All fields are required.'}, status=400)
+
+    try:
+        full_subject = f"Contact form: {subject}"
+        full_message = f"From: {name} <{email}>\n\n{message}"
+        send_mail(
+            full_subject,
+            full_message,
+            getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@example.com'),
+            [getattr(settings, 'CONTACT_RECEIVER_EMAIL', 'admin@example.com')],
+            fail_silently=False,
+        )
+        # Return simple HTML so normal form posts render nicely
+        return JsonResponse({'success': True, 'message': 'Message sent successfully.'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 @require_http_methods(['POST'])
 def api_service_request(request):

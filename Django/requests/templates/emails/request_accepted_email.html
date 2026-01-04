@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #28a745;
+            margin: 0;
+            font-size: 24px;
+        }
+        .success-badge {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .request-details {
+            background-color: #f9f9f9;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .detail-row {
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            display: inline-block;
+            width: 120px;
+        }
+        .detail-value {
+            color: #333;
+        }
+        .provider-info {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .provider-info h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: background-color 0.3s;
+        }
+        .action-button:hover {
+            background-color: #218838;
+        }
+        .footer {
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+            padding-top: 15px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✓ Your Request Has Been Accepted!</h1>
+        </div>
+
+        <div class="success-badge">REQUEST ACCEPTED</div>
+
+        <p>Hi {{ customer_name }},</p>
+
+        <p>Great news! {{ provider_name }} has accepted your service request.</p>
+
+        <div class="request-details">
+            <div class="detail-row">
+                <span class="detail-label">Request ID:</span>
+                <span class="detail-value">#{{ request_id }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Service:</span>
+                <span class="detail-value">{{ provider_name }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Description:</span>
+                <span class="detail-value">{{ description }}</span>
+            </div>
+
+            {% if date_time %}
+            <div class="detail-row">
+                <span class="detail-label">Requested Date/Time:</span>
+                <span class="detail-value">{{ date_time|date:"M d, Y H:i" }}</span>
+            </div>
+            {% endif %}
+
+            {% if price_range %}
+            <div class="detail-row">
+                <span class="detail-label">Price Range:</span>
+                <span class="detail-value">{{ price_range }}</span>
+            </div>
+            {% endif %}
+
+            <div class="detail-row">
+                <span class="detail-label">Accepted At:</span>
+                <span class="detail-value">{{ accepted_at|date:"M d, Y H:i" }}</span>
+            </div>
+        </div>
+
+        <div class="provider-info">
+            <h3>Service Provider Information</h3>
+            <p><strong>{{ provider_name }}</strong></p>
+            {% if provider_contact %}
+            <p>📞 Contact: {{ provider_contact }}</p>
+            {% endif %}
+            {% if provider_email %}
+            <p>📧 Email: {{ provider_email }}</p>
+            {% endif %}
+        </div>
+
+        <p>You should expect to hear from the service provider soon to discuss scheduling and any additional details.</p>
+
+        <p>If you need to contact them or manage your request, visit your dashboard:</p>
+
+        <center>
+            <a href="{{ dashboard_link }}" class="action-button">View Your Request</a>
+        </center>
+
+        <p>Thank you for using LocaPro!</p>
+
+        <div class="footer">
+            <p>This is an automated email from LocaPro. Please do not reply to this email.</p>
+            <p>&copy; 2024 LocaPro. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

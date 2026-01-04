@@ -474,7 +474,7 @@
 
                 if (!response.ok) {
                     if (response.status === 401) {
-                        window.location.href = '/accounts/signup/provider/';
+                        window.location.href = '/accounts/register/provider/';
                         return;
                     }
                     throw new Error('Failed to load profile');

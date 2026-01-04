@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 
 from .forms import ServiceRequestForm
-from .models import RequestPhoto
+from .models import RequestPhoto, PriceRange
 
 
 @require_http_methods(["GET", "POST"])
@@ -17,7 +17,7 @@ def create_request(request):
     """
 
     if request.method == "POST":
-        form = ServiceRequestForm(request.POST)
+        form = ServiceRequestForm(request.POST, request.FILES)
 
         if form.is_valid():
             # Save the main ServiceRequest
@@ -37,31 +37,6 @@ def create_request(request):
     else:
         form = ServiceRequestForm()
 
-    context = {
-        "form": form,
-    }
-
-    return render(request, "requests/create_request.html", context)
-from .models import PriceRange
-
-from django.shortcuts import render, redirect
-from .forms import ServiceRequestForm
-
-# Main form page
-def create_request(request):
-    if request.method == "POST":
-        form = ServiceRequestForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('create_request_success')
-    else:
-        form = ServiceRequestForm()
-    return render(request, 'requests/create_request.html')
-
-# Success page after submission
-def create_request_success(request):
-    return render(request, 'requests/create_request_success.html')  # make sure success.html exists
-
     # Pass price ranges to template
     price_ranges = PriceRange.objects.all().order_by("min_price")
 
@@ -69,9 +44,9 @@ def create_request_success(request):
         "form": form,
         "price_ranges": price_ranges,
     }
+
     return render(request, "requests/create_request.html", context)
-from django.http import HttpResponse
 
 
 def create_request_success(request):
-    return render(request, "requests/success.html")
+    return render(request, "requests/create_request_sucess.html")

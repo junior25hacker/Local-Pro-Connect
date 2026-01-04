@@ -1,31 +1,28 @@
 Watching for file changes with StatReloader
-System check identified some issues:
-
-WARNINGS:
-?: (staticfiles.W004) The directory '/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/assets' in the STATICFILES_DIRS setting does not exist.
-
-System check identified 1 issue (0 silenced).
-[26/Dec/2025 17:05:08] "GET / HTTP/1.1" 200 2680
-[26/Dec/2025 17:05:08] "GET / HTTP/1.1" 200 2680
-[26/Dec/2025 17:05:40] "GET / HTTP/1.1" 200 2680
-[26/Dec/2025 17:05:40] "HEAD /accounts/profile/user/ HTTP/1.1" 302 0
-[26/Dec/2025 17:06:16] "GET /accounts/auth/ HTTP/1.1" 200 0
-[26/Dec/2025 17:11:47] "GET /accounts/profile/user/ HTTP/1.1" 302 0
-[26/Dec/2025 17:11:47] "GET /signup/user/ HTTP/1.1" 200 2196
-Not Found: /favicon.ico
-[26/Dec/2025 17:11:47] "GET /favicon.ico HTTP/1.1" 404 5364
-[26/Dec/2025 17:11:48] "GET /signup/user/ HTTP/1.1" 200 2196
-Not Found: /favicon.ico
-[26/Dec/2025 17:11:48] "GET /favicon.ico HTTP/1.1" 404 5364
-[26/Dec/2025 17:12:33] "GET /pages/login.html HTTP/1.1" 304 0
+[03/Jan/2026 23:41:07] "GET / HTTP/1.1" 200 2720
+[03/Jan/2026 23:45:13] "GET /pages/login.html HTTP/1.1" 304 0
 Not Found: /assets/image/logo.png
-[26/Dec/2025 17:12:34] "GET /assets/image/logo.png HTTP/1.1" 404 5394
-[26/Dec/2025 17:12:34] "GET /accounts/auth/ HTTP/1.1" 200 0
+[03/Jan/2026 23:45:13] "GET /assets/image/logo.png HTTP/1.1" 404 6963
+[03/Jan/2026 23:45:13] "GET /accounts/auth/ HTTP/1.1" 200 0
 Not Found: /favicon.ico
-[26/Dec/2025 17:12:34] "GET /favicon.ico HTTP/1.1" 404 5364
-Login attempt with incorrect password for user: testuser
-Unauthorized: /accounts/auth/
-[26/Dec/2025 17:12:50] "POST /accounts/auth/ HTTP/1.1" 401 50
-Login attempt with incorrect password for user: testuser
-Unauthorized: /accounts/auth/
-[26/Dec/2025 17:14:58] "POST /accounts/auth/ HTTP/1.1" 401 50
+[03/Jan/2026 23:45:13] "GET /favicon.ico HTTP/1.1" 404 6933
+Not Found: /favicon.ico
+[03/Jan/2026 23:45:13] "GET /favicon.ico HTTP/1.1" 404 6933
+Not Found: /assets/image/logo.png
+[03/Jan/2026 23:52:28] "GET /assets/image/logo.png HTTP/1.1" 404 6963
+[03/Jan/2026 23:52:28] "GET /accounts/auth/ HTTP/1.1" 200 0
+Not Found: /favicon.ico
+[03/Jan/2026 23:52:28] "GET /favicon.ico HTTP/1.1" 404 6933
+Not Found: /assets/image/logo.png
+[03/Jan/2026 23:52:49] "GET /assets/image/logo.png HTTP/1.1" 404 6963
+[03/Jan/2026 23:52:49] "GET /accounts/auth/ HTTP/1.1" 200 0
+Not Found: /favicon.ico
+[03/Jan/2026 23:52:49] "GET /favicon.ico HTTP/1.1" 404 6933
+[03/Jan/2026 23:53:01] "POST /accounts/auth/ HTTP/1.1" 200 194
+[03/Jan/2026 23:53:06] "GET /accounts/profile/provider/ HTTP/1.1" 200 35707
+Not Found: /favicon.ico
+[03/Jan/2026 23:53:06] "GET /favicon.ico HTTP/1.1" 404 6933
+[03/Jan/2026 23:53:10] "GET /requests/create/ HTTP/1.1" 200 13153
+[03/Jan/2026 23:53:10] "GET /static/assets/image/Gemini_Generated_Image_10go4k10go4k10go.png HTTP/1.1" 404 2095
+Not Found: /favicon.ico
+[03/Jan/2026 23:53:10] "GET /favicon.ico HTTP/1.1" 404 6933

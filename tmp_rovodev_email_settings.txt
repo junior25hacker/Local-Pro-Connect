@@ -1,0 +1,5 @@
+
+# Email settings for development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'no-reply@locapro.test'
+CONTACT_RECEIVER_EMAIL = 'admin@locapro.test'

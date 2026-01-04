@@ -45,14 +45,14 @@ class UserRegistrationForm(forms.Form):
 
 class ProviderRegistrationForm(UserRegistrationForm):
     company_name = forms.CharField(max_length=255, required=False)
-    service_type = forms.ChoiceField(choices=ProviderProfile.SERVICE_CHOICES, initial='other')
+    service_type = forms.ChoiceField(choices=ProviderProfile.SERVICE_CHOICES, initial='other', required=True)
     phone = forms.CharField(max_length=20, required=False)
     business_address = forms.CharField(max_length=255, required=False)
     city = forms.CharField(max_length=100, required=False)
     state = forms.CharField(max_length=50, required=False)
     zip_code = forms.CharField(max_length=10, required=False)
     bio = forms.CharField(widget=forms.Textarea, required=False)
-    years_experience = forms.IntegerField(min_value=0, required=False)
+    years_experience = forms.IntegerField(min_value=0, required=True, initial=0)
 
 
 class UserLoginForm(forms.Form):

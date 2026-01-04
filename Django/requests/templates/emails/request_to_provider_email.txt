@@ -1,0 +1,43 @@
+New Service Request
+===================
+
+Hi {{ provider_name }},
+
+You have received a new service request from a customer. Please review the details below and decide whether to accept or decline this request.
+
+REQUEST DETAILS
+===============
+Request ID: #{{ request_id }}
+From: {{ customer_name }}
+Description: {{ description }}
+
+{% if date_time %}
+Requested Date/Time: {{ date_time|date:"M d, Y H:i" }}
+{% endif %}
+
+{% if price_range %}
+Price Range: {{ price_range }}
+{% endif %}
+
+{% if urgent %}
+Priority: URGENT
+{% endif %}
+
+Posted: {{ created_at|date:"M d, Y H:i" }}
+
+WHAT WOULD YOU LIKE TO DO?
+==========================
+
+Accept this request:
+{{ accept_link }}
+
+Decline this request:
+{{ decline_link }}
+
+Note: Decision links expire in 7 days ({{ expires_at|date:"M d, Y H:i" }})
+
+If you have any questions about this request, you can contact the customer directly.
+
+---
+This is an automated email from LocaPro. Please do not reply to this email.
+© 2024 LocaPro. All rights reserved.

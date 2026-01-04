@@ -125,7 +125,7 @@
         <p>Please fill out the form below to reach out to our team.</p>
 
         <!-- Contact Form -->
-        <form id="contactForm">
+        <form id="contactForm" action="http://127.0.0.1:8000/accounts/api/contact/" method="post">
 
             <!-- User Name -->
             <label for="name">User Name</label>
@@ -168,8 +168,8 @@
 
     <!-- JavaScript for validation, submission & feedback -->
     <script>
-        document.getElementById("contactForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent page reload
+        document.getElementById("contactForm").addEventListener("submit", async function(event) {
+            // event.preventDefault(); // Allow normal form submit
 
             // Get form values
             const name = document.getElementById("name").value.trim();
@@ -188,7 +188,7 @@
                 return;
             }
 
-            // Simulated successful submission
+            // Submitting to backend API (handled by standard form POST to Django).
             // 👉 Backend Integration Point:
             // Send data to backend endpoint, Formspree, or email service here
             // Example: fetch('/api/contact', { method: 'POST', body: JSON.stringify({...}) })
