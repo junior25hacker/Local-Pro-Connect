@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Service Requests{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/request_list.css' %}?v=1.0">
+<!-- Leaflet CSS for Maps -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+{% endblock %}
+
+{% block content %}
+<div class="requests-container">
+    <!-- Header Section -->
+    <div class="requests-header">
+        <h1>
+            {% if is_provider %}
+                📋 Your Service Requests
+            {% else %}
+                📋 My Service Requests
+            {% endif %}
+        </h1>
+        <p class="subtitle">
+            {% if is_provider %}
+                View and manage service requests from customers
+            {% else %}
+                Track your service requests and provider responses
+            {% endif %}
+        </p>
+        
+        <div class="requests-stats">
+            <div class="stat-badge">
+                <span class="icon">📊</span>
+                <span>Total Requests: <strong>{{ total_requests }}</strong></span>
+            </div>
+            {% if is_provider %}
+            <div class="stat-badge">
+                <span class="icon">👷</span>
+                <span>Provider View</span>
+            </div>
+            {% else %}
+            <div class="stat-badge">
+                <span class="icon">👤</span>
+                <span>Customer View</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- View Toggle & Filter Controls -->
+    {% if requests_with_distance %}
+    <div class="view-toggle-wrapper">
+        <div class="view-toggle">
+            <button id="list-view-btn" class="view-toggle-btn active">
+                <i class="fas fa-list"></i>
+                <span>List View</span>
+            </button>
+            <button id="map-view-btn" class="view-toggle-btn">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Map View</span>
+            </button>
+        </div>
+        
+        <button id="filters-toggle-btn" class="filters-toggle-btn">
+            <i class="fas fa-filter"></i>
+            <span>Advanced Filters</span>
+        </button>
+    </div>
+
+    <!-- Advanced Filters Panel -->
+    <div id="filters-panel" class="filters-panel">
+        <div class="filters-header">
+            <div class="filters-title">
+                <i class="fas fa-sliders-h"></i>
+                <span>Filter Requests</span>
+                <span id="active-filters-badge" class="active-filters-badge" style="display: none;">0</span>
+            </div>
+            <button id="clear-filters-btn" class="clear-filters-btn">
+                <i class="fas fa-times-circle"></i> Clear All
+            </button>
+        </div>
+
+        <div class="filters-grid">
+            <!-- Distance Range Filter -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-road"></i>
+                    Distance Range
+                </label>
+                <div class="distance-slider-container">
+                    <input type="range" id="distance-slider" class="distance-slider" 
+                           min="5" max="100" value="100" step="5">
+                    <div id="distance-value-display" class="distance-value-display">All Distances</div>
+                </div>
+            </div>
+
+            <!-- Service Type Filter -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-wrench"></i>
+                    Service Type
+                </label>
+                <div class="service-type-checkboxes">
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-plumbing" class="service-type-checkbox" value="plumbing">
+                        <label for="service-plumbing">Plumbing</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-electrical" class="service-type-checkbox" value="electrical">
+                        <label for="service-electrical">Electrical</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-carpentry" class="service-type-checkbox" value="carpentry">
+                        <label for="service-carpentry">Carpentry</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-cleaning" class="service-type-checkbox" value="cleaning">
+                        <label for="service-cleaning">Cleaning</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-hvac" class="service-type-checkbox" value="hvac">
+                        <label for="service-hvac">HVAC</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-painting" class="service-type-checkbox" value="painting">
+                        <label for="service-painting">Painting</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-landscaping" class="service-type-checkbox" value="landscaping">
+                        <label for="service-landscaping">Landscaping</label>
+                    </div>
+                    <div class="service-checkbox-item">
+                        <input type="checkbox" id="service-roofing" class="service-type-checkbox" value="roofing">
+                        <label for="service-roofing">Roofing</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Range Filter -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-calendar-alt"></i>
+                    Date Range
+                </label>
+                <div class="quick-date-filters">
+                    <button class="quick-date-btn" data-filter="today">Today</button>
+                    <button class="quick-date-btn" data-filter="week">This Week</button>
+                    <button class="quick-date-btn" data-filter="month">This Month</button>
+                    <button class="quick-date-btn active" data-filter="all">All Time</button>
+                </div>
+                <div style="display: grid; gap: 12px; margin-top: 12px;">
+                    <input type="date" id="date-from" class="filter-input" placeholder="From Date">
+                    <input type="date" id="date-to" class="filter-input" placeholder="To Date">
+                </div>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="filter-group">
+                <label class="filter-label">
+                    <i class="fas fa-info-circle"></i>
+                    Request Status
+                </label>
+                <div class="status-filter-options">
+                    <div class="status-option">
+                        <input type="radio" id="status-all" name="status-filter" value="all" checked>
+                        <label for="status-all" class="status-option-label">
+                            <i class="fas fa-check-double"></i> All Requests
+                        </label>
+                    </div>
+                    <div class="status-option status-pending">
+                        <input type="radio" id="status-pending" name="status-filter" value="pending">
+                        <label for="status-pending" class="status-option-label">
+                            <i class="fas fa-clock"></i> Pending
+                        </label>
+                    </div>
+                    <div class="status-option status-accepted">
+                        <input type="radio" id="status-accepted" name="status-filter" value="accepted">
+                        <label for="status-accepted" class="status-option-label">
+                            <i class="fas fa-check-circle"></i> Accepted
+                        </label>
+                    </div>
+                    <div class="status-option status-declined">
+                        <input type="radio" id="status-declined" name="status-filter" value="declined">
+                        <label for="status-declined" class="status-option-label">
+                            <i class="fas fa-times-circle"></i> Declined
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sort Controls -->
+    <div class="sort-controls">
+        <button class="sort-btn active" data-sort="date-desc">
+            <i class="fas fa-calendar-day"></i>
+            <span>Newest First</span>
+        </button>
+        <button class="sort-btn" data-sort="distance-asc">
+            <i class="fas fa-sort-amount-down"></i>
+            <span>Nearest First</span>
+        </button>
+        <button class="sort-btn" data-sort="date-asc">
+            <i class="fas fa-calendar-day"></i>
+            <span>Oldest First</span>
+        </button>
+    </div>
+
+    <!-- Results Summary -->
+    <div class="results-summary">
+        <div class="results-count" id="results-count">{{ total_requests }}</div>
+        <div class="results-text">matching requests found</div>
+    </div>
+
+    <!-- Map Container (Hidden by default) -->
+    <div id="map-container" style="display: none;">
+        <div id="map"></div>
+    </div>
+
+    <!-- Requests Grid -->
+    <div class="requests-grid">
+        {% for item in requests_with_distance %}
+        <div class="request-card" 
+             data-request-id="{{ item.request.id }}"
+             data-service-type="{{ item.request.provider.provider_profile.service_type|default:'general' }}"
+             data-distance="{{ item.distance|default:'999' }}"
+             data-created="{{ item.request.created_at.timestamp }}">
+            <!-- Card Header -->
+            <div class="request-card-header">
+                <div>
+                    <div class="request-id">Request #{{ item.request.id }}</div>
+                    {% if item.request.urgent %}
+                    <div class="urgent-badge" style="margin-top: 8px;">
+                        <span>⚡</span>
+                        <span>Urgent</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="request-status status-{{ item.request.status }}">
+                    {% if item.request.status == 'pending' %}
+                        <span class="status-icon">🕐</span>
+                        <span>Pending</span>
+                    {% elif item.request.status == 'accepted' %}
+                        <span class="status-icon">✓</span>
+                        <span>Accepted</span>
+                    {% elif item.request.status == 'declined' %}
+                        <span class="status-icon">✗</span>
+                        <span>Declined</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Request Content -->
+            <div class="request-content">
+                <!-- Provider/User Info -->
+                <div class="request-section">
+                    <div class="section-label">
+                        {% if is_provider %}
+                            Customer
+                        {% else %}
+                            Provider
+                        {% endif %}
+                    </div>
+                    <div class="provider-info">
+                        <div class="provider-avatar">
+                            {% if is_provider %}
+                                {{ item.request.user.username|slice:":1"|upper }}
+                            {% else %}
+                                {{ item.request.provider_name|slice:":1"|upper }}
+                            {% endif %}
+                        </div>
+                        <div class="provider-details">
+                            <div class="provider-name">
+                                {% if is_provider %}
+                                    {{ item.request.user.get_full_name|default:item.request.user.username }}
+                                {% else %}
+                                    {{ item.request.provider_name }}
+                                {% endif %}
+                            </div>
+                            {% if item.request.provider and item.request.provider.provider_profile %}
+                            <div class="provider-company">
+                                {{ item.request.provider.provider_profile.company_name|default:"" }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description Preview -->
+                <div class="request-section">
+                    <div class="section-label">Description</div>
+                    <div class="section-value">
+                        {{ item.request.description|truncatewords:20 }}
+                    </div>
+                </div>
+
+                <!-- Date/Time -->
+                {% if item.request.date_time %}
+                <div class="request-section">
+                    <div class="section-label">Requested Date</div>
+                    <div class="section-value">
+                        📅 {{ item.request.date_time|date:"M d, Y \a\t g:i A" }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Price Range -->
+                {% if item.request.price_range %}
+                <div class="request-section">
+                    <div class="section-label">Budget</div>
+                    <div class="section-value">
+                        💰 {{ item.request.price_range.label }}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Created Date -->
+                <div class="request-section">
+                    <div class="section-label">Submitted</div>
+                    <div class="section-value">
+                        {{ item.request.created_at|date:"M d, Y \a\t g:i A" }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distance Section -->
+            <div class="distance-section">
+                <div class="distance-header">
+                    <div class="distance-icon">📍</div>
+                    <div class="distance-title">Distance</div>
+                </div>
+                
+                {% if item.distance is not None %}
+                <div class="distance-value">
+                    {{ item.distance|floatformat:1 }}<span class="unit">miles</span>
+                </div>
+                
+                <div class="distance-addresses">
+                    <div class="address-item">
+                        <div class="address-icon">🏠</div>
+                        <div class="address-content">
+                            <div class="address-label">
+                                {% if is_provider %}Customer Location{% else %}Your Location{% endif %}
+                            </div>
+                            <div class="address-text">{{ item.user_address|default:"Address not available" }}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="address-item">
+                        <div class="address-icon">🏢</div>
+                        <div class="address-content">
+                            <div class="address-label">
+                                {% if is_provider %}Your Location{% else %}Provider Location{% endif %}
+                            </div>
+                            <div class="address-text">{{ item.provider_address|default:"Address not available" }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="distance-not-available">
+                    <p>📍 Distance calculation unavailable</p>
+                    <p style="font-size: 13px; margin-top: 8px;">Complete address information needed for both parties</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="request-actions">
+                <a href="{% url 'requests:request_detail' item.request.id %}" class="btn btn-primary">
+                    <span>View Details</span>
+                    <span>→</span>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h2>No Requests Yet</h2>
+        <p>
+            {% if is_provider %}
+                You haven't received any service requests yet. When customers request your services, they'll appear here.
+            {% else %}
+                You haven't created any service requests yet. Get started by creating your first request!
+            {% endif %}
+        </p>
+        {% if not is_provider %}
+        <a href="{% url 'requests:create_request' %}" class="btn btn-primary">
+            <span>Create New Request</span>
+            <span>+</span>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Leaflet JS for Maps -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Map Data for JavaScript -->
+<script>
+    // Prepare request data for map
+    const requestsMapData = [
+        {% for item in requests_with_distance %}
+        {
+            id: {{ item.request.id }},
+            userLat: {{ item.user_lat|default:'null' }},
+            userLng: {{ item.user_lng|default:'null' }},
+            providerLat: {{ item.provider_lat|default:'null' }},
+            providerLng: {{ item.provider_lng|default:'null' }},
+            userAddress: "{{ item.user_address|escapejs }}",
+            providerAddress: "{{ item.provider_address|escapejs }}",
+            providerName: "{{ item.request.provider_name|escapejs }}",
+            distance: {{ item.distance|default:'null' }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+
+<script src="{% static 'js/request_list.js' %}?v=1.0"></script>
+<script src="{% static 'js/maps_filters.js' %}?v=1.0"></script>
+{% endblock %}

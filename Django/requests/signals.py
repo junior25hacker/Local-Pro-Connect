@@ -14,7 +14,7 @@ from datetime import timedelta
 import secrets
 
 from .models import ServiceRequest, RequestDecisionToken
-from .utils import generate_secure_token, get_provider_decision_url, get_provider_email_by_name
+from .utils import generate_secure_token, get_provider_decision_url, get_provider_email_by_name, get_address_string
 
 
 @receiver(post_save, sender=ServiceRequest)
@@ -40,15 +40,49 @@ def send_provider_notification_email(sender, instance, created, **kwargs):
             return
         
         # Build context for email templates
+        # Calculate distance
+        distance = None
+        customer_address = None
+        provider_address = None
+        
+        # Get customer profile
+        customer_profile = None
+        if hasattr(instance.user, 'user_profile'):
+            customer_profile = instance.user.user_profile
+            customer_address = get_address_string(customer_profile)
+        
+        # Get provider profile
+        provider_profile = None
+        if instance.provider and hasattr(instance.provider, 'provider_profile'):
+            provider_profile = instance.provider.provider_profile
+            provider_address = get_address_string(provider_profile)
+        
+        # Calculate distance
+        if customer_profile and provider_profile:
+            try:
+                customer_zip = int(customer_profile.zip_code) if customer_profile.zip_code else 0
+                provider_zip = int(provider_profile.zip_code) if provider_profile.zip_code else 0
+                zip_diff = abs(customer_zip - provider_zip)
+                distance = min(zip_diff * 0.5, 500)  # Cap at 500 miles
+            except (ValueError, AttributeError):
+                distance = None
+        
         context = {
             'request_id': instance.id,
             'provider_name': instance.provider_name,
             'customer_name': instance.user.get_full_name() or instance.user.username,
+            'customer_email': instance.user.email,
             'description': instance.description,
             'date_time': instance.date_time,
-            'price_range': instance.price_range,
+            'price_range': instance.price_range.label if instance.price_range else None,
             'urgent': instance.urgent,
+            'status': instance.status,
             'created_at': instance.created_at,
+            'distance': distance,
+            'customer_address': customer_address,
+            'provider_address': provider_address,
+            'company_name': provider_profile.company_name if provider_profile else None,
+            'service_type': provider_profile.get_service_type_display() if provider_profile else None,
             'accept_link': get_provider_decision_url(instance.id, token, 'accept'),
             'decline_link': get_provider_decision_url(instance.id, token, 'decline'),
             'expires_at': expires_at,
@@ -99,7 +133,7 @@ def send_acceptance_notification_email(sender, instance, created, **kwargs):
             'date_time': instance.date_time,
             'price_range': instance.price_range,
             'accepted_at': instance.accepted_at,
-            'provider_contact': instance.provider.phone if instance.provider else '',
+            'provider_contact': instance.provider.provider_profile.phone if (instance.provider and hasattr(instance.provider, 'provider_profile')) else '',
             'provider_email': instance.provider.email if instance.provider else '',
             'dashboard_link': f"{settings.SITE_URL}/requests/view/{instance.id}/",
         }
