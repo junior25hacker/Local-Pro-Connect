@@ -33,6 +33,27 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+        .distance-section {
+            background-color: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .customer-info {
+            background-color: #f0f8e8;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .provider-info {
+            background-color: #fff8e8;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
         .detail-row {
             margin: 10px 0;
             padding: 5px 0;
@@ -116,14 +137,10 @@
         <p>You have received a new service request from a customer. Please review the details below and decide whether to accept or decline this request.</p>
 
         <div class="request-details">
+            <h3>Request Details</h3>
             <div class="detail-row">
                 <span class="detail-label">Request ID:</span>
                 <span class="detail-value">#{{ request_id }}</span>
-            </div>
-
-            <div class="detail-row">
-                <span class="detail-label">From:</span>
-                <span class="detail-value">{{ customer_name }}</span>
             </div>
 
             <div class="detail-row">
@@ -133,17 +150,22 @@
 
             {% if date_time %}
             <div class="detail-row">
-                <span class="detail-label">Requested Date/Time:</span>
-                <span class="detail-value">{{ date_time|date:"M d, Y H:i" }}</span>
+                <span class="detail-label">Date/Time:</span>
+                <span class="detail-value">{{ date_time|date:"M d, Y g:i A" }}</span>
             </div>
             {% endif %}
 
             {% if price_range %}
             <div class="detail-row">
-                <span class="detail-label">Price Range:</span>
+                <span class="detail-label">Budget:</span>
                 <span class="detail-value">{{ price_range }}</span>
             </div>
             {% endif %}
+
+            <div class="detail-row">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">{{ status|title }}</span>
+            </div>
 
             {% if urgent %}
             <div class="detail-row">
@@ -151,11 +173,66 @@
                 <span class="urgent-badge">URGENT</span>
             </div>
             {% endif %}
+        </div>
 
+        <div class="distance-section">
+            <h3>Distance Information</h3>
+            {% if distance %}
             <div class="detail-row">
-                <span class="detail-label">Posted:</span>
-                <span class="detail-value">{{ created_at|date:"M d, Y H:i" }}</span>
+                <span class="detail-label">Distance:</span>
+                <span class="detail-value">{{ distance|floatformat:1 }} miles</span>
             </div>
+            {% if customer_address %}
+            <div class="detail-row">
+                <span class="detail-label">Customer:</span>
+                <span class="detail-value">{{ customer_address }}</span>
+            </div>
+            {% endif %}
+            {% if provider_address %}
+            <div class="detail-row">
+                <span class="detail-label">Your Location:</span>
+                <span class="detail-value">{{ provider_address }}</span>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="detail-row">
+                <span class="detail-value">Distance information not available</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="customer-info">
+            <h3>Customer Information</h3>
+            <div class="detail-row">
+                <span class="detail-label">Name:</span>
+                <span class="detail-value">{{ customer_name }}</span>
+            </div>
+            {% if customer_email %}
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ customer_email }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="provider-info">
+            <h3>Provider Information</h3>
+            <div class="detail-row">
+                <span class="detail-label">Name:</span>
+                <span class="detail-value">{{ provider_name }}</span>
+            </div>
+            {% if company_name %}
+            <div class="detail-row">
+                <span class="detail-label">Company:</span>
+                <span class="detail-value">{{ company_name }}</span>
+            </div>
+            {% endif %}
+            {% if service_type %}
+            <div class="detail-row">
+                <span class="detail-label">Service:</span>
+                <span class="detail-value">{{ service_type }}</span>
+            </div>
+            {% endif %}
         </div>
 
         <p><strong>What would you like to do?</strong></p>
@@ -172,8 +249,8 @@
         <p>If you have any questions about this request, you can contact the customer directly.</p>
 
         <div class="footer">
-            <p>This is an automated email from LocaPro. Please do not reply to this email.</p>
-            <p>&copy; 2024 LocaPro. All rights reserved.</p>
+            <p>This is an automated email from Local Pro Connect. Please do not reply to this email.</p>
+            <p>&copy; 2024 Local Pro Connect. All rights reserved.</p>
         </div>
     </div>
 </body>

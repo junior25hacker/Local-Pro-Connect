@@ -150,3 +150,63 @@ def format_decline_reason(reason_code):
         'no_reason': 'No reason provided',
     }
     return reasons.get(reason_code, 'Unknown reason')
+
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the distance between two geographic coordinates using the Haversine formula.
+    
+    Args:
+        lat1: Latitude of first point
+        lon1: Longitude of first point
+        lat2: Latitude of second point
+        lon2: Longitude of second point
+        
+    Returns:
+        Distance in miles (float)
+    """
+    from math import radians, sin, cos, sqrt, atan2
+    
+    # Convert to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    
+    # Haversine formula
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    
+    # Earth's radius in miles
+    radius_miles = 3959
+    distance = radius_miles * c
+    
+    return round(distance, 1)
+
+
+def get_address_string(profile):
+    """
+    Get a formatted address string from a user or provider profile.
+    
+    Args:
+        profile: UserProfile or ProviderProfile instance
+        
+    Returns:
+        Formatted address string
+    """
+    address_parts = []
+    
+    if hasattr(profile, 'business_address') and profile.business_address:
+        address_parts.append(profile.business_address)
+    elif hasattr(profile, 'address') and profile.address:
+        address_parts.append(profile.address)
+    
+    if profile.city:
+        address_parts.append(profile.city)
+    
+    if profile.state:
+        address_parts.append(profile.state)
+    
+    if profile.zip_code:
+        address_parts.append(profile.zip_code)
+    
+    return ', '.join(address_parts) if address_parts else 'Address not available'
