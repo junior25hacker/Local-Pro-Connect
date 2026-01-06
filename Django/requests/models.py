@@ -23,10 +23,10 @@ class ServiceRequest(models.Model):
     ]
 
     DECLINE_REASON_CHOICES = [
-        ('price', 'Price too low'),
-        ('distance', 'Too far away'),
-        ('other', 'Other reason'),
-        ('no_reason', 'No reason provided'),
+        ('price', 'Price'),
+        ('distance', 'Distance'),
+        ('time', 'Time'),
+        ('other', 'Other'),
     ]
 
     # Requester (user who creates the request)

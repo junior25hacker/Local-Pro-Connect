@@ -160,13 +160,19 @@ def provider_decision(request, request_id, action, token):
                 })
             
             elif action == 'decline':
-                decline_reason = request.POST.get('decline_reason', 'no_reason')
-                decline_message = request.POST.get('decline_message', '')
+                # Get rejection data from form (can come from modal or regular form)
+                rejection_reason = request.POST.get('rejection_reason', '')
+                rejection_description = request.POST.get('rejection_description', '')
+                
+                # Map rejection_reason to decline_reason if using modal naming
+                # Also support legacy decline_reason field for backward compatibility
+                decline_reason = request.POST.get('decline_reason', rejection_reason)
+                decline_message = request.POST.get('decline_message', rejection_description)
                 
                 # Validate decline reason
                 valid_reasons = [r[0] for r in ServiceRequest.DECLINE_REASON_CHOICES]
                 if decline_reason not in valid_reasons:
-                    decline_reason = 'no_reason'
+                    decline_reason = 'other'
                 
                 # Decline the request
                 service_request.decline(decline_reason, decline_message)
@@ -177,9 +183,24 @@ def provider_decision(request, request_id, action, token):
                     from django.core.mail import EmailMultiAlternatives
                     from django.template.loader import render_to_string
                     from django.conf import settings as dj_settings
+                    
+                    # Get display text for the reason
+                    reason_display = dict(ServiceRequest.DECLINE_REASON_CHOICES).get(decline_reason, 'Other')
+                    
                     subject = "Your request was declined"
                     context = {
                         'service_request': service_request,
+                        'customer_name': service_request.user.get_full_name() or service_request.user.username,
+                        'provider_name': service_request.provider_name,
+                        'request_id': service_request.id,
+                        'description': service_request.description,
+                        'date_time': service_request.date_time,
+                        'price_range': service_request.price_range,
+                        'decline_reason': decline_reason,
+                        'decline_reason_display': reason_display,
+                        'decline_message': decline_message,
+                        'declined_at': service_request.declined_at,
+                        'dashboard_link': f"{dj_settings.SITE_URL}/dashboard/",
                         'status': 'declined',
                         'site_url': dj_settings.SITE_URL,
                     }
@@ -212,6 +233,13 @@ def provider_decision(request, request_id, action, token):
     
     else:
         return HttpResponseForbidden('Method not allowed')
+
+
+def rejection_modal_demo(request):
+    """
+    Demo view to display the rejection modal as a standalone page for testing.
+    """
+    return render(request, 'requests/rejection_modal.html')
 
 
 @login_required
