@@ -26,11 +26,12 @@ REASON FOR DECLINING
 ====================
 
 {% if decline_reason %}
-Reason: {{ decline_reason_display }}
+Reason Category: {{ decline_reason_display }}
 {% endif %}
 
 {% if decline_message %}
-Note: {{ decline_message }}
+Additional Details:
+{{ decline_message }}
 {% endif %}
 
 {% endif %}

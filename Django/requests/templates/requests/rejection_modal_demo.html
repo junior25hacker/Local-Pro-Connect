@@ -1,0 +1,135 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejection Modal - Demo & Testing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/rejection_modal.css' %}">
+    <style>
+        /* Demo page specific styles */
+        .demo-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0052CC 0%, #003d99 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .demo-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .demo-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2C3E50;
+            margin-bottom: 16px;
+        }
+        
+        .demo-subtitle {
+            font-size: 16px;
+            color: #666666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .demo-btn {
+            background: #17B890;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(23, 184, 144, 0.3);
+        }
+        
+        .demo-btn:hover {
+            background: #139a77;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(23, 184, 144, 0.4);
+        }
+        
+        .info-box {
+            background: #E8F0FE;
+            border-left: 4px solid #0052CC;
+            padding: 20px;
+            margin-top: 32px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .info-box h3 {
+            color: #0052CC;
+            margin: 0 0 12px 0;
+            font-size: 18px;
+        }
+        
+        .info-box ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #666666;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo Landing Page -->
+    <div class="demo-container" id="demoContainer">
+        <div class="demo-card">
+            <i class="fas fa-times-circle" style="font-size: 64px; color: #e74c3c; margin-bottom: 20px;"></i>
+            <h1 class="demo-title">Rejection Modal Demo</h1>
+            <p class="demo-subtitle">
+                Click the button below to test the rejection modal functionality. 
+                This is a demonstration of how service providers can reject requests with structured feedback.
+            </p>
+            
+            <button class="demo-btn" onclick="showModal()">
+                <i class="fas fa-hand-pointer"></i>
+                Open Rejection Modal
+            </button>
+            
+            <div class="info-box">
+                <h3><i class="fas fa-info-circle"></i> Testing Features</h3>
+                <ul>
+                    <li>Select from 4 rejection reasons</li>
+                    <li>See dynamic reason display</li>
+                    <li>Add optional description (500 char limit)</li>
+                    <li>Test form validation</li>
+                    <li>Try keyboard navigation (Tab, Enter, Escape)</li>
+                    <li>Test on mobile devices</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the Rejection Modal -->
+    {% include 'requests/rejection_modal.html' %}
+
+    <script src="{% static 'js/rejection_modal.js' %}"></script>
+    <script>
+        function showModal() {
+            const overlay = document.getElementById('rejectionModalOverlay');
+            overlay.style.display = 'flex';
+        }
+    </script>
+</body>
+</html>

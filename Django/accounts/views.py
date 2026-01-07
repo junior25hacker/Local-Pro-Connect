@@ -1,5 +1,5 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
 from .forms import UserRegistrationForm, ProviderRegistrationForm, UserLoginForm, ProviderLoginForm
@@ -204,6 +204,29 @@ def provider_profile(request):
         return redirect('register_provider')
     provider_profile = ProviderProfile.objects.get(user=request.user) if ProviderProfile.objects.filter(user=request.user).exists() else None
     return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
+
+
+def provider_profile_detail(request, provider_id):
+    """
+    Display detailed profile of a specific provider.
+    Accessible to all authenticated users to view provider information.
+    """
+    if not request.user.is_authenticated:
+        return redirect('login_page')
+    
+    # Get the provider profile by ID
+    provider_profile = get_object_or_404(
+        ProviderProfile.objects.select_related('user'),
+        id=provider_id
+    )
+    
+    context = {
+        'provider_profile': provider_profile,
+        'user': provider_profile.user,
+        'is_own_profile': request.user == provider_profile.user,
+    }
+    
+    return render(request, 'accounts/provider_profile_detail.html', context)
 
 
 @login_required(login_url='auth')
@@ -470,6 +493,7 @@ def api_service_request(request):
             'error': str(e)
         }, status=400)
 
+<<<<<<< HEAD
 
 def search_page(request):
     """
@@ -532,3 +556,177 @@ def api_search_providers(request):
         })
     
     return JsonResponse({'providers': results})
+=======
+def professionals_list(request):
+    """
+    Display list of professionals filtered by service type.
+    Supports filtering and sorting via query parameters.
+    """
+    service = request.GET.get('service', 'all')
+    
+    # Validate service parameter
+    valid_services = ['all'] + [choice[0] for choice in ProviderProfile.SERVICE_CHOICES]
+    if service not in valid_services:
+        service = 'all'
+    
+    # Base queryset - active providers only
+    professionals = ProviderProfile.objects.filter(
+        user__is_active=True
+    ).select_related('user')
+    
+    # Filter by service type
+    if service and service != 'all':
+        professionals = professionals.filter(service_type=service)
+    
+    # Get service name for display
+    if service == 'all':
+        service_name = 'All Services'
+    else:
+        service_name = dict(ProviderProfile.SERVICE_CHOICES).get(service, service.title())
+    
+    context = {
+        'service_name': service_name,
+        'service_type': service,
+        'professionals_count': professionals.count(),
+    }
+    
+    return render(request, 'accounts/professionals_list.html', context)
+
+@require_http_methods(['GET'])
+def api_professionals_list(request):
+    """
+    API endpoint to fetch professionals data with filtering, sorting, and pagination.
+    Returns JSON data for AJAX requests.
+    
+    Query Parameters:
+    - service (required): Service type to filter ('plumbing', 'electrical', 'all', etc.)
+    - min_price (optional): Minimum price filter
+    - max_price (optional): Maximum price filter
+    - min_rating (optional): Minimum rating (e.g., 4.0, 4.5)
+    - verified (optional): Filter verified only ('true'/'false')
+    - availability (optional): Availability filter (e.g., 'weekdays', 'weekends', '24/7')
+    - location (optional): Location search text
+    - sort (optional): Sort by ('rating', 'reviews', 'price', 'experience')
+    - page (optional): Page number (default: 1)
+    - limit (optional): Items per page (default: 12)
+    """
+    from django.db.models import Q
+    
+    # Get required parameter
+    service = request.GET.get('service', '')
+    if not service:
+        return JsonResponse({
+            'success': False,
+            'error': 'service parameter is required'
+        }, status=400)
+    
+    # Validate service parameter
+    valid_services = ['all'] + [choice[0] for choice in ProviderProfile.SERVICE_CHOICES]
+    if service not in valid_services:
+        return JsonResponse({
+            'success': False,
+            'error': f'Invalid service type: {service}. Valid options are: {", ".join(valid_services)}'
+        }, status=404)
+    
+    # Get optional parameters
+    min_price = request.GET.get('min_price', '')
+    max_price = request.GET.get('max_price', '')
+    min_rating = request.GET.get('min_rating', '')
+    verified = request.GET.get('verified', 'false').lower() == 'true'
+    availability = request.GET.get('availability', '')
+    location = request.GET.get('location', '')
+    sort_by = request.GET.get('sort', 'rating')
+    
+    # Pagination parameters
+    try:
+        page = max(1, int(request.GET.get('page', 1)))
+        limit = max(1, min(100, int(request.GET.get('limit', 12))))  # Cap at 100
+    except (ValueError, TypeError):
+        page = 1
+        limit = 12
+    
+    # Base queryset - active providers only, optimized with select_related
+    professionals = ProviderProfile.objects.filter(
+        user__is_active=True
+    ).select_related('user').defer('service_description')  # Defer unused field for performance
+    
+    # Apply service filter
+    if service != 'all':
+        professionals = professionals.filter(service_type=service)
+    
+    # Apply filters
+    if verified:
+        professionals = professionals.filter(is_verified=True)
+    
+    # Rating filter
+    if min_rating:
+        try:
+            min_rating_float = float(min_rating)
+            professionals = professionals.filter(rating__gte=min_rating_float)
+        except (ValueError, TypeError):
+            pass  # Ignore invalid rating values
+    
+    # Location filtering (text search)
+    if location:
+        professionals = professionals.filter(
+            Q(city__icontains=location) |
+            Q(state__icontains=location) |
+            Q(business_address__icontains=location)
+        )
+    
+    # Availability filtering
+    if availability:
+        # Note: This is a placeholder - implement based on your availability field
+        # For now, we'll just filter if the field exists in the model
+        pass
+    
+    # Get total count before pagination
+    total_count = professionals.count()
+    
+    # Apply sorting
+    sort_mapping = {
+        'rating': '-rating',
+        'reviews': '-total_reviews',
+        'price': 'years_experience',  # Placeholder - adjust based on your price field
+        'experience': '-years_experience'
+    }
+    sort_field = sort_mapping.get(sort_by, '-rating')
+    professionals = professionals.order_by(sort_field, '-created_at')
+    
+    # Apply pagination
+    offset = (page - 1) * limit
+    professionals_page = professionals[offset:offset + limit]
+    
+    # Build response data
+    professionals_data = []
+    for p in professionals_page:
+        professional_data = {
+            'id': p.id,
+            'name': p.company_name or p.user.get_full_name() or p.user.username,
+            'avatar': p.profile_picture.url if p.profile_picture else None,
+            'service': p.get_service_type_display(),
+            'rating': float(p.rating) if p.rating else 0.0,
+            'reviews': p.total_reviews if p.total_reviews else 0,
+            'verified': p.is_verified,
+            'experience': p.years_experience if p.years_experience else 0,
+            'price_range': '$$',  # Default - can be extended with actual price field
+            'location': f"{p.city}, {p.state}" if p.city and p.state else 'Location not available',
+            'bio': p.bio or '',
+        }
+        professionals_data.append(professional_data)
+    
+    # Calculate pagination info
+    total_pages = (total_count + limit - 1) // limit  # Ceiling division
+    
+    return JsonResponse({
+        'success': True,
+        'service': service,
+        'professionals': professionals_data,
+        'pagination': {
+            'page': page,
+            'limit': limit,
+            'total': total_count,
+            'pages': total_pages
+        }
+    })
+>>>>>>> ca13d526026081fe0e9cdb79736f4fb38647b1f7
