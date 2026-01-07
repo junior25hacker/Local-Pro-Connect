@@ -1,3 +1,28 @@
+# API endpoint to return demo professionals for a service
+from django.views.decorators.http import require_GET
+
+@require_GET
+def api_demo_providers(request):
+    service_type = request.GET.get('serviceType', '').strip()
+    # Only filter demo professionals (usernames start with demo_pro_)
+    professionals = ProviderProfile.objects.filter(
+        user__username__startswith='demo_pro_',
+        service_type=service_type
+    )
+    results = []
+    for pro in professionals:
+        results.append({
+            'id': pro.user.id,
+            'name': pro.company_name,
+            'serviceType': dict(ProviderProfile.SERVICE_CHOICES).get(pro.service_type, pro.service_type),
+            'description': pro.service_description,
+            'address': pro.business_address,
+            'phone': pro.phone,
+            'rating': float(pro.rating),
+            'reviewCount': pro.total_reviews,
+            'yearsExperience': pro.years_experience,
+        })
+    return JsonResponse(results, safe=False)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
@@ -17,6 +42,49 @@ from .export_utils import (
     get_export_filename,
     format_request_for_export
 )
+
+
+# Geocodio Autocomplete proxy endpoint
+import requests as ext_requests
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
+
+GEOCODIO_API_KEY = '054587d60047e4d609f91e55ed7876849766576'
+
+@require_GET
+@csrf_exempt
+def locations_autocomplete(request):
+    """
+    Proxies Geocodio Autocomplete API for city/address suggestions.
+    Query param: ?q=search_text
+    """
+    query = request.GET.get('q', '')
+    if not query:
+        return JsonResponse({'results': []})
+
+    url = 'https://api.geocod.io/v1.7/autocomplete'
+    params = {
+        'q': query,
+        'api_key': GEOCODIO_API_KEY,
+        'limit': 8,
+    }
+    try:
+        resp = ext_requests.get(url, params=params, timeout=5)
+        data = resp.json()
+        suggestions = data.get('results', [])
+        # Return formatted suggestions
+        results = [
+            {
+                'description': s.get('address_components', {}).get('formatted_city', s.get('formatted_address', '')),
+                'full_address': s.get('formatted_address', ''),
+                'lat': s.get('location', {}).get('lat'),
+                'lng': s.get('location', {}).get('lng'),
+            }
+            for s in suggestions
+        ]
+        return JsonResponse({'results': results})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @require_http_methods(["GET", "POST"])

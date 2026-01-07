@@ -7,6 +7,8 @@ from .views import (
     request_detail,
     export_requests_csv,
     export_requests_pdf,
+    locations_autocomplete,
+    api_demo_providers,
 )
 
 app_name = "requests"
@@ -20,4 +22,6 @@ urlpatterns = [
     path("export/csv/", export_requests_csv, name="export_requests_csv"),
     path("export/pdf/", export_requests_pdf, name="export_requests_pdf"),
     path("<int:request_id>/", request_detail, name="request_detail"),
+    path("api/locations-autocomplete/", locations_autocomplete, name="locations_autocomplete"),
+    path("api/demo-providers/", api_demo_providers, name="api_demo_providers"),
 ]
