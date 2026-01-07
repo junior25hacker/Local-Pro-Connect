@@ -7,6 +7,7 @@ from .views import (
     request_detail,
     export_requests_csv,
     export_requests_pdf,
+    live_provider_tracking,
 )
 
 app_name = "requests"
@@ -19,5 +20,6 @@ urlpatterns = [
     path("list/", request_list, name="request_list"),
     path("export/csv/", export_requests_csv, name="export_requests_csv"),
     path("export/pdf/", export_requests_pdf, name="export_requests_pdf"),
+    path("<int:request_id>/tracking/", live_provider_tracking, name="live_provider_tracking"),
     path("<int:request_id>/", request_detail, name="request_detail"),
 ]
