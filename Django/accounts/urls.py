@@ -12,10 +12,14 @@ urlpatterns = [
     path('profile/user/', views.user_profile, name='user_profile'),
     path('profile/provider/', views.provider_profile, name='provider_profile'),
     path('logout/', views.logout_view, name='logout'),
+    # Professionals List
+    path('professionals/', views.professionals_list, name='professionals_list'),
+    path('professionals/<int:provider_id>/', views.provider_profile_detail, name='provider_profile_detail'),
     # API Endpoints
     path('api/user/profile/', views.api_user_profile, name='api_user_profile'),
     path('api/provider/profile/', views.api_provider_profile, name='api_provider_profile'),
     path('api/logout/', views.api_logout, name='api_logout'),
     path('api/service-request/', views.api_service_request, name='api_service_request'),
     path('api/contact/', views.api_contact, name='api_contact'),
+    path('api/professionals/', views.api_professionals_list, name='api_professionals_list'),
 ]
