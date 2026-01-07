@@ -357,4 +357,101 @@ document.addEventListener("DOMContentLoaded", function () {
             // Could show character count here
         });
     }
+
+    // ===========================
+    // ASYNC FORM SUBMISSION
+    // ===========================
+    const form = document.querySelector(".request-form");
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            handleAsyncSubmission(form);
+        });
+    }
+
+    function handleAsyncSubmission(form) {
+        // Create a loading overlay
+        const loadingOverlay = document.createElement("div");
+        loadingOverlay.className = "loading-overlay";
+        loadingOverlay.innerHTML = `
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Submitting your request...</p>
+                <p style="font-size: 12px; color: #999; margin-top: 10px;">Processing email notifications (5 seconds)</p>
+            </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+
+        // Add styles for loading overlay
+        const style = document.createElement("style");
+        style.textContent = `
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+            .loading-spinner {
+                text-align: center;
+                background: white;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            }
+            .spinner {
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #667eea;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 20px;
+            }
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            .loading-spinner p {
+                color: #333;
+                margin: 10px 0;
+            }
+        `;
+        if (!document.head.querySelector("style[data-loading-styles]")) {
+            style.setAttribute("data-loading-styles", "true");
+            document.head.appendChild(style);
+        }
+
+        // Submit form data via AJAX with 5-second delay
+        const formData = new FormData(form);
+        
+        // Show loading for 5 seconds
+        setTimeout(() => {
+            fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Redirect to success page
+                    window.location.href = response.url;
+                } else {
+                    throw new Error("Form submission failed");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                loadingOverlay.remove();
+                alert("Error submitting form. Please try again.");
+            });
+        }, 5000); // 5-second delay for async email processing
+    }
 });
