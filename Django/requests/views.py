@@ -97,6 +97,9 @@ def create_request(request):
     - optional price range
     - urgent toggle
     - optional multiple photos
+    
+    Supports pre-selection of provider via query parameter:
+    - ?provider=<provider_id> - pre-selects the provider in the form
     """
 
     if request.method == "POST":
@@ -123,7 +126,18 @@ def create_request(request):
             return redirect("requests:create_request_success")
 
     else:
-        form = ServiceRequestForm()
+        # Check for provider pre-selection from query parameter
+        provider_id = request.GET.get('provider')
+        initial_data = {}
+        
+        if provider_id:
+            try:
+                provider_profile = ProviderProfile.objects.get(id=provider_id)
+                initial_data['provider_choice'] = provider_profile
+            except ProviderProfile.DoesNotExist:
+                pass
+        
+        form = ServiceRequestForm(initial=initial_data)
 
     # Pass price ranges to template
     price_ranges = PriceRange.objects.all().order_by("min_price")
