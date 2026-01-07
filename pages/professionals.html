@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plumbing Professionals - Local Pro Connect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        /* Import professionals list styles inline for standalone demo */
+        :root {
+            --primary-blue: #0052CC;
+            --primary-blue-dark: #003d99;
+            --primary-blue-light: #0066FF;
+            --accent-green: #17B890;
+            --accent-green-dark: #139a77;
+            --accent-green-light: #20D4A8;
+            --accent-yellow: #FFC300;
+            --accent-yellow-dark: #E6B000;
+            --text-dark: #2C3E50;
+            --text-medium: #4A5568;
+            --text-light: #6B7280;
+            --light-blue: #E8F0FE;
+            --light-green: #E8F5F0;
+            --light-gray: #F5F5F5;
+            --border-gray: #E8E8E8;
+            --white: #FFFFFF;
+            --error-red: #e74c3c;
+            --success-green: #10B981;
+            --warning-orange: #FF8C42;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.08);
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+    </style>
+    <link rel="stylesheet" href="../Django/static/css/professionals_list.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand text-white" href="../index.html" style="font-weight: bold; font-size: 1.25rem;">
+                <i class="fas fa-tools me-2"></i>
+                Local Pro<span style="color: #17B890;">Connect</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="../index.html"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="login.html"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="professionals-container">
+        <!-- Header with Breadcrumb -->
+        <div class="professionals-header">
+            <div class="breadcrumb-nav">
+                <a href="../index.html" class="breadcrumb-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                <a href="../index.html#services" class="breadcrumb-link">Services</a>
+                <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                <span class="breadcrumb-current">Plumbing</span>
+            </div>
+            
+            <h1 class="page-title">
+                <i class="fas fa-users-cog"></i>
+                Plumbing Professionals
+            </h1>
+            <p class="page-subtitle">Find verified and trusted plumbing experts in your area</p>
+        </div>
+
+        <!-- Filter and Results Section -->
+        <div class="content-wrapper">
+            <!-- Filters Sidebar -->
+            <aside class="filters-sidebar">
+                <div class="filters-header">
+                    <h3><i class="fas fa-filter"></i> Filters</h3>
+                    <button class="clear-filters-btn" id="clearFilters">
+                        <i class="fas fa-times"></i> Clear All
+                    </button>
+                </div>
+
+                <!-- Price Range Filter -->
+                <div class="filter-section">
+                    <h4 class="filter-title">
+                        <i class="fas fa-dollar-sign"></i> Price Range
+                    </h4>
+                    <div class="filter-content">
+                        <select class="filter-select" id="priceFilter">
+                            <option value="">Any Price</option>
+                            <option value="budget">$ - Budget Friendly</option>
+                            <option value="moderate">$$ - Moderate</option>
+                            <option value="premium">$$$ - Premium</option>
+                            <option value="luxury">$$$$ - Luxury</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Rating Filter -->
+                <div class="filter-section">
+                    <h4 class="filter-title">
+                        <i class="fas fa-star"></i> Minimum Rating
+                    </h4>
+                    <div class="filter-content">
+                        <div class="rating-filter-options">
+                            <label class="rating-option">
+                                <input type="radio" name="rating" value="" checked>
+                                <span class="rating-label">Any Rating</span>
+                            </label>
+                            <label class="rating-option">
+                                <input type="radio" name="rating" value="4">
+                                <span class="rating-label">
+                                    <i class="fas fa-star"></i> 4+ Stars
+                                </span>
+                            </label>
+                            <label class="rating-option">
+                                <input type="radio" name="rating" value="4.5">
+                                <span class="rating-label">
+                                    <i class="fas fa-star"></i> 4.5+ Stars
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verified Only Filter -->
+                <div class="filter-section">
+                    <h4 class="filter-title">
+                        <i class="fas fa-shield-check"></i> Verification
+                    </h4>
+                    <div class="filter-content">
+                        <label class="checkbox-filter">
+                            <input type="checkbox" id="verifiedOnly">
+                            <span class="checkbox-label">Verified Professionals Only</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Working Hours Filter -->
+                <div class="filter-section">
+                    <h4 class="filter-title">
+                        <i class="fas fa-clock"></i> Availability
+                    </h4>
+                    <div class="filter-content">
+                        <select class="filter-select" id="availabilityFilter">
+                            <option value="">Any Time</option>
+                            <option value="weekdays">Weekdays</option>
+                            <option value="weekends">Weekends</option>
+                            <option value="24_7">24/7 Available</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Location Filter -->
+                <div class="filter-section">
+                    <h4 class="filter-title">
+                        <i class="fas fa-location-dot"></i> Location
+                    </h4>
+                    <div class="filter-content">
+                        <input type="text" class="filter-input" id="locationFilter" placeholder="Enter city or zip code">
+                        <div class="location-radius">
+                            <label class="radius-label">Within:</label>
+                            <select class="filter-select-sm" id="radiusFilter">
+                                <option value="10">10 miles</option>
+                                <option value="25" selected>25 miles</option>
+                                <option value="50">50 miles</option>
+                                <option value="100">100 miles</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Professionals Grid -->
+            <main class="professionals-main">
+                <!-- Results Header -->
+                <div class="results-header">
+                    <div class="results-count">
+                        <span id="resultsCount">0</span> professionals found
+                    </div>
+                    <div class="sort-controls">
+                        <label for="sortBy">Sort by:</label>
+                        <select class="sort-select" id="sortBy">
+                            <option value="rating">Highest Rated</option>
+                            <option value="reviews">Most Reviews</option>
+                            <option value="price_low">Price: Low to High</option>
+                            <option value="price_high">Price: High to Low</option>
+                            <option value="experience">Most Experience</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState">
+                    <div class="loading-spinner"></div>
+                    <p>Loading professionals...</p>
+                </div>
+
+                <!-- Professionals Grid -->
+                <div class="professionals-grid" id="professionalsGrid">
+                    <!-- Professional cards will be dynamically inserted here -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No Professionals Found</h3>
+                    <p>We couldn't find any plumbing professionals matching your criteria.</p>
+                    <button class="btn-primary" onclick="clearAllFilters()">
+                        <i class="fas fa-rotate"></i> Clear Filters
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Professional Card Template (Hidden) -->
+    <template id="professionalCardTemplate">
+        <div class="professional-card">
+            <div class="card-header-accent"></div>
+            <div class="professional-avatar">
+                <img src="" alt="Professional photo" class="avatar-img">
+                <div class="avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            
+            <div class="professional-info">
+                <div class="verified-badge" style="display: none;">
+                    <i class="fas fa-check-circle"></i> Verified Pro
+                </div>
+                
+                <h3 class="professional-name"></h3>
+                <p class="professional-company"></p>
+                <p class="professional-service">
+                    <i class="fas fa-briefcase"></i> <span class="service-text"></span>
+                </p>
+                
+                <div class="professional-rating">
+                    <div class="stars"></div>
+                    <span class="rating-number"></span>
+                    <span class="reviews-count"></span>
+                </div>
+                
+                <div class="professional-details">
+                    <div class="detail-item">
+                        <i class="fas fa-award"></i>
+                        <span class="experience-text"></span>
+                    </div>
+                    <div class="detail-item price-range">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span class="price-text"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="professional-actions">
+                <button class="btn-primary request-btn">
+                    <i class="fas fa-paper-plane"></i> Request Service
+                </button>
+                <button class="btn-secondary view-profile-btn">
+                    <i class="fas fa-user-circle"></i> View Profile
+                </button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #004C99 0%, #003366 100%); color: white; padding: 2rem 0; text-align: center; margin-top: 3rem;">
+        <p>&copy; 2025 Local Pro Connect. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../Django/static/js/professionals_list.js"></script>
+</body>
+</html>
