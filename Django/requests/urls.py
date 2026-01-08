@@ -7,9 +7,6 @@ from .views import (
     request_detail,
     export_requests_csv,
     export_requests_pdf,
-    locations_autocomplete,
-    api_demo_providers,
-    live_provider_tracking,
 )
 
 app_name = "requests"
