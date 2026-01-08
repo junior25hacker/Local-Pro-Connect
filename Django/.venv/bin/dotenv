@@ -1,0 +1,7 @@
+#!/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/.venv/bin/python3
+import sys
+from dotenv.__main__ import cli
+if __name__ == '__main__':
+    if sys.argv[0].endswith('.exe'):
+        sys.argv[0] = sys.argv[0][:-4]
+    sys.exit(cli())

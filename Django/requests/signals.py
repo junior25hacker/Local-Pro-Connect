@@ -1,20 +1,36 @@
 """
 Signals for handling ServiceRequest workflow events.
 Automatically sends emails when requests are created, accepted, or declined.
+
+Uses async tasks to avoid blocking the request with email sending.
 """
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.core.mail import send_mass_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 import secrets
+from threading import Thread
 
 from .models import ServiceRequest, RequestDecisionToken
 from .utils import generate_secure_token, get_provider_decision_url, get_provider_email_by_name, get_address_string
+
+
+def send_email_async(email_obj):
+    """
+    Send email in a background thread to avoid blocking the request.
+    
+    Args:
+        email_obj: EmailMultiAlternatives object ready to send
+    """
+    try:
+        email_obj.send()
+    except Exception as e:
+        print(f"Error sending email in background: {str(e)}")
 
 
 @receiver(post_save, sender=ServiceRequest)
@@ -111,11 +127,15 @@ def send_provider_notification_email(sender, instance, created, **kwargs):
         )
         email.attach_alternative(html_message, "text/html")
         
-        try:
-            email.send()
-            print(f"Provider notification email sent for request #{instance.id} to {recipient_email}")
-        except Exception as e:
-            print(f"Error sending provider email: {str(e)}")
+        # Send email asynchronously in a background thread to avoid blocking
+        # The request will complete immediately while email is sent in the background
+        thread = Thread(
+            target=send_email_async,
+            args=(email,),
+            daemon=True  # Don't wait for thread to complete
+        )
+        thread.start()
+        print(f"Provider notification email scheduled for request #{instance.id} to {recipient_email}")
 
 
 @receiver(post_save, sender=ServiceRequest)
@@ -153,11 +173,14 @@ def send_acceptance_notification_email(sender, instance, created, **kwargs):
         )
         email.attach_alternative(html_message, "text/html")
         
-        try:
-            email.send()
-            print(f"Acceptance notification email sent for request #{instance.id}")
-        except Exception as e:
-            print(f"Error sending acceptance email: {str(e)}")
+        # Send email asynchronously in a background thread to avoid blocking
+        thread = Thread(
+            target=send_email_async,
+            args=(email,),
+            daemon=True
+        )
+        thread.start()
+        print(f"Acceptance notification email scheduled for request #{instance.id}")
 
 
 @receiver(post_save, sender=ServiceRequest)
@@ -202,8 +225,11 @@ def send_decline_notification_email(sender, instance, created, **kwargs):
         )
         email.attach_alternative(html_message, "text/html")
         
-        try:
-            email.send()
-            print(f"Decline notification email sent for request #{instance.id}")
-        except Exception as e:
-            print(f"Error sending decline email: {str(e)}")
+        # Send email asynchronously in a background thread to avoid blocking
+        thread = Thread(
+            target=send_email_async,
+            args=(email,),
+            daemon=True
+        )
+        thread.start()
+        print(f"Decline notification email scheduled for request #{instance.id}")
