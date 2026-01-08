@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Professionals - Local Pro Connect</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- External CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}"
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        }
+        
+        .search-hero {
+            background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+            color: white;
+            padding: 3rem 0;
+            margin-top: 70px;
+        }
+        
+        .search-container {
+            max-width: 700px;
+        }
+        
+        .search-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            margin-bottom: 2rem;
+        }
+        
+        .search-form h3 {
+            color: #17B890;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .search-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .search-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid #E8E8E8;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #004C99;
+            box-shadow: 0 0 0 3px rgba(0, 76, 153, 0.1);
+        }
+        
+        .search-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background-color: #00A65A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            background-color: #008a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+        }
+        
+        .search-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results-container {
+            max-width: 700px;
+        }
+        
+        .results-header {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .results-header strong {
+            color: #004C99;
+        }
+        
+        .no-results {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: #666;
+        }
+        
+        .professional-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border-left: 4px solid #00A65A;
+        }
+        
+        .professional-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .professional-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .professional-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #004C99;
+            margin: 0;
+        }
+        
+        .professional-service {
+            color: #666;
+            font-size: 0.95rem;
+            margin: 0.25rem 0 0 0;
+        }
+        
+        .rating-badge {
+            background: #FFC300;
+            color: #333;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        
+        .stars {
+            color: #FFB800;
+            font-size: 0.9rem;
+        }
+        
+        .professional-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem 0;
+            border-top: 1px solid #E8E8E8;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        
+        @media (max-width: 576px) {
+            .professional-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .detail-item {
+            text-align: center;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .call-now-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: #00A65A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        
+        .call-now-btn:hover {
+            background-color: #008a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+            color: white;
+        }
+        
+        .profile-link {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .profile-link a {
+            flex: 1;
+            padding: 0.75rem;
+            background-color: #f0f0f0;
+            color: #004C99;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+        
+        .profile-link a:hover {
+            background-color: #e0e0e0;
+            color: #003366;
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner-border {
+            color: #004C99;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                <span class="navbar-brand-logo">
+                    <img src="{% static 'assets/image/newlogo.png' %}" alt="Local Pro Connect Logo" style="height: 40px; width: auto;">
+                </span>
+                <span>Local Pro<span style="color: #17B890;">Connect</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user_profile' %}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login/">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register_user' %}">Sign Up</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Hero Section -->
+    <div class="search-hero">
+        <div class="container">
+            <h1 class="mb-3" style="color: white;"><i class="fas fa-search me-2"></i>Find Local Professionals</h1>
+            <p class="lead" style="color: white;">Search and connect with verified professionals in your area</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+        <div class="search-container mx-auto">
+            <!-- Search Form -->
+            <div class="search-form">
+                <h3><i class="fas fa-sliders-h me-2"></i>Search Professionals</h3>
+                
+                <!-- BACKEND: Form will POST to /api/search endpoint with service type and location -->
+                <form id="searchForm" onsubmit="handleSearch(event)" novalidate>
+                    <div class="search-inputs">
+                        <div class="form-group">
+                            <label for="serviceType">Service Type</label>
+                            <select id="serviceType" name="serviceType" required>
+                                <option value="">-- Select a service --</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical</option>
+                                <option value="carpentry">Carpentry</option>
+                                <option value="cleaning">Cleaning</option>
+                                <option value="tutoring">Tutoring</option>
+                                <option value="hvac">HVAC</option>
+                                <option value="roofing">Roofing</option>
+                                <option value="landscaping">Landscaping</option>
+                                <option value="painting">Painting</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <!-- BACKEND: Filter providers by serviceType from database -->
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" placeholder="City or address" required>
+                            <!-- BACKEND: CRITICAL - Convert location to GPS coordinates (lat/lon) in Sprint 2 -->
+                            <!-- BACKEND: Use coordinates to calculate distance from each provider using Haversine formula -->
+                            <!-- BACKEND: Sort results by distance (nearest first) -->
+                        </div>
+                    </div>
+
+                    <button type="submit" class="search-btn">
+                        <span id="searchBtnText"><i class="fas fa-search me-2"></i>Search</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    Showing <strong id="resultsCount">0</strong> results for 
+                    <strong id="searchQuery"></strong>
+                </div>
+
+                <!-- Results Container -->
+                <!-- BACKEND: Populate with dynamic professional cards from /api/search response -->
+                <div id="resultsContainer">
+                    <!-- Professional cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResultsSection" style="display: none;">
+                <div class="no-results">
+                    <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+                    <p>No professionals found for your search.</p>
+                    <p style="font-size: 0.9rem; color: #999;">Try adjusting your service type or location.</p>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="searchError" style="color: #e74c3c; text-align: center; display: none; margin-top: 1rem;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Search Handler -->
+    <script>
+        async function handleSearch(event) {
+            event.preventDefault();
+            const serviceType = document.getElementById('serviceType').value;
+            const location = document.getElementById('location').value.trim();
+            const searchBtn = document.querySelector('.search-btn');
+            const searchBtnText = document.getElementById('searchBtnText');
+            const searchError = document.getElementById('searchError');
+            const resultsSection = document.getElementById('resultsSection');
+            const noResultsSection = document.getElementById('noResultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+            searchError.style.display = 'none';
+            if (!serviceType || !location) {
+                searchError.textContent = 'Please select a service type and enter a location';
+                searchError.style.display = 'block';
+                return;
+            }
+            searchBtn.disabled = true;
+            searchBtnText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Searching...';
+            resultsContainer.innerHTML = '<div class="loading-spinner"><span class="spinner-border"></span></div>';
+            try {
+                // Fetch from Django API
+                const response = await fetch(`/accounts/api/search-providers/?service=${encodeURIComponent(serviceType)}&city=${encodeURIComponent(location)}`);
+                
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        // User is not authenticated, redirect to login
+                        window.location.href = '/login/?next=/accounts/search/';
+                        return;
+                    }
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                displaySearchResults(data.providers, serviceType, location);
+            } catch (error) {
+                searchError.textContent = 'Search failed. Please try again.';
+                searchError.style.display = 'block';
+                resultsSection.style.display = 'none';
+                noResultsSection.style.display = 'none';
+            }
+            searchBtn.disabled = false;
+            searchBtnText.textContent = 'Search';
+        }
+        
+        function displaySearchResults(results, serviceType, location) {
+            const resultsSection = document.getElementById('resultsSection');
+            const noResultsSection = document.getElementById('noResultsSection');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsCount = document.getElementById('resultsCount');
+            const searchQuery = document.getElementById('searchQuery');
+            resultsContainer.innerHTML = '';
+            if (results.length === 0) {
+                resultsSection.style.display = 'none';
+                noResultsSection.style.display = 'block';
+                return;
+            }
+            noResultsSection.style.display = 'none';
+            resultsSection.style.display = 'block';
+            resultsCount.textContent = results.length;
+            searchQuery.textContent = `${serviceType} in ${location}`;
+            results.forEach(professional => {
+                const rating = professional.rating || 0;
+                const reviewCount = professional.total_reviews || 0;
+                const starsHtml = generateStars(rating);
+                const verified = professional.is_verified ? '<span class="verified-badge"><i class="fas fa-check-circle"></i> Verified</span>' : '';
+                const card = document.createElement('div');
+                card.className = 'professional-card';
+                card.innerHTML = `
+                    <div class="professional-header">
+                        <div>
+                            <h4 class="professional-name">${professional.company_name}</h4>
+                            <p class="professional-service">${professional.service_type_display}</p>
+                            ${verified}
+                        </div>
+                        <div class="rating-badge">
+                            <span>${rating.toFixed(1)}</span>
+                            <span class="stars">${starsHtml}</span>
+                        </div>
+                    </div>
+                    <p style="color: #666; margin-bottom: 1rem;">${professional.bio || 'No description available.'}</p>
+                    <div class="professional-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Rating</div>
+                            <div class="detail-value">${rating.toFixed(1)}/5</div>
+                            <div style="font-size: 0.9rem; color: #999;">${reviewCount} reviews</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Location</div>
+                            <div class="detail-value">${professional.city}, ${professional.state}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Experience</div>
+                            <div class="detail-value">${professional.years_experience || 0} years</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Phone</div>
+                            <div class="detail-value">${professional.phone || 'N/A'}</div>
+                        </div>
+                    </div>
+                    <div class="profile-link">
+                        <a href="/accounts/provider/${professional.id}/" class="btn btn-outline-primary btn-sm">View Profile</a>
+                        <button class="btn btn-success btn-sm book-btn" data-id="${professional.id}" data-name="${professional.company_name}">Book Service</button>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+            // Add event listeners for Book buttons
+            document.querySelectorAll('.book-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('Booking request sent for ' + this.dataset.name + '!');
+                });
+            });
+        }
+                // Auto-select service and trigger search if ?service= in URL
+                document.addEventListener('DOMContentLoaded', function() {
+                    const params = new URLSearchParams(window.location.search);
+                    const service = params.get('service');
+                    if (service) {
+                        const serviceTypeSelect = document.getElementById('serviceType');
+                        serviceTypeSelect.value = service;
+                        // Set a default location if empty
+                        const locationInput = document.getElementById('location');
+                        if (!locationInput.value) {
+                            locationInput.value = 'All';
+                        }
+                        // Automatically trigger the search
+                        document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+                    }
+                });
+        
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+            let starsHtml = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                starsHtml += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar && fullStars < 5) {
+                starsHtml += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            for (let i = Math.ceil(rating); i < 5; i++) {
+                starsHtml += '<i class="far fa-star"></i>';
+            }
+            
+            return starsHtml;
+        }
+    </script>
+</body>
+</html>

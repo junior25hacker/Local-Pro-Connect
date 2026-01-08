@@ -103,8 +103,16 @@ def handle_user_login(request, username, email, password):
     auth.login(request, authenticated_user)
     logger.info(f'User successfully logged in: {username}')
 
+    # Check for 'next' parameter for redirect after login
+    next_url = request.POST.get('next') or request.GET.get('next')
+    
+    # If there's a next URL, use it
+    if next_url:
+        redirect_url = next_url
+        user_type = 'redirect'
+        success_msg = 'You have successfully logged in! Redirecting...'
     # Check if user is a superuser/admin first (highest priority)
-    if authenticated_user.is_superuser and authenticated_user.is_staff:
+    elif authenticated_user.is_superuser and authenticated_user.is_staff:
         redirect_url = '/admin/'
         user_type = 'superuser'
         success_msg = 'Welcome Administrator! You have successfully logged in. Redirecting to admin panel...'
@@ -436,6 +444,22 @@ def api_contact(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+@require_http_methods(['GET'])
+def api_check_auth(request):
+    """API endpoint to check if user is authenticated"""
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'authenticated': True,
+            'username': request.user.username,
+            'email': request.user.email,
+            'user_id': request.user.id
+        })
+    else:
+        return JsonResponse({
+            'authenticated': False
+        })
+
+
 @require_http_methods(['POST'])
 def api_service_request(request):
     """API endpoint to handle service requests"""
@@ -469,6 +493,70 @@ def api_service_request(request):
             'error': str(e)
         }, status=400)
 
+<<<<<<< HEAD
+
+def search_page(request):
+    """
+    Search page for finding professionals.
+    """
+    # Get all providers for search results
+    providers = ProviderProfile.objects.all()
+    
+    # Filter by service type if provided
+    service_type = request.GET.get('service')
+    if service_type:
+        providers = providers.filter(service_type=service_type)
+    
+    # Filter by location if provided
+    city = request.GET.get('city')
+    if city:
+        providers = providers.filter(city__icontains=city)
+    
+    context = {
+        'providers': providers,
+        'service_type': service_type,
+        'city': city,
+    }
+    return render(request, 'pages/search.html', context)
+
+
+def api_search_providers(request):
+    """
+    API endpoint to search providers.
+    """
+    # Get all providers
+    providers = ProviderProfile.objects.select_related('user').all()
+    
+    # Filter by service type if provided
+    service_type = request.GET.get('service')
+    if service_type:
+        providers = providers.filter(service_type=service_type)
+    
+    # Filter by location if provided
+    city = request.GET.get('city')
+    if city:
+        providers = providers.filter(city__icontains=city)
+    
+    # Prepare response data
+    results = []
+    for provider in providers:
+        results.append({
+            'id': provider.id,
+            'company_name': provider.company_name,
+            'service_type': provider.service_type,
+            'service_type_display': dict(provider.SERVICE_CHOICES).get(provider.service_type, 'Other'),
+            'city': provider.city,
+            'state': provider.state,
+            'rating': float(provider.rating),
+            'total_reviews': provider.total_reviews,
+            'years_experience': provider.years_experience,
+            'bio': provider.bio,
+            'phone': provider.phone,
+            'is_verified': provider.is_verified,
+        })
+    
+    return JsonResponse({'providers': results})
+=======
 def professionals_list(request):
     """
     Display list of professionals filtered by service type.
@@ -641,3 +729,4 @@ def api_professionals_list(request):
             'pages': total_pages
         }
     })
+>>>>>>> ca13d526026081fe0e9cdb79736f4fb38647b1f7
