@@ -11,6 +11,7 @@ urlpatterns = [
     path('register/provider/', views.register_provider, name='register_provider'),
     path('profile/user/', views.user_profile, name='user_profile'),
     path('profile/provider/', views.provider_profile, name='provider_profile'),
+    path('emergency/', views.emergency_request, name='emergency_request'),
     path('logout/', views.logout_view, name='logout'),
     # API Endpoints
     path('api/user/profile/', views.api_user_profile, name='api_user_profile'),
