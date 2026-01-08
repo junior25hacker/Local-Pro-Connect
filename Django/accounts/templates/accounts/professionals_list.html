@@ -138,14 +138,27 @@
                     <i class="fas fa-location-dot"></i> Location
                 </h4>
                 <div class="filter-content">
-                    <input type="text" class="filter-input" id="locationFilter" placeholder="Enter city or zip code">
+                    <select class="filter-select" id="regionFilter">
+                        <option value="">All Regions</option>
+                        <option value="adamawa">Adamawa</option>
+                        <option value="centre">Centre</option>
+                        <option value="east">East</option>
+                        <option value="far_north">Far North</option>
+                        <option value="littoral">Littoral</option>
+                        <option value="north">North</option>
+                        <option value="northwest">Northwest</option>
+                        <option value="south">South</option>
+                        <option value="southwest">Southwest</option>
+                        <option value="west">West</option>
+                    </select>
+                    <input type="text" class="filter-input" id="locationFilter" placeholder="Enter city or town" style="margin-top: 10px;">
                     <div class="location-radius">
                         <label class="radius-label">Within:</label>
                         <select class="filter-select-sm" id="radiusFilter">
-                            <option value="10">10 miles</option>
-                            <option value="25" selected>25 miles</option>
-                            <option value="50">50 miles</option>
-                            <option value="100">100 miles</option>
+                            <option value="10">10 km</option>
+                            <option value="25" selected>25 km</option>
+                            <option value="50">50 km</option>
+                            <option value="100">100 km</option>
                         </select>
                     </div>
                 </div>

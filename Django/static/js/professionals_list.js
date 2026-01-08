@@ -86,6 +86,7 @@ let currentFilters = {
     rating: '',
     verified: false,
     availability: '',
+    region: '',
     location: '',
     radius: 25
 };
@@ -104,6 +105,7 @@ const priceFilter = document.getElementById('priceFilter');
 const ratingFilters = document.querySelectorAll('input[name="rating"]');
 const verifiedCheckbox = document.getElementById('verifiedOnly');
 const availabilityFilter = document.getElementById('availabilityFilter');
+const regionFilter = document.getElementById('regionFilter');
 const locationFilter = document.getElementById('locationFilter');
 const radiusFilter = document.getElementById('radiusFilter');
 
@@ -146,6 +148,12 @@ function initializeFilters() {
     // Availability Filter
     availabilityFilter.addEventListener('change', function() {
         currentFilters.availability = this.value;
+        applyFilters();
+    });
+
+    // Region Filter
+    regionFilter.addEventListener('change', function() {
+        currentFilters.region = this.value;
         applyFilters();
     });
 
@@ -279,10 +287,17 @@ function applyFilters() {
         // Availability Filter
         if (currentFilters.availability && professional.availability !== currentFilters.availability) return false;
 
+        // Region Filter
+        if (currentFilters.region) {
+            const professionalRegion = (professional.region || professional.state || '').toLowerCase();
+            if (professionalRegion !== currentFilters.region.toLowerCase()) return false;
+        }
+
         // Location Filter (simple text match - in production use geolocation)
         if (currentFilters.location) {
             const locationLower = currentFilters.location.toLowerCase();
-            if (!professional.location.toLowerCase().includes(locationLower)) return false;
+            const professionalLocation = (professional.location || professional.city || '').toLowerCase();
+            if (!professionalLocation.includes(locationLower)) return false;
         }
 
         return true;
@@ -436,6 +451,7 @@ function clearAllFilters() {
         rating: '',
         verified: false,
         availability: '',
+        region: '',
         location: '',
         radius: 25
     };
@@ -448,6 +464,7 @@ function clearAllFilters() {
     });
     verifiedCheckbox.checked = false;
     availabilityFilter.value = '';
+    regionFilter.value = '';
     locationFilter.value = '';
     radiusFilter.value = '25';
 
