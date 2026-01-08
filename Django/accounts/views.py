@@ -493,7 +493,6 @@ def api_service_request(request):
             'error': str(e)
         }, status=400)
 
-<<<<<<< HEAD
 
 def search_page(request):
     """
@@ -556,7 +555,8 @@ def api_search_providers(request):
         })
     
     return JsonResponse({'providers': results})
-=======
+
+
 def professionals_list(request):
     """
     Display list of professionals filtered by service type.
@@ -729,4 +729,3 @@ def api_professionals_list(request):
             'pages': total_pages
         }
     })
->>>>>>> ca13d526026081fe0e9cdb79736f4fb38647b1f7
