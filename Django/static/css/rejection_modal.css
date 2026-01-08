@@ -1,0 +1,716 @@
+/* ============================================================================
+   LOCAL PRO CONNECT - REJECTION MODAL STYLESHEET
+   Professional Tech Aesthetic with Brand Colors
+   ============================================================================ */
+
+/* ============================================================================
+   CSS VARIABLES - Brand Color Palette
+   ============================================================================ */
+:root {
+    /* Primary Colors */
+    --primary-blue: #0052CC;
+    --primary-blue-dark: #003d99;
+    --accent-green: #17B890;
+    --accent-green-dark: #139a77;
+    --accent-yellow: #FFC300;
+    --accent-yellow-dark: #ffb800;
+    
+    /* Supporting Colors */
+    --text-dark: #2C3E50;
+    --text-medium: #666666;
+    --text-light: #999999;
+    --light-blue: #E8F0FE;
+    --light-green: #E8F5F0;
+    --light-gray: #F5F5F5;
+    --border-gray: #E8E8E8;
+    --white: #FFFFFF;
+    
+    /* Semantic Colors */
+    --danger-red: #e74c3c;
+    --danger-red-light: rgba(231, 76, 60, 0.1);
+    --success-green: var(--accent-green);
+    
+    /* Shadows & Effects */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+    --shadow-blue: 0 0 0 4px rgba(0, 82, 204, 0.1);
+    --shadow-green: 0 4px 12px rgba(23, 184, 144, 0.3);
+    
+    /* Spacing & Layout */
+    --border-radius: 10px;
+    --border-radius-sm: 8px;
+    --border-radius-lg: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================
+   GLOBAL RESET & BASE STYLES
+   ============================================================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    background-color: var(--light-gray);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================================
+   MODAL OVERLAY
+   ============================================================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 62, 80, 0.75);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================================================
+   MODAL CONTAINER
+   ============================================================================ */
+.rejection-modal {
+    background: var(--white);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    max-width: 650px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Custom Scrollbar */
+.rejection-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.rejection-modal::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 10px;
+}
+
+.rejection-modal::-webkit-scrollbar-thumb {
+    background: var(--border-gray);
+    border-radius: 10px;
+}
+
+.rejection-modal::-webkit-scrollbar-thumb:hover {
+    background: var(--text-light);
+}
+
+/* ============================================================================
+   MODAL HEADER
+   ============================================================================ */
+.modal-header {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    padding: 28px 32px;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative Background Pattern */
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(23, 184, 144, 0.1);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.modal-header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.modal-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    background: rgba(231, 76, 60, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.modal-icon-wrapper i {
+    font-size: 24px;
+    color: var(--danger-red);
+}
+
+.modal-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.modal-close-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    z-index: 1;
+}
+
+.modal-close-btn i {
+    color: var(--white);
+    font-size: 18px;
+}
+
+.modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: rotate(90deg);
+}
+
+/* ============================================================================
+   MODAL BODY
+   ============================================================================ */
+.modal-body {
+    padding: 32px;
+}
+
+.modal-description {
+    font-size: 15px;
+    color: var(--text-medium);
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+/* ============================================================================
+   FORM SECTIONS
+   ============================================================================ */
+.form-section {
+    margin-bottom: 28px;
+}
+
+.section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.section-label i {
+    color: var(--primary-blue);
+    font-size: 16px;
+}
+
+.required {
+    color: var(--danger-red);
+    font-weight: 700;
+}
+
+.optional {
+    color: var(--text-light);
+    font-weight: 400;
+    font-size: 14px;
+}
+
+/* ============================================================================
+   REASON OPTIONS (RADIO CARDS)
+   ============================================================================ */
+.reason-options {
+    display: grid;
+    gap: 12px;
+}
+
+.reason-card {
+    position: relative;
+}
+
+.reason-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.reason-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--white);
+    border: 2px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+}
+
+.reason-label:hover {
+    border-color: var(--primary-blue);
+    background: var(--light-blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+.reason-card input[type="radio"]:checked + .reason-label {
+    border-color: var(--accent-green);
+    background: var(--light-green);
+    box-shadow: var(--shadow-green);
+}
+
+.reason-card input[type="radio"]:focus + .reason-label {
+    box-shadow: var(--shadow-blue);
+}
+
+.reason-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--light-gray);
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.reason-icon i {
+    font-size: 20px;
+    color: var(--text-medium);
+    transition: var(--transition);
+}
+
+.reason-card input[type="radio"]:checked + .reason-label .reason-icon {
+    background: var(--accent-green);
+}
+
+.reason-card input[type="radio"]:checked + .reason-label .reason-icon i {
+    color: var(--white);
+}
+
+.reason-content {
+    flex: 1;
+}
+
+.reason-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0 0 4px 0;
+}
+
+.reason-subtitle {
+    font-size: 14px;
+    color: var(--text-medium);
+    margin: 0;
+}
+
+.reason-checkmark {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.reason-checkmark i {
+    font-size: 24px;
+    color: var(--accent-green);
+}
+
+.reason-card input[type="radio"]:checked + .reason-label .reason-checkmark {
+    opacity: 1;
+    animation: checkmarkPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes checkmarkPop {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ============================================================================
+   ERROR MESSAGE
+   ============================================================================ */
+.error-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: var(--danger-red-light);
+    border: 1px solid var(--danger-red);
+    border-radius: var(--border-radius-sm);
+    color: var(--danger-red);
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 12px;
+    animation: shakeError 0.4s ease;
+}
+
+.error-message i {
+    font-size: 16px;
+}
+
+@keyframes shakeError {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+/* ============================================================================
+   SELECTED REASON DISPLAY
+   ============================================================================ */
+.selected-reason-display {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, var(--light-blue) 0%, var(--light-green) 100%);
+    border-left: 4px solid var(--accent-green);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 24px;
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selected-reason-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.selected-reason-content i {
+    color: var(--primary-blue);
+    font-size: 18px;
+}
+
+.selected-reason-text {
+    font-size: 15px;
+    color: var(--text-dark);
+}
+
+.selected-reason-text strong {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+/* ============================================================================
+   DESCRIPTION SECTION
+   ============================================================================ */
+.description-section {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.description-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border-gray);
+    border-radius: var(--border-radius);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 15px;
+    color: var(--text-dark);
+    line-height: 1.6;
+    resize: vertical;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.description-textarea:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: var(--shadow-blue);
+    background: var(--white);
+}
+
+.description-textarea::placeholder {
+    color: var(--text-light);
+}
+
+.character-count {
+    text-align: right;
+    font-size: 13px;
+    color: var(--text-light);
+    margin-top: 8px;
+}
+
+.character-count #charCount {
+    color: var(--text-medium);
+    font-weight: 500;
+}
+
+/* ============================================================================
+   MODAL ACTIONS (BUTTONS)
+   ============================================================================ */
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 8px;
+}
+
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn i {
+    font-size: 14px;
+}
+
+/* Secondary Button (Cancel) */
+.btn-secondary {
+    background: var(--white);
+    color: var(--text-dark);
+    border: 2px solid var(--border-gray);
+}
+
+.btn-secondary:hover {
+    background: var(--light-gray);
+    border-color: var(--text-medium);
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Danger Button (Submit Rejection) */
+.btn-danger {
+    background: var(--danger-red);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #c0392b;
+    box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-danger:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-danger:disabled {
+    background: var(--border-gray);
+    color: var(--text-light);
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    .rejection-modal {
+        max-width: 95%;
+        max-height: 95vh;
+    }
+    
+    .modal-header {
+        padding: 24px;
+    }
+    
+    .modal-title {
+        font-size: 20px;
+    }
+    
+    .modal-icon-wrapper {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .modal-icon-wrapper i {
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 24px;
+    }
+    
+    .reason-label {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .reason-icon {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .reason-icon i {
+        font-size: 18px;
+    }
+    
+    .modal-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    .modal-overlay {
+        padding: 10px;
+    }
+    
+    .rejection-modal {
+        border-radius: var(--border-radius);
+    }
+    
+    .modal-header {
+        padding: 20px;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+    
+    .modal-title {
+        font-size: 18px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .reason-title {
+        font-size: 15px;
+    }
+    
+    .reason-subtitle {
+        font-size: 13px;
+    }
+    
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+}
+
+/* ============================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================================================ */
+
+/* Focus Visible for Keyboard Navigation */
+.btn:focus-visible,
+.modal-close-btn:focus-visible {
+    outline: 3px solid var(--primary-blue);
+    outline-offset: 2px;
+}
+
+/* Reduced Motion for Users with Vestibular Disorders */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .reason-label {
+        border-width: 3px;
+    }
+    
+    .reason-card input[type="radio"]:checked + .reason-label {
+        border-width: 3px;
+    }
+}

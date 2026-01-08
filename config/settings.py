@@ -102,6 +102,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 import os
 
+# Google Places API Key (set this in your environment or here for development)
+GOOGLE_PLACES_API_KEY = '054587d60047e4d609f91e55ed7876849766576'
+
 # Media files (user uploads)
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
@@ -122,3 +125,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Email settings for development (prints to console)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

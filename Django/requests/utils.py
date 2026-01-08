@@ -103,32 +103,63 @@ def get_provider_decision_url(request_id, token, action):
 
 def get_provider_email_by_name(provider_name):
     """
-    Look up a provider's email address by their name.
-    This is a placeholder implementation.
+    Look up a provider's email address by their name using multiple strategies.
     
-    In production, you would:
-    1. Search the ProviderProfile table for matching providers
-    2. Return the associated user's email
-    3. Handle cases where no provider is found
+    Search strategy (in order):
+    1. Exact match on company_name (case-insensitive)
+    2. Partial match on company_name (case-insensitive contains)
+    3. Match on user.first_name or user.last_name
+    4. Return None if no match found
     
     Args:
-        provider_name: The name of the provider
+        provider_name: The name of the provider (company name or person name)
         
     Returns:
         The provider's email address or None
     """
     # Import here to avoid circular imports
     from accounts.models import ProviderProfile
+    from django.contrib.auth.models import User
+    from django.db.models import Q
+    
+    if not provider_name or not provider_name.strip():
+        return None
+    
+    provider_name_lower = provider_name.lower().strip()
     
     try:
+        # Strategy 1: Try exact match on company_name (case-insensitive)
         provider = ProviderProfile.objects.filter(
-            company_name__icontains=provider_name
-        ).first()
+            company_name__iexact=provider_name_lower
+        ).select_related('user').first()
         
-        if provider and provider.user.email:
+        if provider and provider.user and provider.user.email:
+            print(f"Found provider '{provider_name}' by exact company name match: {provider.user.email}")
             return provider.user.email
+        
+        # Strategy 2: Try partial match on company_name
+        provider = ProviderProfile.objects.filter(
+            company_name__icontains=provider_name_lower
+        ).select_related('user').first()
+        
+        if provider and provider.user and provider.user.email:
+            print(f"Found provider '{provider_name}' by company name contains: {provider.user.email}")
+            return provider.user.email
+        
+        # Strategy 3: Try matching on user first_name or last_name
+        provider = ProviderProfile.objects.filter(
+            Q(user__first_name__icontains=provider_name_lower) |
+            Q(user__last_name__icontains=provider_name_lower)
+        ).select_related('user').first()
+        
+        if provider and provider.user and provider.user.email:
+            print(f"Found provider '{provider_name}' by user name match: {provider.user.email}")
+            return provider.user.email
+        
+        print(f"Warning: Could not find provider email for '{provider_name}' using any lookup strategy")
+        
     except Exception as e:
-        print(f"Error looking up provider email: {str(e)}")
+        print(f"Error looking up provider email for '{provider_name}': {str(e)}")
     
     return None
 
@@ -150,3 +181,63 @@ def format_decline_reason(reason_code):
         'no_reason': 'No reason provided',
     }
     return reasons.get(reason_code, 'Unknown reason')
+
+
+def calculate_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the distance between two geographic coordinates using the Haversine formula.
+    
+    Args:
+        lat1: Latitude of first point
+        lon1: Longitude of first point
+        lat2: Latitude of second point
+        lon2: Longitude of second point
+        
+    Returns:
+        Distance in miles (float)
+    """
+    from math import radians, sin, cos, sqrt, atan2
+    
+    # Convert to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+    
+    # Haversine formula
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1-a))
+    
+    # Earth's radius in miles
+    radius_miles = 3959
+    distance = radius_miles * c
+    
+    return round(distance, 1)
+
+
+def get_address_string(profile):
+    """
+    Get a formatted address string from a user or provider profile.
+    
+    Args:
+        profile: UserProfile or ProviderProfile instance
+        
+    Returns:
+        Formatted address string
+    """
+    address_parts = []
+    
+    if hasattr(profile, 'business_address') and profile.business_address:
+        address_parts.append(profile.business_address)
+    elif hasattr(profile, 'address') and profile.address:
+        address_parts.append(profile.address)
+    
+    if profile.city:
+        address_parts.append(profile.city)
+    
+    if profile.state:
+        address_parts.append(profile.state)
+    
+    if profile.zip_code:
+        address_parts.append(profile.zip_code)
+    
+    return ', '.join(address_parts) if address_parts else 'Address not available'

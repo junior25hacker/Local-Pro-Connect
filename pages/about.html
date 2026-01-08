@@ -155,16 +155,19 @@
         }
 
         .member-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #0052CC 0%, #17B890 100%);
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
+            overflow: hidden;
+            border: 4px solid #17B890;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .member-name {
@@ -469,7 +472,7 @@
             <div class="team-grid">
                 <div class="team-member">
                     <div class="member-avatar">
-                        <i class="fas fa-user-tie"></i>
+                        <img src="../assets/image/scrummaster.jpg" alt="Tantoh Perez">
                     </div>
                     <h3 class="member-name">Tantoh Perez</h3>
                     <p class="member-role">Scrum Master</p>
@@ -477,7 +480,7 @@
                 </div>
                 <div class="team-member">
                     <div class="member-avatar">
-                        <i class="fas fa-user-circle"></i>
+                        <img src="../assets/image/productowner.jpg" alt="Ngoh Huela">
                     </div>
                     <h3 class="member-name">Ngoh Huela</h3>
                     <p class="member-role">Product Owner</p>
@@ -485,7 +488,7 @@
                 </div>
                 <div class="team-member">
                     <div class="member-avatar">
-                        <i class="fas fa-user-secret"></i>
+                        <img src="../assets/image/devopuidesigner2.jpg" alt="Melaine Atarh">
                     </div>
                     <h3 class="member-name">Melaine Atarh</h3>
                     <p class="member-role">UI Designer</p>
@@ -493,7 +496,7 @@
                 </div>
                 <div class="team-member">
                     <div class="member-avatar">
-                        <i class="fas fa-user-check"></i>
+                        <img src="../assets/image/devopuidesigner1.jpg" alt="Sandra Colleh">
                     </div>
                     <h3 class="member-name">Sandra Colleh</h3>
                     <p class="member-role">UI Designer</p>
@@ -501,7 +504,7 @@
                 </div>
                 <div class="team-member">
                     <div class="member-avatar">
-                        <i class="fas fa-user-clock"></i>
+                        <img src="../assets/image/WhatsApp Image 2026-01-07 at 5.02.37 PM.jpeg" alt="MC-Olivier">
                     </div>
                     <h3 class="member-name">MC-Olivier</h3>
                     <p class="member-role">Backend Developer</p>
@@ -509,7 +512,7 @@
                 </div>
                 <div class="team-member">
                     <div class="member-avatar">
-                        <i class="fas fa-user-graduate"></i>
+                        <img src="../assets/image/Snapchat-2090096880.jpg" alt="Michelle">
                     </div>
                     <h3 class="member-name">Michelle</h3>
                     <p class="member-role">UI Designer</p>

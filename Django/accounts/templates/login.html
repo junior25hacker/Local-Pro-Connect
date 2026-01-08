@@ -215,6 +215,13 @@ async function loginUser(event) {
             body += `&email=${encodeURIComponent(email)}`;
         }
         
+        // Include 'next' parameter if present in URL (for redirect after login)
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next');
+        if (nextUrl) {
+            body += `&next=${encodeURIComponent(nextUrl)}`;
+        }
+        
         // Get CSRF token - try multiple sources
         const token = csrfToken || getCookie('csrftoken');
         

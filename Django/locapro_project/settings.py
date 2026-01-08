@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env from project root (env vars override .env)
-load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'))
+# Load .env from project root (with override=True to ensure .env values are used)
+load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'), override=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
