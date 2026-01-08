@@ -81,6 +81,7 @@ const mockProfessionals = [
 let allProfessionals = [];
 let filteredProfessionals = [];
 let currentFilters = {
+    serviceType: '',
     price: '',
     rating: '',
     verified: false,
@@ -98,6 +99,7 @@ const clearFiltersBtn = document.getElementById('clearFilters');
 const sortSelect = document.getElementById('sortBy');
 
 // Filter Elements
+const serviceTypeFilter = document.getElementById('serviceTypeFilter');
 const priceFilter = document.getElementById('priceFilter');
 const ratingFilters = document.querySelectorAll('input[name="rating"]');
 const verifiedCheckbox = document.getElementById('verifiedOnly');
@@ -115,6 +117,12 @@ document.addEventListener('DOMContentLoaded', function() {
    INITIALIZATION
 =========================== */
 function initializeFilters() {
+    // Service Type Filter
+    serviceTypeFilter.addEventListener('change', function() {
+        currentFilters.serviceType = this.value;
+        applyFilters();
+    });
+
     // Price Filter
     priceFilter.addEventListener('change', function() {
         currentFilters.price = this.value;
@@ -247,6 +255,13 @@ function loadMockData(service) {
 =========================== */
 function applyFilters() {
     filteredProfessionals = allProfessionals.filter(professional => {
+        // Service Type Filter
+        if (currentFilters.serviceType) {
+            // Check both 'service' and 'serviceType' properties for compatibility
+            const professionalService = (professional.serviceType || professional.service || '').toLowerCase();
+            if (professionalService !== currentFilters.serviceType.toLowerCase()) return false;
+        }
+
         // Price Filter
         if (currentFilters.price) {
             const priceMap = { 'budget': '$', 'moderate': '$$', 'premium': '$$$', 'luxury': '$$$$' };
@@ -416,6 +431,7 @@ function handleViewProfile(professional) {
 function clearAllFilters() {
     // Reset all filter values
     currentFilters = {
+        serviceType: '',
         price: '',
         rating: '',
         verified: false,
@@ -425,6 +441,7 @@ function clearAllFilters() {
     };
 
     // Reset UI elements
+    serviceTypeFilter.value = '';
     priceFilter.value = '';
     ratingFilters.forEach(radio => {
         radio.checked = radio.value === '';
