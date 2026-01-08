@@ -1,96 +1,266 @@
 {% extends 'simple_base.html' %}
 {% load static %}
 
-{% block title %}Sign up as User{% endblock %}
+{% block title %}Create Your Account - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+  .signup-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  
+  .signup-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 76, 153, 0.15);
+    padding: 40px;
+    max-width: 600px;
+    width: 100%;
+  }
+  
+  .signup-header {
+    text-align: center;
+    margin-bottom: 35px;
+  }
+  
+  .signup-header .icon-wrapper {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #004C99 0%, #17B890 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(0, 76, 153, 0.3);
+  }
+  
+  .signup-header .icon-wrapper i {
+    font-size: 36px;
+    color: white;
+  }
+  
+  .signup-header h2 {
+    color: #004C99;
+    font-weight: 700;
+    margin-bottom: 10px;
+    font-size: 28px;
+  }
+  
+  .signup-header p {
+    color: #666;
+    font-size: 15px;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  
+  .form-control, .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    border-color: #004C99;
+    box-shadow: 0 0 0 3px rgba(0, 76, 153, 0.1);
+  }
+  
+  .form-control.is-invalid {
+    border-color: #dc3545;
+  }
+  
+  .invalid-feedback {
+    font-size: 13px;
+    margin-top: 5px;
+  }
+  
+  .btn-signup {
+    background: linear-gradient(135deg, #004C99 0%, #17B890 100%);
+    border: none;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    color: white;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .btn-signup:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 76, 153, 0.3);
+    background: linear-gradient(135deg, #003d7a 0%, #159e7a 100%);
+  }
+  
+  .signup-footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e0e0;
+  }
+  
+  .signup-footer p {
+    color: #666;
+    margin-bottom: 10px;
+  }
+  
+  .signup-footer a {
+    color: #004C99;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  
+  .signup-footer a:hover {
+    text-decoration: underline;
+  }
+  
+  .input-icon {
+    position: relative;
+  }
+  
+  .input-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+  }
+  
+  .input-icon .form-control {
+    padding-left: 45px;
+  }
+  
+  .row-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  @media (max-width: 576px) {
+    .row-fields {
+      grid-template-columns: 1fr;
+    }
+    
+    .signup-card {
+      padding: 30px 20px;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-6">
-    <h2>Create an account</h2>
+<div class="signup-container">
+  <div class="signup-card">
+    <div class="signup-header">
+      <div class="icon-wrapper">
+        <i class="fas fa-user-plus"></i>
+      </div>
+      <h2>Create Your Account</h2>
+      <p>Join Local Pro Connect and access trusted professionals</p>
+    </div>
+    
     {% if form.non_field_errors %}
-      <div class="alert alert-danger">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
         {% for error in form.non_field_errors %}
-          <p>{{ error }}</p>
+          <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
         {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
     {% endif %}
+    
     <form method="post" novalidate>
       {% csrf_token %}
       
       <div class="mb-3">
-        <label class="form-label">Username</label>
+        <label class="form-label"><i class="fas fa-user me-2"></i>Username *</label>
+        <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+               value="{{ form.username.value|default:'' }}" required placeholder="Choose a username">
         {% if form.username.errors %}
-          <input type="text" name="username" class="form-control is-invalid" value="{{ form.username.value|default:'' }}">
           <div class="invalid-feedback d-block">
             {% for error in form.username.errors %}{{ error }}{% endfor %}
           </div>
-        {% else %}
-          <input type="text" name="username" class="form-control" value="{{ form.username.value|default:'' }}" required>
         {% endif %}
       </div>
       
       <div class="mb-3">
-        <label class="form-label">Email</label>
+        <label class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
+        <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
+               value="{{ form.email.value|default:'' }}" placeholder="your.email@example.com">
         {% if form.email.errors %}
-          <input type="email" name="email" class="form-control is-invalid" value="{{ form.email.value|default:'' }}">
           <div class="invalid-feedback d-block">
             {% for error in form.email.errors %}{{ error }}{% endfor %}
           </div>
-        {% else %}
-          <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}">
         {% endif %}
       </div>
       
-      <div class="mb-3">
-        <label class="form-label">First name</label>
-        {% if form.first_name.errors %}
-          <input type="text" name="first_name" class="form-control is-invalid" value="{{ form.first_name.value|default:'' }}">
-          <div class="invalid-feedback d-block">
-            {% for error in form.first_name.errors %}{{ error }}{% endfor %}
-          </div>
-        {% else %}
-          <input type="text" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}">
-        {% endif %}
+      <div class="row-fields">
+        <div class="mb-3">
+          <label class="form-label"><i class="fas fa-id-card me-2"></i>First Name</label>
+          <input type="text" name="first_name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
+                 value="{{ form.first_name.value|default:'' }}" placeholder="John">
+          {% if form.first_name.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
+        
+        <div class="mb-3">
+          <label class="form-label"><i class="fas fa-id-card me-2"></i>Last Name</label>
+          <input type="text" name="last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
+                 value="{{ form.last_name.value|default:'' }}" placeholder="Doe">
+          {% if form.last_name.errors %}
+            <div class="invalid-feedback d-block">
+              {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+            </div>
+          {% endif %}
+        </div>
       </div>
       
       <div class="mb-3">
-        <label class="form-label">Last name</label>
-        {% if form.last_name.errors %}
-          <input type="text" name="last_name" class="form-control is-invalid" value="{{ form.last_name.value|default:'' }}">
-          <div class="invalid-feedback d-block">
-            {% for error in form.last_name.errors %}{{ error }}{% endfor %}
-          </div>
-        {% else %}
-          <input type="text" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}">
-        {% endif %}
-      </div>
-      
-      <div class="mb-3">
-        <label class="form-label">Password</label>
+        <label class="form-label"><i class="fas fa-lock me-2"></i>Password *</label>
+        <input type="password" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
+               required placeholder="Create a strong password">
         {% if form.password1.errors %}
-          <input type="password" name="password1" class="form-control is-invalid" required>
           <div class="invalid-feedback d-block">
             {% for error in form.password1.errors %}{{ error }}{% endfor %}
           </div>
-        {% else %}
-          <input type="password" name="password1" class="form-control" required>
         {% endif %}
+        <small class="text-muted">Must be at least 8 characters</small>
       </div>
       
       <div class="mb-3">
-        <label class="form-label">Confirm password</label>
+        <label class="form-label"><i class="fas fa-lock me-2"></i>Confirm Password *</label>
+        <input type="password" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
+               required placeholder="Re-enter your password">
         {% if form.password2.errors %}
-          <input type="password" name="password2" class="form-control is-invalid" required>
           <div class="invalid-feedback d-block">
             {% for error in form.password2.errors %}{{ error }}{% endfor %}
           </div>
-        {% else %}
-          <input type="password" name="password2" class="form-control" required>
         {% endif %}
       </div>
       
-      <button class="btn btn-primary w-100" type="submit">Sign up</button>
+      <button class="btn btn-signup" type="submit">
+        <i class="fas fa-user-check me-2"></i>Create Account
+      </button>
     </form>
+    
+    <div class="signup-footer">
+      <p>Already have an account? <a href="{% url 'login_page' %}">Sign in here</a></p>
+      <p>Are you a professional? <a href="{% url 'signup_provider_page' %}">Register as Provider</a></p>
+    </div>
   </div>
 </div>
 {% endblock %}
