@@ -48,6 +48,9 @@ class ServiceRequest(models.Model):
     # Request details
     description = models.TextField()
     provider_name = models.CharField(max_length=255)  # Name of provider being requested
+    
+    # Price offered by the user
+    offered_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Price offered by the user")
 
     # OPTIONAL per UI spec
     date_time = models.DateTimeField(null=True, blank=True)

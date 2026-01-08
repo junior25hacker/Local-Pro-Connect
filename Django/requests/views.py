@@ -30,6 +30,8 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.db.models import Q
+from decimal import Decimal
+import math
 
 from .forms import ServiceRequestForm
 from .models import ServiceRequest, RequestPhoto, PriceRange, RequestDecisionToken
@@ -734,3 +736,148 @@ def export_requests_pdf(request):
             status=500,
             content_type="text/plain"
         )
+
+
+@login_required
+@require_http_methods(["GET"])
+def live_provider_tracking(request, request_id):
+    """
+    Returns the live location of the provider for an accepted service request.
+    
+    Only allows the request owner (user who created the request) to access the data.
+    Returns JSON with provider's current coordinates, name, and estimated time of arrival.
+    
+    Args:
+        request_id: The ServiceRequest ID
+    
+    Returns:
+        JSON response with provider location data:
+        {
+            "success": true,
+            "provider_id": 123,
+            "provider_name": "John Doe",
+            "latitude": 12.3456,
+            "longitude": 78.9012,
+            "eta_minutes": 15
+        }
+    
+    Error responses:
+        - 404: Request not found
+        - 403: User is not the owner of the request
+        - 400: Request not accepted or provider not assigned
+        - 400: Provider location not available
+    """
+    # Get the service request
+    service_request = get_object_or_404(ServiceRequest, id=request_id)
+    
+    # Authorization: Only the request owner can access provider location
+    if service_request.user != request.user:
+        return JsonResponse({
+            'success': False,
+            'error': 'You do not have permission to track this provider.',
+            'error_code': 'UNAUTHORIZED'
+        }, status=403)
+    
+    # Verify request is accepted
+    if service_request.status != 'accepted':
+        return JsonResponse({
+            'success': False,
+            'error': 'This request has not been accepted yet. Provider location is only available for accepted requests.',
+            'error_code': 'REQUEST_NOT_ACCEPTED'
+        }, status=400)
+    
+    # Verify provider is assigned
+    if not service_request.provider:
+        return JsonResponse({
+            'success': False,
+            'error': 'No provider assigned to this request.',
+            'error_code': 'NO_PROVIDER'
+        }, status=400)
+    
+    # Get provider profile
+    try:
+        provider_profile = service_request.provider.provider_profile
+    except ProviderProfile.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Provider profile not found.',
+            'error_code': 'PROVIDER_PROFILE_NOT_FOUND'
+        }, status=400)
+    
+    # Check if provider has location data
+    if provider_profile.latitude is None or provider_profile.longitude is None:
+        return JsonResponse({
+            'success': False,
+            'error': 'Provider location is not available at this time. The provider may not have enabled location sharing.',
+            'error_code': 'LOCATION_NOT_AVAILABLE'
+        }, status=400)
+    
+    # Get user location for ETA calculation
+    user_profile = None
+    eta_minutes = None
+    
+    if hasattr(service_request.user, 'user_profile'):
+        user_profile = service_request.user.user_profile
+        
+        # Calculate ETA if we have both locations
+        if user_profile.zip_code and provider_profile.zip_code:
+            try:
+                # Simple distance calculation based on lat/long
+                # In production, you'd use a routing API (Google Maps, Mapbox, etc.)
+                distance_km = calculate_haversine_distance(
+                    float(provider_profile.latitude),
+                    float(provider_profile.longitude),
+                    # Mock user coordinates from zip for demo
+                    40.7128 + (int(user_profile.zip_code) % 1000) * 0.001 if user_profile.zip_code else 40.7128,
+                    -74.0060 + (int(user_profile.zip_code) % 2000) * 0.001 if user_profile.zip_code else -74.0060
+                )
+                
+                # Estimate ETA: assume average speed of 30 km/h in city
+                eta_minutes = int((distance_km / 30) * 60)
+                
+                # Add some buffer time for stops, traffic, etc.
+                eta_minutes = max(5, eta_minutes + 5)
+                
+            except (ValueError, AttributeError, ZeroDivisionError):
+                # If calculation fails, don't provide ETA
+                eta_minutes = None
+    
+    # Get provider name
+    provider_name = (
+        provider_profile.company_name 
+        or service_request.provider.get_full_name() 
+        or service_request.provider.username
+    )
+    
+    # Return success response
+    return JsonResponse({
+        'success': True,
+        'provider_id': service_request.provider.id,
+        'provider_name': provider_name,
+        'latitude': float(provider_profile.latitude),
+        'longitude': float(provider_profile.longitude),
+        'eta_minutes': eta_minutes,
+        'last_updated': provider_profile.updated_at.isoformat() if provider_profile.updated_at else None,
+        'provider_phone': provider_profile.phone if provider_profile.phone else None,
+    })
+
+
+def calculate_haversine_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees).
+    Returns distance in kilometers.
+    """
+    # Convert decimal degrees to radians
+    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    
+    # Haversine formula
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+    c = 2 * math.asin(math.sqrt(a))
+    
+    # Radius of earth in kilometers
+    r = 6371
+    
+    return c * r

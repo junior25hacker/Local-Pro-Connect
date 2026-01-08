@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from .models import ServiceRequest, PriceRange
 from accounts.models import ProviderProfile
 
@@ -30,6 +31,22 @@ class ServiceRequestForm(forms.ModelForm):
         help_text="If you cannot find the provider in the list, enter their name here.",
         label="Provider Name (fallback)",
     )
+    
+    offered_price = forms.DecimalField(
+        required=False,
+        min_value=0,
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(
+            attrs={
+                "placeholder": "Enter your offered price...",
+                "class": "input-field",
+                "step": "0.01",
+            }
+        ),
+        help_text="The price you're willing to pay for this service.",
+        label="Offered Price (optional)",
+    )
 
     class Meta:
         model = ServiceRequest
@@ -37,6 +54,7 @@ class ServiceRequestForm(forms.ModelForm):
             "provider_choice",
             "provider_name",
             "description",
+            "offered_price",
             "date_time",
             "price_range",
             "urgent",
@@ -84,6 +102,21 @@ class ServiceRequestForm(forms.ModelForm):
         provider_name = (cleaned.get("provider_name") or "").strip()
         if not provider_choice and not provider_name:
             raise forms.ValidationError("Please select a provider or enter a provider name.")
+        
+        # Price validation: Check if offered_price meets provider's minimum
+        offered_price = cleaned.get("offered_price")
+        if provider_choice and offered_price is not None:
+            # Get provider's minimum acceptable price
+            provider_min_price = provider_choice.min_price
+            
+            if offered_price < provider_min_price:
+                provider_name_display = provider_choice.company_name or provider_choice.user.get_full_name() or provider_choice.user.username
+                raise ValidationError(
+                    f"The offered price (${offered_price:.2f}) is below the minimum required by "
+                    f"{provider_name_display} (${provider_min_price:.2f}). "
+                    f"Please offer at least ${provider_min_price:.2f} or select a different provider."
+                )
+        
         return cleaned
 
     def save(self, commit=True):

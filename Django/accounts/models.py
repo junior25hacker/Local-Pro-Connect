@@ -50,6 +50,12 @@ class ProviderProfile(models.Model):
 	rating = models.DecimalField(max_digits=3, decimal_places=1, default=5.0)
 	total_reviews = models.IntegerField(default=0)
 	is_verified = models.BooleanField(default=False)
+	
+	# Pricing and location fields
+	min_price = models.DecimalField(max_digits=10, decimal_places=2, default=50.00, help_text="Minimum service price")
+	latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, help_text="Current latitude for live tracking")
+	longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, help_text="Current longitude for live tracking")
+	
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
