@@ -208,6 +208,7 @@ function loadProfessionals() {
         if (currentFilters.rating) params.append('min_rating', currentFilters.rating);
         if (currentFilters.verified) params.append('verified', 'true');
         if (currentFilters.availability) params.append('availability', currentFilters.availability);
+        if (currentFilters.region) params.append('region', currentFilters.region);
         if (currentFilters.location) params.append('location', currentFilters.location);
         
         const apiUrl = `/accounts/api/professionals/?${params.toString()}`;
@@ -232,6 +233,14 @@ function loadProfessionals() {
                 allProfessionals = data.professionals || [];
                 filteredProfessionals = [...allProfessionals];
                 console.log(`Loaded ${allProfessionals.length} professionals`);
+                
+                // Display region message if provided
+                if (data.region_message) {
+                    displayRegionMessage(data.region_message, data.available_regions);
+                } else {
+                    hideRegionMessage();
+                }
+                
                 renderProfessionals(filteredProfessionals);
                 hideLoading();
             })
@@ -511,6 +520,56 @@ function hideEmpty() {
     emptyState.style.display = 'none';
     professionalsGrid.style.display = 'grid';
 }
+
+/* ===========================
+   REGION MESSAGE DISPLAY
+=========================== */
+function displayRegionMessage(message, availableRegions) {
+    // Create or update region message banner
+    let banner = document.getElementById('regionMessageBanner');
+    
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'regionMessageBanner';
+        banner.className = 'region-message-banner';
+        
+        // Insert before results header
+        const resultsHeader = document.querySelector('.results-header');
+        if (resultsHeader) {
+            resultsHeader.parentNode.insertBefore(banner, resultsHeader);
+        }
+    }
+    
+    // Format available regions
+    let regionsText = '';
+    if (availableRegions && availableRegions.length > 0) {
+        regionsText = `<br><strong>Available in:</strong> ${availableRegions.join(', ')}`;
+    }
+    
+    banner.innerHTML = `
+        <div class="region-message-content">
+            <i class="fas fa-info-circle"></i>
+            <div class="region-message-text">
+                <p>${message}${regionsText}</p>
+            </div>
+            <button class="close-region-message" onclick="hideRegionMessage()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    banner.style.display = 'block';
+}
+
+function hideRegionMessage() {
+    const banner = document.getElementById('regionMessageBanner');
+    if (banner) {
+        banner.style.display = 'none';
+    }
+}
+
+// Expose to global scope
+window.hideRegionMessage = hideRegionMessage;
 
 /* ===========================
    UTILITY FUNCTIONS
