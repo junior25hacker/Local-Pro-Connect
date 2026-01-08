@@ -641,10 +641,10 @@ def api_professionals_list(request):
     # Pagination parameters
     try:
         page = max(1, int(request.GET.get('page', 1)))
-        limit = max(1, min(100, int(request.GET.get('limit', 12))))  # Cap at 100
+        limit = max(1, min(100, int(request.GET.get('limit', 50))))  # Cap at 100, default 50
     except (ValueError, TypeError):
         page = 1
-        limit = 12
+        limit = 50
     
     # Base queryset - active providers only, optimized with select_related
     professionals = ProviderProfile.objects.filter(

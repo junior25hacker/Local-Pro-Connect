@@ -201,7 +201,7 @@ function loadProfessionals() {
             service: service,
             sort: sortSelect.value || 'rating',
             page: 1,
-            limit: 12
+            limit: 50
         });
         
         // Add optional filters if they're set
