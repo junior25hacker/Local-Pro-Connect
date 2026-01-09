@@ -6,10 +6,21 @@
 {% block extra_css %}
 <style>
     body {
-        background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+        background: linear-gradient(
+       135deg,
+       rgba(225, 245, 254, 1.0) 0%,
+       rgba(179, 229, 252, 0.9) 100%
+       ),
+       url("{% static 'images/Gemini_Generated_Image_10go4k10go4k10go.jpg' %}");
+        
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
         min-height: 100vh;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+ 
+    
 
     .emergency-container {
         max-width: 1200px;
@@ -96,14 +107,17 @@
         }
     }
 
-    .form-section {
-        background: white;
+   .form-section {
+
+        background: rgba(255, 255, 255, 0.95); /* Added slight transparency */
         border-radius: 15px;
         padding: 2rem;
         box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        backdrop-filter: blur(5px); /* Adds a modern frosted glass effect */
     }
 
     .form-section h3 {
+        
         color: #DC3545;
         font-size: 1.5rem;
         margin-bottom: 1.5rem;
