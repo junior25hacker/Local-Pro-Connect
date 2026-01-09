@@ -2,11 +2,15 @@ from django.urls import path
 from .views import (
     create_request,
     create_request_success,
-    provider_decision, rejection_modal_demo,
+    provider_decision, 
+    rejection_modal_demo,
     request_list,
     request_detail,
     export_requests_csv,
     export_requests_pdf,
+    live_provider_tracking,
+    locations_autocomplete,
+    api_demo_providers,
 )
 
 app_name = "requests"

@@ -493,70 +493,6 @@ def api_service_request(request):
             'error': str(e)
         }, status=400)
 
-<<<<<<< HEAD
-
-def search_page(request):
-    """
-    Search page for finding professionals.
-    """
-    # Get all providers for search results
-    providers = ProviderProfile.objects.all()
-    
-    # Filter by service type if provided
-    service_type = request.GET.get('service')
-    if service_type:
-        providers = providers.filter(service_type=service_type)
-    
-    # Filter by location if provided
-    city = request.GET.get('city')
-    if city:
-        providers = providers.filter(city__icontains=city)
-    
-    context = {
-        'providers': providers,
-        'service_type': service_type,
-        'city': city,
-    }
-    return render(request, 'pages/search.html', context)
-
-
-def api_search_providers(request):
-    """
-    API endpoint to search providers.
-    """
-    # Get all providers
-    providers = ProviderProfile.objects.select_related('user').all()
-    
-    # Filter by service type if provided
-    service_type = request.GET.get('service')
-    if service_type:
-        providers = providers.filter(service_type=service_type)
-    
-    # Filter by location if provided
-    city = request.GET.get('city')
-    if city:
-        providers = providers.filter(city__icontains=city)
-    
-    # Prepare response data
-    results = []
-    for provider in providers:
-        results.append({
-            'id': provider.id,
-            'company_name': provider.company_name,
-            'service_type': provider.service_type,
-            'service_type_display': dict(provider.SERVICE_CHOICES).get(provider.service_type, 'Other'),
-            'city': provider.city,
-            'state': provider.state,
-            'rating': float(provider.rating),
-            'total_reviews': provider.total_reviews,
-            'years_experience': provider.years_experience,
-            'bio': provider.bio,
-            'phone': provider.phone,
-            'is_verified': provider.is_verified,
-        })
-    
-    return JsonResponse({'providers': results})
-=======
 def professionals_list(request):
     """
     Display list of professionals filtered by service type.
@@ -729,4 +665,3 @@ def api_professionals_list(request):
             'pages': total_pages
         }
     })
->>>>>>> ca13d526026081fe0e9cdb79736f4fb38647b1f7
