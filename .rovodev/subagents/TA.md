@@ -17,8 +17,10 @@ tools:
 - get_confluence_spaces
 - view_confluence_descendants
 - view_confluence_ancestors
+- get_adf_documentation
 - create_confluence_page
 - update_confluence_page
+- add_confluence_page_comment
 - search_confluence_using_cql
 - get_jira_issue
 - get_jira_projects
