@@ -41,12 +41,14 @@
                         <small class="text-muted">({{ provider_profile.total_reviews }} reviews)</small>
                     </div>
                     
+                    {% if is_own_profile %}
                     <hr>
                     <div class="d-grid gap-2">
                         <a href="#editProfile" class="btn btn-primary btn-sm">Edit Profile</a>
                         <a href="#uploadPhoto" class="btn btn-outline-secondary btn-sm">Upload Photo</a>
                         <a href="/accounts/logout/" class="btn btn-outline-danger btn-sm">Sign Out</a>
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
