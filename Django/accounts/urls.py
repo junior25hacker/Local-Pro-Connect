@@ -12,6 +12,8 @@ urlpatterns = [
     path('profile/user/', views.user_profile, name='user_profile'),
     path('profile/provider/', views.provider_profile, name='provider_profile'),
     path('logout/', views.logout_view, name='logout'),
+    # Search (protected - requires login)
+    path('search/', views.search_page, name='search_page'),
     # Professionals List
     path('professionals/', views.professionals_list, name='professionals_list'),
     path('professionals/<int:provider_id>/', views.provider_profile_detail, name='provider_profile_detail'),

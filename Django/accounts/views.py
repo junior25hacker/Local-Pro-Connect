@@ -493,6 +493,70 @@ def api_service_request(request):
             'error': str(e)
         }, status=400)
 
+
+def search_page(request):
+    """
+    Search page for finding professionals.
+    """
+    # Get all providers for search results
+    providers = ProviderProfile.objects.all()
+    
+    # Filter by service type if provided
+    service_type = request.GET.get('service')
+    if service_type:
+        providers = providers.filter(service_type=service_type)
+    
+    # Filter by location if provided
+    city = request.GET.get('city')
+    if city:
+        providers = providers.filter(city__icontains=city)
+    
+    context = {
+        'providers': providers,
+        'service_type': service_type,
+        'city': city,
+    }
+    return render(request, 'pages/search.html', context)
+
+
+def api_search_providers(request):
+    """
+    API endpoint to search providers.
+    """
+    # Get all providers
+    providers = ProviderProfile.objects.select_related('user').all()
+    
+    # Filter by service type if provided
+    service_type = request.GET.get('service')
+    if service_type:
+        providers = providers.filter(service_type=service_type)
+    
+    # Filter by location if provided
+    city = request.GET.get('city')
+    if city:
+        providers = providers.filter(city__icontains=city)
+    
+    # Prepare response data
+    results = []
+    for provider in providers:
+        results.append({
+            'id': provider.id,
+            'company_name': provider.company_name,
+            'service_type': provider.service_type,
+            'service_type_display': dict(provider.SERVICE_CHOICES).get(provider.service_type, 'Other'),
+            'city': provider.city,
+            'state': provider.state,
+            'rating': float(provider.rating),
+            'total_reviews': provider.total_reviews,
+            'years_experience': provider.years_experience,
+            'bio': provider.bio,
+            'phone': provider.phone,
+            'is_verified': provider.is_verified,
+        })
+    
+    return JsonResponse({'providers': results})
+
+
 def professionals_list(request):
     """
     Display list of professionals filtered by service type.
@@ -570,16 +634,17 @@ def api_professionals_list(request):
     min_rating = request.GET.get('min_rating', '')
     verified = request.GET.get('verified', 'false').lower() == 'true'
     availability = request.GET.get('availability', '')
+    region = request.GET.get('region', '')
     location = request.GET.get('location', '')
     sort_by = request.GET.get('sort', 'rating')
     
     # Pagination parameters
     try:
         page = max(1, int(request.GET.get('page', 1)))
-        limit = max(1, min(100, int(request.GET.get('limit', 12))))  # Cap at 100
+        limit = max(1, min(100, int(request.GET.get('limit', 50))))  # Cap at 100, default 50
     except (ValueError, TypeError):
         page = 1
-        limit = 12
+        limit = 50
     
     # Base queryset - active providers only, optimized with select_related
     professionals = ProviderProfile.objects.filter(
@@ -602,7 +667,23 @@ def api_professionals_list(request):
         except (ValueError, TypeError):
             pass  # Ignore invalid rating values
     
-    # Location filtering (text search)
+    # Region filtering (exact match on state field)
+    region_filtered = False
+    if region:
+        region_filtered = True
+        region_professionals = professionals.filter(state__iexact=region)
+        
+        # If no professionals found in the region, get all for the service to show alternatives
+        if region_professionals.count() == 0:
+            # Keep all professionals but track that none were found in the region
+            region_message = f"No professionals found in {region.title()}. Showing professionals from other regions."
+        else:
+            professionals = region_professionals
+            region_message = None
+    else:
+        region_message = None
+    
+    # Location filtering (text search on city)
     if location:
         professionals = professionals.filter(
             Q(city__icontains=location) |
@@ -635,26 +716,34 @@ def api_professionals_list(request):
     
     # Build response data
     professionals_data = []
+    available_regions = set()
+    
     for p in professionals_page:
         professional_data = {
             'id': p.id,
             'name': p.company_name or p.user.get_full_name() or p.user.username,
             'avatar': p.profile_picture.url if p.profile_picture else None,
             'service': p.get_service_type_display(),
+            'serviceType': p.service_type,
             'rating': float(p.rating) if p.rating else 0.0,
             'reviews': p.total_reviews if p.total_reviews else 0,
             'verified': p.is_verified,
             'experience': p.years_experience if p.years_experience else 0,
             'price_range': '$$',  # Default - can be extended with actual price field
             'location': f"{p.city}, {p.state}" if p.city and p.state else 'Location not available',
+            'region': p.state,
+            'city': p.city,
             'bio': p.bio or '',
         }
         professionals_data.append(professional_data)
+        if p.state:
+            available_regions.add(p.state)
     
     # Calculate pagination info
     total_pages = (total_count + limit - 1) // limit  # Ceiling division
     
-    return JsonResponse({
+    # Prepare response
+    response_data = {
         'success': True,
         'service': service,
         'professionals': professionals_data,
@@ -664,4 +753,12 @@ def api_professionals_list(request):
             'total': total_count,
             'pages': total_pages
         }
+    }
+    
+    # Add region-specific information
+    if region_message:
+        response_data['region_message'] = region_message
+        response_data['available_regions'] = sorted(list(available_regions))
+    
+    return JsonResponse(response_data)
     })

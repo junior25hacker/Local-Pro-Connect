@@ -81,10 +81,12 @@ const mockProfessionals = [
 let allProfessionals = [];
 let filteredProfessionals = [];
 let currentFilters = {
+    serviceType: '',
     price: '',
     rating: '',
     verified: false,
     availability: '',
+    region: '',
     location: '',
     radius: 25
 };
@@ -98,10 +100,12 @@ const clearFiltersBtn = document.getElementById('clearFilters');
 const sortSelect = document.getElementById('sortBy');
 
 // Filter Elements
+const serviceTypeFilter = document.getElementById('serviceTypeFilter');
 const priceFilter = document.getElementById('priceFilter');
 const ratingFilters = document.querySelectorAll('input[name="rating"]');
 const verifiedCheckbox = document.getElementById('verifiedOnly');
 const availabilityFilter = document.getElementById('availabilityFilter');
+const regionFilter = document.getElementById('regionFilter');
 const locationFilter = document.getElementById('locationFilter');
 const radiusFilter = document.getElementById('radiusFilter');
 
@@ -115,6 +119,12 @@ document.addEventListener('DOMContentLoaded', function() {
    INITIALIZATION
 =========================== */
 function initializeFilters() {
+    // Service Type Filter
+    serviceTypeFilter.addEventListener('change', function() {
+        currentFilters.serviceType = this.value;
+        applyFilters();
+    });
+
     // Price Filter
     priceFilter.addEventListener('change', function() {
         currentFilters.price = this.value;
@@ -138,6 +148,12 @@ function initializeFilters() {
     // Availability Filter
     availabilityFilter.addEventListener('change', function() {
         currentFilters.availability = this.value;
+        applyFilters();
+    });
+
+    // Region Filter
+    regionFilter.addEventListener('change', function() {
+        currentFilters.region = this.value;
         applyFilters();
     });
 
@@ -185,13 +201,14 @@ function loadProfessionals() {
             service: service,
             sort: sortSelect.value || 'rating',
             page: 1,
-            limit: 12
+            limit: 50
         });
         
         // Add optional filters if they're set
         if (currentFilters.rating) params.append('min_rating', currentFilters.rating);
         if (currentFilters.verified) params.append('verified', 'true');
         if (currentFilters.availability) params.append('availability', currentFilters.availability);
+        if (currentFilters.region) params.append('region', currentFilters.region);
         if (currentFilters.location) params.append('location', currentFilters.location);
         
         const apiUrl = `/accounts/api/professionals/?${params.toString()}`;
@@ -216,6 +233,14 @@ function loadProfessionals() {
                 allProfessionals = data.professionals || [];
                 filteredProfessionals = [...allProfessionals];
                 console.log(`Loaded ${allProfessionals.length} professionals`);
+                
+                // Display region message if provided
+                if (data.region_message) {
+                    displayRegionMessage(data.region_message, data.available_regions);
+                } else {
+                    hideRegionMessage();
+                }
+                
                 renderProfessionals(filteredProfessionals);
                 hideLoading();
             })
@@ -247,6 +272,13 @@ function loadMockData(service) {
 =========================== */
 function applyFilters() {
     filteredProfessionals = allProfessionals.filter(professional => {
+        // Service Type Filter
+        if (currentFilters.serviceType) {
+            // Check both 'service' and 'serviceType' properties for compatibility
+            const professionalService = (professional.serviceType || professional.service || '').toLowerCase();
+            if (professionalService !== currentFilters.serviceType.toLowerCase()) return false;
+        }
+
         // Price Filter
         if (currentFilters.price) {
             const priceMap = { 'budget': '$', 'moderate': '$$', 'premium': '$$$', 'luxury': '$$$$' };
@@ -264,10 +296,17 @@ function applyFilters() {
         // Availability Filter
         if (currentFilters.availability && professional.availability !== currentFilters.availability) return false;
 
+        // Region Filter
+        if (currentFilters.region) {
+            const professionalRegion = (professional.region || professional.state || '').toLowerCase();
+            if (professionalRegion !== currentFilters.region.toLowerCase()) return false;
+        }
+
         // Location Filter (simple text match - in production use geolocation)
         if (currentFilters.location) {
             const locationLower = currentFilters.location.toLowerCase();
-            if (!professional.location.toLowerCase().includes(locationLower)) return false;
+            const professionalLocation = (professional.location || professional.city || '').toLowerCase();
+            if (!professionalLocation.includes(locationLower)) return false;
         }
 
         return true;
@@ -416,21 +455,25 @@ function handleViewProfile(professional) {
 function clearAllFilters() {
     // Reset all filter values
     currentFilters = {
+        serviceType: '',
         price: '',
         rating: '',
         verified: false,
         availability: '',
+        region: '',
         location: '',
         radius: 25
     };
 
     // Reset UI elements
+    serviceTypeFilter.value = '';
     priceFilter.value = '';
     ratingFilters.forEach(radio => {
         radio.checked = radio.value === '';
     });
     verifiedCheckbox.checked = false;
     availabilityFilter.value = '';
+    regionFilter.value = '';
     locationFilter.value = '';
     radiusFilter.value = '25';
 
@@ -477,6 +520,56 @@ function hideEmpty() {
     emptyState.style.display = 'none';
     professionalsGrid.style.display = 'grid';
 }
+
+/* ===========================
+   REGION MESSAGE DISPLAY
+=========================== */
+function displayRegionMessage(message, availableRegions) {
+    // Create or update region message banner
+    let banner = document.getElementById('regionMessageBanner');
+    
+    if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'regionMessageBanner';
+        banner.className = 'region-message-banner';
+        
+        // Insert before results header
+        const resultsHeader = document.querySelector('.results-header');
+        if (resultsHeader) {
+            resultsHeader.parentNode.insertBefore(banner, resultsHeader);
+        }
+    }
+    
+    // Format available regions
+    let regionsText = '';
+    if (availableRegions && availableRegions.length > 0) {
+        regionsText = `<br><strong>Available in:</strong> ${availableRegions.join(', ')}`;
+    }
+    
+    banner.innerHTML = `
+        <div class="region-message-content">
+            <i class="fas fa-info-circle"></i>
+            <div class="region-message-text">
+                <p>${message}${regionsText}</p>
+            </div>
+            <button class="close-region-message" onclick="hideRegionMessage()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    banner.style.display = 'block';
+}
+
+function hideRegionMessage() {
+    const banner = document.getElementById('regionMessageBanner');
+    if (banner) {
+        banner.style.display = 'none';
+    }
+}
+
+// Expose to global scope
+window.hideRegionMessage = hideRegionMessage;
 
 /* ===========================
    UTILITY FUNCTIONS
