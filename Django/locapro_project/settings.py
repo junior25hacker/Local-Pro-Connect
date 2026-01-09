@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env from project root (env vars override .env)
-load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'))
+# Load .env from project root (with override=True to ensure .env values are used)
+load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'), override=True)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -46,6 +46,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'debug': DEBUG,  # Disable template caching in debug mode
         },
     },
 ]
@@ -79,6 +80,21 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# ============================================================================
+# SESSION CONFIGURATION - For Persistent Login
+# ============================================================================
+# Django uses session cookies to maintain user authentication across page reloads
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store sessions in database
+SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds (14 * 24 * 60 * 60)
+SESSION_COOKIE_SECURE = False  # Set to True in production (requires HTTPS)
+SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript from accessing the cookie
+SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection: only send cookie with safe cross-site requests
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Session persists even after browser close
+SESSION_SAVE_EVERY_REQUEST = False  # Only update session when data changes (more efficient)
+CSRF_COOKIE_SECURE = False  # Set to True in production
+CSRF_COOKIE_HTTPONLY = True  # Prevent JavaScript access to CSRF token
+CSRF_COOKIE_SAMESITE = 'Lax'
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
@@ -91,22 +107,34 @@ PAGES_ROOT = BASE_DIR.parent / 'pages'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email Configuration (read from environment variables or derived from provider)
-# Primary envs (can be set directly):
+# ============================================================================
+# EMAIL CONFIGURATION - For Notifications
+# ============================================================================
+# Read from environment variables or derived from SMTP provider.
+# Primary environment variables:
 # - EMAIL_BACKEND (default: smtp backend)
 # - EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
 # - EMAIL_USE_TLS, EMAIL_USE_SSL
 # - DEFAULT_FROM_EMAIL, SERVER_EMAIL
 # Convenience: set SMTP_PROVIDER to 'gmail' or 'outlook' to auto-derive sensible defaults
+# 
+# Example .env configuration:
+#   SMTP_PROVIDER=gmail
+#   EMAIL_HOST_USER=your-email@gmail.com
+#   EMAIL_HOST_PASSWORD=your-app-specific-password
+#
+# For development, if no SMTP user is configured, console backend will be used
+# which prints emails to console instead of sending them.
+#
 SMTP_PROVIDER = os.environ.get('SMTP_PROVIDER', '').lower()
 
-# Defaults for providers (SSL by default as requested)
+# Defaults for providers (SSL by default for security)
 if SMTP_PROVIDER == 'gmail':
     default_host = 'smtp.gmail.com'
     default_port = 465
     default_use_ssl = True
     default_use_tls = False
-elif SMTP_PROVIDER in ('outlook', 'office365', 'microsoft'):  # Outlook also supports TLS:587; honoring SSL per request
+elif SMTP_PROVIDER in ('outlook', 'office365', 'microsoft'):
     default_host = 'smtp-mail.outlook.com'
     default_port = 465
     default_use_ssl = True

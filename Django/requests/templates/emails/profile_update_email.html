@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            border-radius: 5px 5px 0 0;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: white;
+        }
+        .profile-info {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .profile-info p {
+            margin: 10px 0;
+        }
+        .profile-info strong {
+            display: inline-block;
+            min-width: 150px;
+            color: #007bff;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid #ddd;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Profile Updated Successfully!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hello {{ provider_name }},</p>
+            
+            <p>Your provider profile has been successfully updated. The changes are now live and visible to service seekers on LocaProConnect.</p>
+            
+            <div class="profile-info">
+                <h3>Updated Profile Information:</h3>
+                <p>
+                    <strong>Provider Name:</strong> {{ company_name }}
+                </p>
+                <p>
+                    <strong>Service Type:</strong> {{ service_type_display }}
+                </p>
+                <p>
+                    <strong>Location:</strong> {{ city }}, {{ state }}
+                </p>
+                <p>
+                    <strong>Experience:</strong> {{ years_experience }} years
+                </p>
+                <p>
+                    <strong>Verified:</strong> {% if is_verified %}Yes{% else %}No{% endif %}
+                </p>
+            </div>
+            
+            <p>Your profile is now discoverable by clients searching for your service type in your area.</p>
+            
+            <a href="{{ profile_url }}" class="button">View Your Profile</a>
+            
+            <p>If you need to make further changes, you can edit your profile anytime from your dashboard.</p>
+            
+            <p>Thank you for being part of LocaProConnect!</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; 2025 LocaProConnect. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>

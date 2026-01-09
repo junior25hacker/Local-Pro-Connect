@@ -1,0 +1,13 @@
+Hello {{ provider_name }},
+
+Your profile has been successfully updated!
+
+Provider Name: {{ company_name }}
+Service Type: {{ service_type }}
+Location: {{ city }}, {{ state }}
+Experience: {{ years_experience }} years
+
+The changes are now live and visible to service seekers.
+
+Best regards,
+LocaProConnect Team

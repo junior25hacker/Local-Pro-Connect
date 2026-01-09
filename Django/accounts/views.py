@@ -1,21 +1,27 @@
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib import messages, auth
 from .forms import UserRegistrationForm, ProviderRegistrationForm, UserLoginForm, ProviderLoginForm
 from .models import ProviderProfile, UserProfile
 from django.views.decorators.http import require_http_methods
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from .decorators import provider_required, owner_required, read_only_profile
 from urllib.parse import urlencode
 from django.core.mail import send_mail
 from django.conf import settings
 import json
 import logging
+<<<<<<< HEAD
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from requests.models import ServiceRequest
+=======
+>>>>>>> 52a5e9701da7e4a57974d7d77f93dbe0f8158811
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +34,11 @@ def login_page(request):
 
 def signup_user_page(request):
     """Redirect to the Django form-based user registration page"""
-    return redirect('register_user')
+    return redirect('accounts:register_user')
 
 def signup_provider_page(request):
     """Redirect to the Django form-based provider registration page"""
-    return redirect('register_provider')
+    return redirect('accounts:register_provider')
 
 @csrf_exempt
 @require_http_methods(['GET', 'POST'])
@@ -104,8 +110,16 @@ def handle_user_login(request, username, email, password):
     auth.login(request, authenticated_user)
     logger.info(f'User successfully logged in: {username}')
 
+    # Check for 'next' parameter for redirect after login
+    next_url = request.POST.get('next') or request.GET.get('next')
+    
+    # If there's a next URL, use it
+    if next_url:
+        redirect_url = next_url
+        user_type = 'redirect'
+        success_msg = 'You have successfully logged in! Redirecting...'
     # Check if user is a superuser/admin first (highest priority)
-    if authenticated_user.is_superuser and authenticated_user.is_staff:
+    elif authenticated_user.is_superuser and authenticated_user.is_staff:
         redirect_url = '/admin/'
         user_type = 'superuser'
         success_msg = 'Welcome Administrator! You have successfully logged in. Redirecting to admin panel...'
@@ -145,7 +159,7 @@ def register_user(request):
             UserProfile.objects.create(user=user)
             auth.login(request, user)
             messages.success(request, f'Welcome {user.first_name or user.username}!')
-            return redirect('user_profile')
+            return redirect('accounts:user_profile')
     else:
         form = UserRegistrationForm()
     return render(request, 'accounts/register_user.html', {'form': form})
@@ -177,7 +191,7 @@ def register_provider(request):
             )
             auth.login(request, user)
             messages.success(request, f'Welcome {user.first_name or user.username}!')
-            return redirect('provider_profile')
+            return redirect('accounts:provider_profile')
     else:
         form = ProviderRegistrationForm()
     return render(request, 'accounts/register_provider.html', {'form': form})
@@ -186,7 +200,7 @@ def register_provider(request):
 def user_profile(request):
     """Serve user profile HTML page"""
     if not request.user.is_authenticated:
-        return redirect('register_user')
+        return redirect('accounts:register_user')
     user_profile = UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
     return render(request, 'accounts/user_profile.html', {'user_profile': user_profile})
 
@@ -194,11 +208,12 @@ def user_profile(request):
 def provider_profile(request):
     """Serve provider profile HTML page"""
     if not request.user.is_authenticated:
-        return redirect('register_provider')
+        return redirect('accounts:register_provider')
     provider_profile = ProviderProfile.objects.get(user=request.user) if ProviderProfile.objects.filter(user=request.user).exists() else None
     return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
 
 
+<<<<<<< HEAD
 @login_required
 def emergency_request(request):
     """
@@ -300,6 +315,152 @@ View request: {request.build_absolute_uri(f'/requests/detail/{emergency_request.
     }
 
     return render(request, 'accounts/emergency_request.html', context)
+=======
+@read_only_profile
+def provider_profile_detail(request, provider_id):
+    """
+    Display detailed profile of a specific provider.
+    
+    RBAC Rules:
+    - Regular Users: Read-only access to any provider profile
+      * View provider details (service, location, price, reviews)
+      * Cannot modify any provider information
+      * Cannot delete provider profile
+    
+    - Provider Owner: Full access to their own profile
+      * Can edit their own provider profile fields
+      * Cannot edit other providers' profiles
+      * read_only_profile flag is False for owner
+    """
+    if not request.user.is_authenticated:
+        return redirect('accounts:login_page')
+    
+    # Get the provider profile by ID
+    provider_profile = get_object_or_404(
+        ProviderProfile.objects.select_related('user'),
+        id=provider_id
+    )
+    
+    # Determine if this is the provider's own profile
+    is_own_profile = request.user == provider_profile.user
+    
+    # Check if user has edit permissions (only provider owner)
+    can_edit = is_own_profile and request.user.is_authenticated
+    
+    context = {
+        'provider_profile': provider_profile,
+        'user': provider_profile.user,
+        'is_own_profile': is_own_profile,
+        'can_edit': can_edit,  # Used in template to show/hide edit buttons
+        'read_only': getattr(request, 'read_only_profile', True),  # Flag for template
+    }
+    
+    return render(request, 'accounts/provider_profile_detail.html', context)
+
+
+@login_required
+@provider_required
+def provider_dashboard(request):
+    """
+    Provider Dashboard - Access only for users with provider role.
+    
+    RBAC Rules:
+    - Only authenticated users with a ProviderProfile can access
+    - Returns 403 Forbidden for non-providers
+    - Displays provider's service requests and statistics
+    """
+    try:
+        provider_profile = request.user.provider_profile
+    except ProviderProfile.DoesNotExist:
+        messages.error(request, 'Provider profile not found.')
+        return redirect('accounts:home')
+    
+    # Get provider's service requests from requests app
+    from requests.models import ServiceRequest
+    
+    # Get all requests for this provider (filter by user, not provider_profile)
+    all_requests = ServiceRequest.objects.filter(
+        provider=request.user
+    ).select_related('user').order_by('-created_at')
+    
+    # Categorize requests by status
+    pending_requests = all_requests.filter(status='pending')
+    accepted_requests = all_requests.filter(status='accepted')
+    declined_requests = all_requests.filter(status='declined')
+    
+    context = {
+        'provider_profile': provider_profile,
+        'all_requests': all_requests,
+        'pending_requests': pending_requests,
+        'accepted_requests': accepted_requests,
+        'declined_requests': declined_requests,
+        'pending_count': pending_requests.count(),
+        'accepted_count': accepted_requests.count(),
+        'declined_count': declined_requests.count(),
+    }
+    
+    return render(request, 'requests/provider_dashboard.html', context)
+
+
+@login_required
+@provider_required
+def edit_provider_profile(request, provider_id=None):
+    """
+    Edit Provider Profile - Owner access only.
+    
+    RBAC Rules:
+    - Only the provider owner can edit their profile
+    - Returns 403 Forbidden for non-owners
+    - Handles both GET (display form) and POST (save changes)
+    """
+    # Get the provider profile to edit
+    if provider_id:
+        provider_profile = get_object_or_404(ProviderProfile, id=provider_id)
+    else:
+        # Use current user's provider profile if not specified
+        try:
+            provider_profile = request.user.provider_profile
+        except ProviderProfile.DoesNotExist:
+            messages.error(request, 'Provider profile not found.')
+            return redirect('accounts:home')
+    
+    # Check ownership - only provider owner can edit
+    if provider_profile.user != request.user:
+        messages.error(request, 'You do not have permission to edit this provider profile.')
+        return HttpResponseForbidden('Permission denied')
+    
+    if request.method == 'POST':
+        from .forms import ProviderProfileForm
+        from .email_utils import send_profile_update_email
+        
+        form = ProviderProfileForm(request.POST, request.FILES, instance=provider_profile)
+        if form.is_valid():
+            form.save()
+            
+            # Send profile update notification email
+            email_sent = send_profile_update_email(provider_profile)
+            if email_sent:
+                messages.success(request, 'Provider profile updated successfully. Notification email sent.')
+            else:
+                messages.success(request, 'Provider profile updated successfully. (Email notification failed)')
+            
+            return redirect('accounts:provider_profile_detail', provider_id=provider_profile.id)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
+    else:
+        from .forms import ProviderProfileForm
+        form = ProviderProfileForm(instance=provider_profile)
+    
+    context = {
+        'form': form,
+        'provider_profile': provider_profile,
+        'is_editing': True,
+    }
+    
+    return render(request, 'accounts/provider_profile_edit.html', context)
+>>>>>>> 52a5e9701da7e4a57974d7d77f93dbe0f8158811
 
 
 @login_required(login_url='auth')
@@ -312,7 +473,7 @@ def logout_view(request):
     auth.logout(request)
     logger.info(f'User logged out: {username}')
     messages.success(request, 'You have been successfully logged out.')
-    return redirect('auth')
+    return redirect('accounts:auth')
 
 
 @require_http_methods(['POST'])
@@ -517,6 +678,22 @@ def api_contact(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+@require_http_methods(['GET'])
+def api_check_auth(request):
+    """API endpoint to check if user is authenticated"""
+    if request.user.is_authenticated:
+        return JsonResponse({
+            'authenticated': True,
+            'username': request.user.username,
+            'email': request.user.email,
+            'user_id': request.user.id
+        })
+    else:
+        return JsonResponse({
+            'authenticated': False
+        })
+
+
 @require_http_methods(['POST'])
 def api_service_request(request):
     """API endpoint to handle service requests"""
@@ -549,3 +726,234 @@ def api_service_request(request):
             'success': False,
             'error': str(e)
         }, status=400)
+
+
+def search_page(request):
+    """
+    Search page for finding professionals.
+    """
+    # Get all providers for search results
+    providers = ProviderProfile.objects.all()
+    
+    # Filter by service type if provided
+    service_type = request.GET.get('service')
+    if service_type:
+        providers = providers.filter(service_type=service_type)
+    
+    # Filter by location if provided
+    city = request.GET.get('city')
+    if city:
+        providers = providers.filter(city__icontains=city)
+    
+    context = {
+        'providers': providers,
+        'service_type': service_type,
+        'city': city,
+    }
+    return render(request, 'pages/search.html', context)
+
+
+def api_search_providers(request):
+    """
+    API endpoint to search providers.
+    """
+    # Get all providers
+    providers = ProviderProfile.objects.select_related('user').all()
+    
+    # Filter by service type if provided
+    service_type = request.GET.get('service')
+    if service_type:
+        providers = providers.filter(service_type=service_type)
+    
+    # Filter by location if provided
+    city = request.GET.get('city')
+    if city:
+        providers = providers.filter(city__icontains=city)
+    
+    # Prepare response data
+    results = []
+    for provider in providers:
+        results.append({
+            'id': provider.id,
+            'company_name': provider.company_name,
+            'service_type': provider.service_type,
+            'service_type_display': dict(provider.SERVICE_CHOICES).get(provider.service_type, 'Other'),
+            'city': provider.city,
+            'state': provider.state,
+            'rating': float(provider.rating),
+            'total_reviews': provider.total_reviews,
+            'years_experience': provider.years_experience,
+            'bio': provider.bio,
+            'phone': provider.phone,
+            'is_verified': provider.is_verified,
+        })
+    
+    return JsonResponse({'providers': results})
+
+
+def professionals_list(request):
+    """
+    Display list of professionals filtered by service type.
+    Supports filtering and sorting via query parameters.
+    """
+    service = request.GET.get('service', 'all')
+    
+    # Validate service parameter
+    valid_services = ['all'] + [choice[0] for choice in ProviderProfile.SERVICE_CHOICES]
+    if service not in valid_services:
+        service = 'all'
+    
+    # Base queryset - active providers only
+    professionals = ProviderProfile.objects.filter(
+        user__is_active=True
+    ).select_related('user')
+    
+    # Filter by service type
+    if service and service != 'all':
+        professionals = professionals.filter(service_type=service)
+    
+    # Get service name for display
+    if service == 'all':
+        service_name = 'All Services'
+    else:
+        service_name = dict(ProviderProfile.SERVICE_CHOICES).get(service, service.title())
+    
+    context = {
+        'service_name': service_name,
+        'service_type': service,
+        'professionals_count': professionals.count(),
+    }
+    
+    return render(request, 'accounts/professionals_list.html', context)
+
+@require_http_methods(['GET'])
+def api_professionals_list(request):
+    """
+    API endpoint to fetch professionals data with filtering, sorting, and pagination.
+    Returns JSON data for AJAX requests.
+    
+    Query Parameters:
+    - service (required): Service type to filter ('plumbing', 'electrical', 'all', etc.)
+    - city (optional): Filter by city
+    - state (optional): Filter by state
+    - region (optional): Filter by region (Cameroon regions)
+    - location (optional): General location search
+    - min_rating (optional): Minimum rating (e.g., 3.5, 4.0, 4.5)
+    - min_experience (optional): Minimum years of experience
+    - min_price (optional): Minimum price
+    - max_price (optional): Maximum price
+    - price_range (optional): Preset price range ('budget', 'moderate', 'premium', 'luxury')
+    - verified (optional): Filter verified only ('true'/'false')
+    - min_reviews (optional): Minimum number of reviews
+    - sort (optional): Sort by ('rating', 'reviews', 'price', 'experience', 'newest', 'name')
+    - page (optional): Page number (default: 1)
+    - limit (optional): Items per page (default: 20, max: 100)
+    
+    Returns:
+    JSON with professionals list, pagination info, and region alternatives if applicable
+    """
+    from .filter_utils import ProfessionalFilter, serialize_professional, get_region_alternatives
+    
+    # Get required parameter
+    service = request.GET.get('service', '')
+    if not service:
+        return JsonResponse({
+            'success': False,
+            'error': 'service parameter is required'
+        }, status=400)
+    
+    # Validate service parameter
+    valid_services = ['all'] + [choice[0] for choice in ProviderProfile.SERVICE_CHOICES]
+    if service not in valid_services:
+        return JsonResponse({
+            'success': False,
+            'error': f'Invalid service type: {service}. Valid options are: {", ".join(valid_services)}'
+        }, status=400)
+    
+    # Get optional parameters
+    city = request.GET.get('city', '').strip()
+    state = request.GET.get('state', '').strip()
+    region = request.GET.get('region', '').strip()
+    location = request.GET.get('location', '').strip()
+    min_rating = request.GET.get('min_rating', '').strip()
+    min_experience = request.GET.get('min_experience', '').strip()
+    min_price = request.GET.get('min_price', '').strip()
+    max_price = request.GET.get('max_price', '').strip()
+    price_range = request.GET.get('price_range', '').strip()
+    verified = request.GET.get('verified', 'false').lower() == 'true'
+    min_reviews = request.GET.get('min_reviews', '').strip()
+    sort_by = request.GET.get('sort', 'rating').strip()
+    
+    # Pagination parameters
+    try:
+        page = max(1, int(request.GET.get('page', 1)))
+        limit = max(1, min(100, int(request.GET.get('limit', 20))))  # Cap at 100, default 20
+    except (ValueError, TypeError):
+        page = 1
+        limit = 20
+    
+    try:
+        # Initialize filter
+        pfilter = ProfessionalFilter()
+        
+        # Apply filters in order
+        pfilter.apply_service_filter(service)
+        pfilter.apply_rating_filter(min_rating)
+        pfilter.apply_experience_filter(min_experience)
+        pfilter.apply_price_filter(price_range=price_range, min_price=min_price, max_price=max_price)
+        pfilter.apply_verified_filter(verified)
+        pfilter.apply_review_count_filter(min_reviews)
+        
+        # Apply location filter (returns region_message if region not found)
+        pfilter, region_message = pfilter.apply_location_filter(
+            location=location,
+            city=city,
+            state=state,
+            region=region
+        )
+        
+        # Apply sorting
+        pfilter.sort_by(sort_by)
+        
+        # Apply pagination
+        pagination_info = pfilter.paginate(page=page, limit=limit)
+        
+        # Get all professionals for region alternatives (from unfiltered queryset)
+        base_filter = ProfessionalFilter()
+        base_filter.apply_service_filter(service)
+        available_regions = get_region_alternatives(base_filter.get_queryset())
+        
+        # Serialize professionals data
+        professionals_data = [
+            serialize_professional(p) for p in pagination_info['items']
+        ]
+        
+        # Prepare response
+        response_data = {
+            'success': True,
+            'service': service,
+            'professionals': professionals_data,
+            'pagination': {
+                'page': pagination_info['page'],
+                'limit': pagination_info['limit'],
+                'total': pagination_info['total'],
+                'pages': pagination_info['pages'],
+                'has_next': pagination_info['has_next'],
+                'has_prev': pagination_info['has_prev'],
+            },
+            'filters_applied': pfilter.get_filters_applied(),
+        }
+        
+        # Add region-specific information if applicable
+        if region_message:
+            response_data['region_message'] = region_message
+            response_data['available_regions'] = available_regions
+        
+        return JsonResponse(response_data)
+    
+    except Exception as e:
+        logger.error(f'Error in api_professionals_list: {str(e)}', exc_info=True)
+        return JsonResponse({
+            'success': False,
+            'error': f'Error processing filter: {str(e)}'
+        }, status=500)

@@ -23,10 +23,10 @@ class ServiceRequest(models.Model):
     ]
 
     DECLINE_REASON_CHOICES = [
-        ('price', 'Price too low'),
-        ('distance', 'Too far away'),
-        ('other', 'Other reason'),
-        ('no_reason', 'No reason provided'),
+        ('price', 'Price'),
+        ('distance', 'Distance'),
+        ('time', 'Time'),
+        ('other', 'Other'),
     ]
 
     # Requester (user who creates the request)
@@ -48,6 +48,9 @@ class ServiceRequest(models.Model):
     # Request details
     description = models.TextField()
     provider_name = models.CharField(max_length=255)  # Name of provider being requested
+    
+    # Price offered by the user
+    offered_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Price offered by the user")
 
     # OPTIONAL per UI spec
     date_time = models.DateTimeField(null=True, blank=True)
@@ -83,6 +86,14 @@ class ServiceRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
     declined_at = models.DateTimeField(null=True, blank=True)
+    
+    # Email tracking
+    email_sent_to_provider = models.BooleanField(default=False, help_text="Whether provider notification email was sent")
+    email_sent_to_provider_timestamp = models.DateTimeField(null=True, blank=True, help_text="When provider email was sent")
+    email_sent_to_user = models.BooleanField(default=False, help_text="Whether user notification email was sent")
+    email_sent_to_user_timestamp = models.DateTimeField(null=True, blank=True, help_text="When user email was sent")
+    email_read_timestamp = models.DateTimeField(null=True, blank=True, help_text="When provider opened email (if tracked)")
+    email_response_timestamp = models.DateTimeField(null=True, blank=True, help_text="When provider responded to request")
 
     class Meta:
         ordering = ['-created_at']

@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ service_name|title }} Professionals - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/professionals_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="professionals-container">
+    <!-- Header with Breadcrumb -->
+    <div class="professionals-header">
+        <div class="breadcrumb-nav">
+            <a href="/" class="breadcrumb-link">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <a href="/#services" class="breadcrumb-link">Services</a>
+            <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+            <span class="breadcrumb-current">{{ service_name|title }}</span>
+        </div>
+        
+        <h1 class="page-title">
+            <i class="fas fa-users-cog"></i>
+            {{ service_name|title }} Professionals
+        </h1>
+        <p class="page-subtitle">Find verified and trusted {{ service_name }} experts in your area</p>
+    </div>
+
+    <!-- Filter and Results Section -->
+    <div class="content-wrapper">
+        <!-- Filters Sidebar -->
+        <aside class="filters-sidebar">
+            <div class="filters-header">
+                <h3><i class="fas fa-filter"></i> Filters</h3>
+                <button class="clear-filters-btn" id="clearFilters">
+                    <i class="fas fa-times"></i> Clear All
+                </button>
+            </div>
+
+            <!-- Service Type Filter -->
+            <div class="filter-section">
+                <h4 class="filter-title">
+                    <i class="fas fa-briefcase"></i> Service Type
+                </h4>
+                <div class="filter-content">
+                    <select class="filter-select" id="serviceTypeFilter">
+                        <option value="">All Services</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="carpentry">Carpentry</option>
+                        <option value="cleaning">Cleaning</option>
+                        <option value="tutoring">Tutoring</option>
+                        <option value="hvac">HVAC</option>
+                        <option value="roofing">Roofing</option>
+                        <option value="landscaping">Landscaping</option>
+                        <option value="painting">Painting</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-section">
+                <h4 class="filter-title">
+                    <i class="fas fa-dollar-sign"></i> Price Range
+                </h4>
+                <div class="filter-content">
+                    <select class="filter-select" id="priceFilter">
+                        <option value="">Any Price</option>
+                        <option value="budget">$ - Budget Friendly</option>
+                        <option value="moderate">$$ - Moderate</option>
+                        <option value="premium">$$$ - Premium</option>
+                        <option value="luxury">$$$$ - Luxury</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="filter-section">
+                <h4 class="filter-title">
+                    <i class="fas fa-star"></i> Minimum Rating
+                </h4>
+                <div class="filter-content">
+                    <div class="rating-filter-options">
+                        <label class="rating-option">
+                            <input type="radio" name="rating" value="" checked>
+                            <span class="rating-label">Any Rating</span>
+                        </label>
+                        <label class="rating-option">
+                            <input type="radio" name="rating" value="4">
+                            <span class="rating-label">
+                                <i class="fas fa-star"></i> 4+ Stars
+                            </span>
+                        </label>
+                        <label class="rating-option">
+                            <input type="radio" name="rating" value="4.5">
+                            <span class="rating-label">
+                                <i class="fas fa-star"></i> 4.5+ Stars
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verified Only Filter -->
+            <div class="filter-section">
+                <h4 class="filter-title">
+                    <i class="fas fa-shield-check"></i> Verification
+                </h4>
+                <div class="filter-content">
+                    <label class="checkbox-filter">
+                        <input type="checkbox" id="verifiedOnly">
+                        <span class="checkbox-label">Verified Professionals Only</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Working Hours Filter -->
+            <div class="filter-section">
+                <h4 class="filter-title">
+                    <i class="fas fa-clock"></i> Availability
+                </h4>
+                <div class="filter-content">
+                    <select class="filter-select" id="availabilityFilter">
+                        <option value="">Any Time</option>
+                        <option value="weekdays">Weekdays</option>
+                        <option value="weekends">Weekends</option>
+                        <option value="24_7">24/7 Available</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Location Filter -->
+            <div class="filter-section">
+                <h4 class="filter-title">
+                    <i class="fas fa-location-dot"></i> Location
+                </h4>
+                <div class="filter-content">
+                    <select class="filter-select" id="regionFilter">
+                        <option value="">All Regions</option>
+                        <option value="adamawa">Adamawa</option>
+                        <option value="centre">Centre</option>
+                        <option value="east">East</option>
+                        <option value="far_north">Far North</option>
+                        <option value="littoral">Littoral</option>
+                        <option value="north">North</option>
+                        <option value="northwest">Northwest</option>
+                        <option value="south">South</option>
+                        <option value="southwest">Southwest</option>
+                        <option value="west">West</option>
+                    </select>
+                    <input type="text" class="filter-input" id="locationFilter" placeholder="Enter city or town" style="margin-top: 10px;">
+                    <div class="location-radius">
+                        <label class="radius-label">Within:</label>
+                        <select class="filter-select-sm" id="radiusFilter">
+                            <option value="10">10 km</option>
+                            <option value="25" selected>25 km</option>
+                            <option value="50">50 km</option>
+                            <option value="100">100 km</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Professionals Grid -->
+        <main class="professionals-main">
+            <!-- Results Header -->
+            <div class="results-header">
+                <div class="results-count">
+                    <span id="resultsCount">0</span> professionals found
+                </div>
+                <div class="sort-controls">
+                    <label for="sortBy">Sort by:</label>
+                    <select class="sort-select" id="sortBy">
+                        <option value="rating">Highest Rated</option>
+                        <option value="reviews">Most Reviews</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                        <option value="experience">Most Experience</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <div class="loading-spinner"></div>
+                <p>Loading professionals...</p>
+            </div>
+
+            <!-- Professionals Grid -->
+            <div class="professionals-grid" id="professionalsGrid">
+                <!-- Professional cards will be dynamically inserted here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>No Professionals Found</h3>
+                <p id="emptyStateMessage">We couldn't find any professionals matching your criteria.</p>
+                <button class="btn-primary" onclick="clearAllFilters()">
+                    <i class="fas fa-rotate"></i> Clear Filters
+                </button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Professional Card Template (Hidden) -->
+<template id="professionalCardTemplate">
+    <div class="professional-card">
+        <div class="card-header-accent"></div>
+        <div class="professional-avatar">
+            <img src="" alt="Professional photo" class="avatar-img">
+            <div class="avatar-placeholder">
+                <i class="fas fa-user"></i>
+            </div>
+        </div>
+        
+        <div class="professional-info">
+            <div class="verified-badge" style="display: none;">
+                <i class="fas fa-check-circle"></i> Verified Pro
+            </div>
+            
+            <h3 class="professional-name"></h3>
+            <p class="professional-company"></p>
+            <p class="professional-service">
+                <i class="fas fa-briefcase"></i> <span class="service-text"></span>
+            </p>
+            
+            <div class="professional-rating">
+                <div class="stars"></div>
+                <span class="rating-number"></span>
+                <span class="reviews-count"></span>
+            </div>
+            
+            <div class="professional-details">
+                <div class="detail-item">
+                    <i class="fas fa-award"></i>
+                    <span class="experience-text"></span>
+                </div>
+                <div class="detail-item price-range">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="price-text"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="professional-actions">
+            <button class="btn-primary request-btn">
+                <i class="fas fa-paper-plane"></i> Request Service
+            </button>
+            <button class="btn-secondary view-profile-btn">
+                <i class="fas fa-user-circle"></i> View Profile
+            </button>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Enable real API for Django template
+    const USE_REAL_API = true;
+</script>
+<script src="{% static 'js/professionals_list.js' %}"></script>
+{% endblock %}

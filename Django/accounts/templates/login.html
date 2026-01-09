@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,30 +9,109 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #E8F0FE 0%, #E8F5F0 100%);
+            background: linear-gradient(135deg, #0052CC 0%, #1E88E5 50%, #42A5F5 100%);
             min-height: 100vh;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('{% static "assets/image/Gemini_Generated_Image_10go4k10go4k10go.png" %}') center/cover no-repeat;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.08;
+            z-index: 0;
+        }
+        
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+            z-index: 0;
+        }
+        
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
         .login-container {
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+            position: relative;
+            z-index: 1;
         }
         .login-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,82,204,0.10), 0 1.5px 8px rgba(44,62,80,0.08);
-            padding: 2.5rem 2.25rem 2.25rem 2.25rem;
-            max-width: 410px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,82,204,0.3), 
+                        0 0 80px rgba(0,82,204,0.15);
+            padding: 0;
+            max-width: 450px;
             width: 100%;
-            border-top: 6px solid #0052CC;
+            border: 1px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
         }
-        .login-card h2 {
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #0052CC 0%, #1E88E5 50%, #42A5F5 100%);
+        }
+        .login-logo {
+            text-align: center;
+            padding: 2rem 2rem 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(0, 82, 204, 0.05) 0%, rgba(66, 165, 245, 0.05) 100%);
+            border-bottom: 1px solid rgba(0, 82, 204, 0.1);
+            position: relative;
+        }
+        .login-logo img {
+            max-width: 100px;
+            height: auto;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 2px 4px rgba(0,82,204,0.2));
+            transition: transform 0.3s ease;
+        }
+        .login-logo img:hover {
+            transform: scale(1.05);
+        }
+        .login-logo h2 {
             color: #0052CC;
             font-weight: 800;
-            margin-bottom: 1.2rem;
-            text-align: center;
+            margin: 0;
+            font-size: 1.75rem;
             letter-spacing: 0.5px;
+        }
+        .login-form-wrapper {
+            padding: 2rem 2.25rem 2.25rem 2.25rem;
+        }
+        .login-form-wrapper a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 82, 204, 0.25);
+            background: rgba(0, 82, 204, 0.15) !important;
         }
         .form-group {
             margin-bottom: 1.5rem;
@@ -45,37 +125,61 @@
         }
         .form-group input {
             width: 100%;
-            padding: 0.875rem;
-            border: 2px solid #E8F0FE;
-            border-radius: 8px;
+            padding: 1rem;
+            border: 2px solid rgba(0, 82, 204, 0.2);
+            border-radius: 10px;
             font-size: 1rem;
-            background: #F9FBFF;
+            background: #ffffff;
             color: #2C3E50;
             transition: all 0.3s;
         }
         .form-group input:focus {
             outline: none;
             border-color: #0052CC;
-            box-shadow: 0 0 0 3px rgba(0,82,204,0.10);
+            box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1);
             background: #fff;
+            transform: translateY(-2px);
+        }
+        .form-group input::placeholder {
+            color: rgba(44, 62, 80, 0.5);
         }
         .login-btn {
             width: 100%;
-            padding: 0.875rem;
-            background-color: #17B890;
+            padding: 1.1rem;
+            background: linear-gradient(135deg, #0052CC 0%, #1E88E5 100%);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 700;
-            font-size: 1.08rem;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(23,184,144,0.10);
-            letter-spacing: 0.2px;
+            box-shadow: 0 6px 20px rgba(0, 82, 204, 0.3);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1E88E5 0%, #42A5F5 100%);
+            transition: left 0.4s;
+            z-index: 0;
+        }
+        .login-btn:hover::before {
+            left: 0;
         }
         .login-btn:hover {
-            background-color: #13a07a;
-            box-shadow: 0 4px 16px rgba(23,184,144,0.18);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 82, 204, 0.4);
+        }
+        .login-btn * {
+            position: relative;
+            z-index: 1;
         }
         .alert {
             margin-bottom: 1rem;
@@ -92,56 +196,112 @@
             color: #C0392B;
             border: 1.5px solid #FFC300;
         }
-        .login-card {
-            position: relative;
+        
+        /* Responsive Design for Mobile */
+        @media (max-width: 768px) {
+            .login-container {
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            .login-card {
+                max-width: 100%;
+            }
+            .login-logo {
+                padding: 1.5rem 1.5rem 1rem 1.5rem;
+            }
+            .login-logo img {
+                max-width: 80px;
+            }
+            .login-logo h2 {
+                font-size: 1.3rem;
+            }
+            .login-form-wrapper {
+                padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+            }
         }
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: -32px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 6px;
-            background: linear-gradient(90deg, #0052CC 60%, #17B890 100%);
-            border-radius: 8px;
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding-top: 1rem;
+                padding-bottom: 1rem;
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+            .login-logo {
+                padding: 1rem 1rem 0.75rem 1rem;
+            }
+            .login-logo img {
+                max-width: 70px;
+            }
+            .login-logo h2 {
+                font-size: 1.2rem;
+            }
+            .login-form-wrapper {
+                padding: 1.25rem;
+            }
+            .form-group input {
+                padding: 0.75rem;
+                font-size: 0.95rem;
+            }
+            .login-btn {
+                padding: 0.875rem;
+                font-size: 1rem;
+            }
+            .login-card::before {
+                top: -20px;
+                width: 40px;
+                height: 4px;
+            }
         }
     </style>
 </head>
 <body>
 <div class="login-container">
     <div class="login-card">
-        <div style="text-align:center; margin-bottom:1.2rem;">
-            <img src="../assets/image/logo.png" alt="Local Pro Connect Logo" style="height:54px; margin-bottom:0.5rem;">
+        <!-- Logo Section -->
+        <div class="login-logo">
+            <img src="{% static 'assets/image/newlogo.png' %}" alt="Local Pro Connect Logo" />
+            <h2>Sign In</h2>
         </div>
-        <h2>Sign In</h2>
-        <p style="text-align:center; color:#2C3E50; font-size:1.05rem; margin-bottom:1.5rem; letter-spacing:0.1px;">Access your account to connect with local professionals.</p>
-        <div id="alertBox"></div>
-        <form id="loginForm" autocomplete="on">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus>
+        
+        <!-- Form Section -->
+        <div class="login-form-wrapper">
+            <p style="text-align:center; color:#2C3E50; font-size:1.05rem; margin-bottom:1.5rem; letter-spacing:0.1px;">Access your account to connect with local professionals.</p>
+            <div id="alertBox"></div>
+            <form id="loginForm" autocomplete="on">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn" id="submitBtn">Sign In <i class="fas fa-arrow-right ms-2"></i></button>
+            </form>
+            <div id="countdownBox" style="display:none; text-align:center; margin-top:1.5rem;">
+                <div class="alert alert-success" style="margin-bottom:0;">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="countdownText">Redirecting in 5 seconds...</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="you@example.com">
+            <div style="text-align:center; margin-top:2rem; padding-top:1.5rem; border-top:1px solid rgba(0, 82, 204, 0.1);">
+                <p style="font-size:0.95rem; color:#5a6c7d; margin-bottom:0.8rem;">Don't have an account?</p>
+                <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+                    <a href="/accounts/register/user/" style="color:#0052CC; font-weight:600; text-decoration:none; padding:0.6rem 1.2rem; border-radius:8px; background:rgba(0, 82, 204, 0.08); transition:all 0.3s;">
+                        <i class="fas fa-user-plus" style="margin-right:0.5rem;"></i>Sign up as User
+                    </a>
+                    <a href="/accounts/register/provider/" style="color:#1E88E5; font-weight:600; text-decoration:none; padding:0.6rem 1.2rem; border-radius:8px; background:rgba(30, 136, 229, 0.08); transition:all 0.3s;">
+                        <i class="fas fa-briefcase" style="margin-right:0.5rem;"></i>Sign up as Pro
+                    </a>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-            </div>
-            <button type="submit" class="login-btn" id="submitBtn">Sign In <i class="fas fa-arrow-right ms-2"></i></button>
-        </form>
-        <div id="countdownBox" style="display:none; text-align:center; margin-top:1.5rem;">
-            <div class="alert alert-success" style="margin-bottom:0;">
-                <i class="fas fa-check-circle me-2"></i>
-                <span id="countdownText">Redirecting in 5 seconds...</span>
-            </div>
-        </div>
-        <div style="text-align:center; margin-top:2rem; font-size:0.97rem; color:#2C3E50;">
-            <span>Don't have an account?</span><br>
-            <a href="/accounts/register/user/" style="color:#0052CC; font-weight:600; text-decoration:none;">Sign up as a User</a> |
-            <a href="/accounts/register/provider/" style="color:#17B890; font-weight:600; text-decoration:none;">Sign up as a Pro</a>
         </div>
     </div>
 </div>
@@ -213,6 +373,13 @@ async function loginUser(event) {
         let body = `action=signin&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
         if (email) {
             body += `&email=${encodeURIComponent(email)}`;
+        }
+        
+        // Include 'next' parameter if present in URL (for redirect after login)
+        const urlParams = new URLSearchParams(window.location.search);
+        const nextUrl = urlParams.get('next');
+        if (nextUrl) {
+            body += `&next=${encodeURIComponent(nextUrl)}`;
         }
         
         // Get CSRF token - try multiple sources

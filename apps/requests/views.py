@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
+from django.core.mail import send_mail
 
 from .forms import ServiceRequestForm
 from .models import RequestPhoto, PriceRange
@@ -30,6 +31,15 @@ def create_request(request):
                     service_request=service_request,
                     image=photo,
                 )
+
+            # Send an email
+            send_mail(
+                'New Service Request Created',
+                f'A new service request has been created with the following description:\n\n{service_request.description}',
+                'from@example.com',  # Replace with your from email
+                ['to@example.com'],  # Replace with your to email
+                fail_silently=False,
+            )
 
             # After successful submission
             return redirect("requests:create_request_success")
