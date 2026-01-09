@@ -233,7 +233,7 @@ def provider_profile_detail(request, provider_id):
     )
     
     # Determine if this is the provider's own profile
-    is_own_profile = request.user == provider_profile.user
+    is_own_profile = (request.user.is_authenticated and request.user == provider_profile.user)
     
     # Check if user has edit permissions (only provider owner)
     can_edit = is_own_profile and request.user.is_authenticated
@@ -353,7 +353,7 @@ def edit_provider_profile(request, provider_id=None):
     return render(request, 'accounts/provider_profile_edit.html', context)
 
 
-@login_required(login_url='auth')
+@require_http_methods(['GET'])
 def logout_view(request):
     """
     Handle user logout securely.
@@ -363,7 +363,8 @@ def logout_view(request):
     auth.logout(request)
     logger.info(f'User logged out: {username}')
     messages.success(request, 'You have been successfully logged out.')
-    return redirect('accounts:auth')
+    # UXA: after logout, redirect to static homepage
+    return redirect('http://127.0.0.1:5500/index.html')
 
 
 @require_http_methods(['POST'])
@@ -391,10 +392,8 @@ def api_user_profile(request):
     if not request.user.is_authenticated:
         return JsonResponse({'error': 'Unauthorized'}, status=401)
     
-    try:
-        user_profile = UserProfile.objects.get(user=request.user)
-    except UserProfile.DoesNotExist:
-        return JsonResponse({'error': 'Profile not found'}, status=404)
+    # Ensure user profile exists (auto-create if missing)
+    user_profile, _created = UserProfile.objects.get_or_create(user=request.user)
     
     # Handle POST requests to update profile
     if request.method == 'POST':
@@ -406,9 +405,19 @@ def api_user_profile(request):
                 request.user.last_name = request.POST.get('last_name', '')
             if 'email' in request.POST:
                 request.user.email = request.POST.get('email', '')
-            
+
             request.user.save()
-            
+
+            # Handle optional user profile photo upload
+            if 'profile_picture' in request.FILES:
+                uploaded = request.FILES['profile_picture']
+                content_type = getattr(uploaded, 'content_type', '') or ''
+                if not content_type.startswith('image/'):
+                    return JsonResponse({'success': False, 'error': 'Only image uploads are allowed.'}, status=400)
+                if uploaded.size and uploaded.size > 5 * 1024 * 1024:
+                    return JsonResponse({'success': False, 'error': 'Image too large (max 5MB).'}, status=400)
+                user_profile.profile_picture = uploaded
+
             # Update user profile fields
             if 'phone' in request.POST:
                 user_profile.phone = request.POST.get('phone', '')
@@ -420,9 +429,9 @@ def api_user_profile(request):
                 user_profile.state = request.POST.get('state', '')
             if 'zip_code' in request.POST:
                 user_profile.zip_code = request.POST.get('zip_code', '')
-            
+
             user_profile.save()
-            
+
             return JsonResponse({
                 'success': True,
                 'message': 'Profile updated successfully',
@@ -445,6 +454,7 @@ def api_user_profile(request):
         'city': user_profile.city,
         'state': user_profile.state,
         'zip_code': user_profile.zip_code,
+        'profile_picture': (user_profile.profile_picture.url if user_profile.profile_picture else ''),
         'created_at': request.user.date_joined.isoformat(),
         'updated_at': user_profile.updated_at.isoformat(),
         'date_joined': request.user.date_joined.isoformat(),
