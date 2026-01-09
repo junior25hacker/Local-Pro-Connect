@@ -148,6 +148,108 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================================================
     // FORM SUBMISSION
     // ========================================================================
+    
+    /**
+     * Get the CSRF token from the DOM
+     */
+    function getCsrfToken() {
+        const tokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (tokenElement) {
+            return tokenElement.value;
+        }
+        // Fallback: try to get from cookie
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'csrftoken') {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Submit rejection via AJAX
+     */
+    function submitRejectionViaAjax(reason, message) {
+        const requestId = modal.dataset.requestId;
+        
+        if (!requestId) {
+            showErrorMessage('Request ID not found. Cannot submit rejection.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalButtonHTML;
+            return;
+        }
+
+        const csrfToken = getCsrfToken();
+        if (!csrfToken) {
+            console.warn('CSRF token not found, attempting submission without it');
+        }
+
+        const payload = {
+            reason: reason,
+            message: message
+        };
+
+        console.log('Submitting rejection via AJAX:', {
+            requestId,
+            payload
+        });
+
+        // Send AJAX request
+        fetch(`/requests/api/${requestId}/decline/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken || ''
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.json().then(data => ({
+                status: response.status,
+                data: data
+            }));
+        })
+        .then(result => {
+            console.log('Response data:', result.data);
+            
+            if (result.status === 200 && result.data.status === 'success') {
+                // Show success message
+                showSuccessMessage();
+                
+                // Close modal after delay
+                setTimeout(() => {
+                    closeModal();
+                    // Optionally refresh the request list
+                    if (window.location.href.includes('/requests/list/')) {
+                        window.location.reload();
+                    }
+                }, 1500);
+            } else {
+                // Handle error response
+                const errorMessage = result.data.message || 'Failed to submit rejection. Please try again.';
+                showErrorMessage(errorMessage);
+                
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalButtonHTML;
+            }
+        })
+        .catch(error => {
+            console.error('AJAX Error:', error);
+            showErrorMessage('An error occurred while submitting your rejection. Please try again.');
+            
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalButtonHTML;
+        });
+    }
+
+    // Store original button HTML for later restoration
+    let originalButtonHTML = submitBtn.innerHTML;
+
     rejectionForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -158,27 +260,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Show loading state on submit button
-        const originalButtonHTML = submitBtn.innerHTML;
+        originalButtonHTML = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
         // Get form data
         const formData = new FormData(this);
-        const data = {
-            rejection_reason: formData.get('rejection_reason'),
-            rejection_description: formData.get('rejection_description') || ''
-        };
+        const reason = formData.get('rejection_reason');
+        const message = formData.get('rejection_description') || '';
 
-        console.log('Form submitted with data:', data);
+        console.log('Form submitted with data:', { reason, message });
 
-        // Show success message
-        showSuccessMessage();
-        
-        // Submit the form to Django after a short delay
-        setTimeout(() => {
-            console.log('Submitting form to Django');
-            this.submit();
-        }, 800);
+        // Submit via AJAX
+        submitRejectionViaAjax(reason, message);
     });
 
     /**
@@ -216,6 +310,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.removeChild(successDiv);
             }, 400);
         }, 2000);
+    }
+
+    /**
+     * Show error message
+     */
+    function showErrorMessage(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-notification';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i>
+            <span>${message}</span>
+        `;
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideInRight 0.4s ease-out;
+        `;
+        
+        document.body.appendChild(errorDiv);
+        
+        setTimeout(() => {
+            errorDiv.style.animation = 'slideOutRight 0.4s ease-out';
+            setTimeout(() => {
+                document.body.removeChild(errorDiv);
+            }, 400);
+        }, 3000);
     }
 
     // ========================================================================

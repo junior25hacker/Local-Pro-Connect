@@ -13,6 +13,7 @@
   
   .signup-container {
     min-height: 100vh;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -22,7 +23,15 @@
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    background-repeat: no-repeat;
     position: relative;
+  }
+  
+  @media (max-width: 768px) {
+    .signup-container {
+      background-attachment: scroll;
+      padding: 30px 15px;
+    }
   }
   
   .signup-container::before {
@@ -474,8 +483,8 @@
     </form>
     
     <div class="signup-footer">
-      <p>Already have an account? <a href="{% url 'login_page' %}">Sign in here</a></p>
-      <p>Not a professional? <a href="{% url 'signup_user_page' %}">Register as User</a></p>
+      <p>Already have an account? <a href="{% url 'accounts:login_page' %}">Sign in here</a></p>
+      <p>Not a professional? <a href="{% url 'accounts:signup_user_page' %}">Register as User</a></p>
     </div>
   </div>
 </div>

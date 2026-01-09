@@ -421,6 +421,228 @@ select option {
 }
 
 /* ===========================
+   BUDGET SLIDER COMPONENT
+=========================== */
+.budget-slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: linear-gradient(135deg, rgba(0, 82, 204, 0.04) 0%, rgba(23, 184, 144, 0.04) 100%);
+    border: 2px solid var(--primary-blue);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-normal);
+}
+
+.budget-slider-wrapper:hover {
+    border-color: var(--accent-green);
+    box-shadow: 0 4px 12px rgba(0, 82, 204, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Budget Display */
+.budget-display {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+    transition: all var(--transition-normal);
+}
+
+.budget-display:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 82, 204, 0.4);
+}
+
+.budget-currency {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent-yellow);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.budget-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -1px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    min-width: 120px;
+    text-align: center;
+    transition: all var(--transition-fast);
+}
+
+.budget-value.updating {
+    transform: scale(1.05);
+    color: var(--accent-yellow);
+}
+
+/* Range Slider Styling */
+.budget-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--light-blue) 0%, var(--accent-green) 100%);
+    outline: none;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.budget-slider:hover {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(23, 184, 144, 0.2);
+}
+
+.budget-slider:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(23, 184, 144, 0.25);
+}
+
+/* Slider Thumb - WebKit (Chrome, Safari) */
+.budget-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+    cursor: pointer;
+    border: 4px solid var(--white);
+    box-shadow: 0 4px 12px rgba(23, 184, 144, 0.5), 0 0 0 2px var(--accent-green);
+    transition: all var(--transition-normal);
+}
+
+.budget-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 20px rgba(23, 184, 144, 0.6), 0 0 0 3px var(--accent-green);
+}
+
+.budget-slider::-webkit-slider-thumb:active {
+    transform: scale(1.25);
+    box-shadow: 0 8px 24px rgba(23, 184, 144, 0.7), 0 0 0 4px var(--accent-yellow);
+}
+
+/* Slider Thumb - Firefox */
+.budget-slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dark) 100%);
+    cursor: pointer;
+    border: 4px solid var(--white);
+    box-shadow: 0 4px 12px rgba(23, 184, 144, 0.5), 0 0 0 2px var(--accent-green);
+    transition: all var(--transition-normal);
+}
+
+.budget-slider::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 20px rgba(23, 184, 144, 0.6), 0 0 0 3px var(--accent-green);
+}
+
+.budget-slider::-moz-range-thumb:active {
+    transform: scale(1.25);
+    box-shadow: 0 8px 24px rgba(23, 184, 144, 0.7), 0 0 0 4px var(--accent-yellow);
+}
+
+/* Slider Track - Firefox */
+.budget-slider::-moz-range-track {
+    width: 100%;
+    height: 12px;
+    border-radius: var(--radius-full);
+    background: linear-gradient(90deg, var(--light-blue) 0%, var(--accent-green) 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Range Labels */
+.budget-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-medium);
+    padding: 0 var(--spacing-xs);
+    letter-spacing: 0.3px;
+}
+
+.range-min {
+    color: var(--primary-blue);
+}
+
+.range-max {
+    color: var(--accent-green);
+}
+
+.range-min.provider-min-active {
+    color: var(--accent-yellow);
+    font-weight: 700;
+    animation: pulse 1.5s infinite;
+}
+
+/* Budget Hint Wrapper */
+.budget-hint-wrapper {
+    min-height: 20px;
+    margin-top: var(--spacing-xs);
+}
+
+.budget-hint-wrapper .form-hint {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(255, 195, 0, 0.15) 0%, rgba(255, 195, 0, 0.08) 100%);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent-yellow);
+    animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.budget-hint-wrapper .form-hint::before {
+    content: '💰 ';
+}
+
+.budget-hint-wrapper .form-hint strong {
+    color: var(--accent-yellow-dark);
+    font-weight: 700;
+}
+
+/* Below Minimum Warning */
+.budget-slider-wrapper.below-minimum {
+    border-color: var(--error-red);
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.08) 0%, rgba(231, 76, 60, 0.04) 100%);
+}
+
+.budget-slider-wrapper.below-minimum .budget-display {
+    background: linear-gradient(135deg, var(--error-red) 0%, #c0392b 100%);
+    animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+/* Responsive Design for Budget Slider */
+@media (max-width: 480px) {
+    .budget-value {
+        font-size: 28px;
+        min-width: 100px;
+    }
+    
+    .budget-currency {
+        font-size: 20px;
+    }
+    
+    .budget-slider-wrapper {
+        padding: var(--spacing-md);
+    }
+}
+
+/* ===========================
    URGENT TOGGLE
 =========================== */
 .urgent-group {

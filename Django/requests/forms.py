@@ -103,19 +103,41 @@ class ServiceRequestForm(forms.ModelForm):
         if not provider_choice and not provider_name:
             raise forms.ValidationError("Please select a provider or enter a provider name.")
         
-        # Price validation: Check if offered_price meets provider's minimum
+        # Price validation: Check if offered_price meets provider's minimum and maximum
         offered_price = cleaned.get("offered_price")
         if provider_choice and offered_price is not None:
-            # Get provider's minimum acceptable price
+            # Get provider's pricing information
             provider_min_price = provider_choice.min_price
+            provider_max_price = provider_choice.max_price
+            provider_name_display = provider_choice.company_name or provider_choice.user.get_full_name() or provider_choice.user.username
             
+            # Check minimum price
             if offered_price < provider_min_price:
-                provider_name_display = provider_choice.company_name or provider_choice.user.get_full_name() or provider_choice.user.username
                 raise ValidationError(
                     f"The offered price (${offered_price:.2f}) is below the minimum required by "
                     f"{provider_name_display} (${provider_min_price:.2f}). "
                     f"Please offer at least ${provider_min_price:.2f} or select a different provider."
                 )
+            
+            # Check maximum price (if set)
+            if provider_max_price and offered_price > provider_max_price:
+                raise ValidationError(
+                    f"The offered price (${offered_price:.2f}) exceeds the maximum rate for "
+                    f"{provider_name_display} (${provider_max_price:.2f}). "
+                    f"Please offer at most ${provider_max_price:.2f} or select a different provider."
+                )
+            
+            # Check for unreasonably high values (sanity check)
+            MAX_REASONABLE_PRICE = 50000  # $50k max to catch data entry errors
+            if offered_price > MAX_REASONABLE_PRICE:
+                raise ValidationError(
+                    f"The offered price (${offered_price:.2f}) seems unreasonably high. "
+                    f"Please verify the amount and try again."
+                )
+        
+        # Check for negative or zero budget
+        if offered_price is not None and offered_price <= 0:
+            raise ValidationError("Budget amount must be greater than zero.")
         
         return cleaned
 
@@ -139,3 +161,121 @@ class ServiceRequestForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class RejectionForm(forms.Form):
+    """
+    Form for handling provider rejection of service requests.
+    Used by API endpoint to validate rejection submissions.
+    """
+    reason = forms.ChoiceField(
+        choices=ServiceRequest.DECLINE_REASON_CHOICES,
+        required=True,
+        help_text="The reason for declining the request",
+        label="Rejection Reason"
+    )
+    
+    message = forms.CharField(
+        required=False,
+        max_length=500,
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'class': 'description-textarea',
+            'placeholder': 'Provide additional details about your rejection (optional)'
+        }),
+        help_text="Optional custom message to include with the rejection",
+        label="Additional Details"
+    )
+
+    def clean_message(self):
+        """Trim and validate message length"""
+        message = self.cleaned_data.get('message', '').strip()
+        if message and len(message) > 500:
+            raise ValidationError("Message must not exceed 500 characters.")
+        return message
+
+    def clean(self):
+        """Overall form validation"""
+        cleaned = super().clean()
+        reason = cleaned.get('reason')
+        message = cleaned.get('message')
+        
+        # Validate that reason is selected
+        if not reason:
+            raise ValidationError("Please select a rejection reason.")
+        
+        # If 'other' is selected, message becomes more important
+        if reason == 'other' and not message:
+            raise ValidationError("When selecting 'Other', please provide details about your reason.")
+        
+        return cleaned
+
+
+class AcceptanceForm(forms.Form):
+    """
+    Form for handling provider acceptance of service requests.
+    Used by API endpoint to validate acceptance submissions.
+    """
+    notes = forms.CharField(
+        required=False,
+        max_length=500,
+        widget=forms.Textarea(attrs={
+            'rows': 4,
+            'class': 'description-textarea',
+            'placeholder': 'Add any notes about your acceptance (optional)'
+        }),
+        help_text="Optional notes to include with your acceptance",
+        label="Acceptance Notes"
+    )
+
+    def clean_notes(self):
+        """Trim and validate notes length"""
+        notes = self.cleaned_data.get('notes', '').strip()
+        if notes and len(notes) > 500:
+            raise ValidationError("Notes must not exceed 500 characters.")
+        return notes
+
+
+class RequestEditForm(forms.ModelForm):
+    """
+    Form for handling user edits to service requests.
+    Only allows editing certain fields after creation.
+    """
+    class Meta:
+        model = ServiceRequest
+        fields = ['description', 'date_time', 'offered_price']
+        widgets = {
+            'description': forms.Textarea(attrs={
+                'rows': 4,
+                'class': 'input-textarea',
+                'placeholder': 'Update request description...'
+            }),
+            'date_time': forms.DateTimeInput(attrs={
+                'type': 'datetime-local',
+                'class': 'input-field',
+            }),
+            'offered_price': forms.NumberInput(attrs={
+                'class': 'input-field',
+                'step': '0.01',
+                'placeholder': 'Updated price offer...'
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.service_request = kwargs.pop('service_request', None)
+        super().__init__(*args, **kwargs)
+        self.fields['date_time'].required = False
+        self.fields['offered_price'].required = False
+
+    def clean(self):
+        """Validate that request is in editable state"""
+        cleaned = super().clean()
+        
+        if self.service_request:
+            # Cannot edit accepted or declined requests
+            if self.service_request.status in ['accepted', 'declined']:
+                raise ValidationError(
+                    f"Cannot edit a request that has already been {self.service_request.status}."
+                )
+        
+        return cleaned

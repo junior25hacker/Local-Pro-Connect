@@ -86,6 +86,14 @@ class ServiceRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
     declined_at = models.DateTimeField(null=True, blank=True)
+    
+    # Email tracking
+    email_sent_to_provider = models.BooleanField(default=False, help_text="Whether provider notification email was sent")
+    email_sent_to_provider_timestamp = models.DateTimeField(null=True, blank=True, help_text="When provider email was sent")
+    email_sent_to_user = models.BooleanField(default=False, help_text="Whether user notification email was sent")
+    email_sent_to_user_timestamp = models.DateTimeField(null=True, blank=True, help_text="When user email was sent")
+    email_read_timestamp = models.DateTimeField(null=True, blank=True, help_text="When provider opened email (if tracked)")
+    email_response_timestamp = models.DateTimeField(null=True, blank=True, help_text="When provider responded to request")
 
     class Meta:
         ordering = ['-created_at']

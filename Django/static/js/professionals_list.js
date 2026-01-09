@@ -196,64 +196,82 @@ function loadProfessionals() {
     
     if (useAPI) {
         // Production: Use real API
-        // Build query parameters
-        const params = new URLSearchParams({
-            service: service,
-            sort: sortSelect.value || 'rating',
-            page: 1,
-            limit: 50
-        });
-        
-        // Add optional filters if they're set
-        if (currentFilters.rating) params.append('min_rating', currentFilters.rating);
-        if (currentFilters.verified) params.append('verified', 'true');
-        if (currentFilters.availability) params.append('availability', currentFilters.availability);
-        if (currentFilters.region) params.append('region', currentFilters.region);
-        if (currentFilters.location) params.append('location', currentFilters.location);
-        
-        const apiUrl = `/accounts/api/professionals/?${params.toString()}`;
-        console.log('Fetching from API:', apiUrl);
-        
-        fetch(apiUrl)
-            .then(response => {
-                console.log('API Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('API Response data:', data);
-                if (!data.success) {
-                    console.error('API Error:', data.error);
-                    showEmptyWithMessage(data.error || 'Failed to load professionals');
-                    hideLoading();
-                    return;
-                }
-                allProfessionals = data.professionals || [];
-                filteredProfessionals = [...allProfessionals];
-                console.log(`Loaded ${allProfessionals.length} professionals`);
-                
-                // Display region message if provided
-                if (data.region_message) {
-                    displayRegionMessage(data.region_message, data.available_regions);
-                } else {
-                    hideRegionMessage();
-                }
-                
-                renderProfessionals(filteredProfessionals);
-                hideLoading();
-            })
-            .catch(error => {
-                console.error('Error loading professionals:', error);
-                showEmptyWithMessage('Unable to load professionals. Please try again later.');
-                hideLoading();
-            });
+        fetchProfessionalsFromAPI(service, 1);
     } else {
         // Development: Use mock data
         console.log('Using mock data (USE_REAL_API is false)');
         loadMockData(service);
     }
+}
+
+function fetchProfessionalsFromAPI(service, page = 1) {
+    /**
+     * Fetch professionals from the backend API with current filters applied
+     */
+    showLoading();
+    
+    // Build query parameters with all current filters
+    const params = new URLSearchParams({
+        service: service,
+        sort: sortSelect.value || 'rating',
+        page: page,
+        limit: 20  // Items per page
+    });
+    
+    // Add optional filters if they're set
+    if (currentFilters.serviceType) params.append('service_type', currentFilters.serviceType);
+    if (currentFilters.rating) params.append('min_rating', currentFilters.rating);
+    if (currentFilters.verified) params.append('verified', 'true');
+    if (currentFilters.region) params.append('region', currentFilters.region);
+    if (currentFilters.location) params.append('location', currentFilters.location);
+    
+    // Add price filter if set
+    if (currentFilters.price) {
+        params.append('price_range', currentFilters.price);
+    }
+    
+    const apiUrl = `/accounts/api/professionals/?${params.toString()}`;
+    console.log('Fetching from API:', apiUrl);
+    
+    fetch(apiUrl)
+        .then(response => {
+            console.log('API Response status:', response.status);
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('API Response data:', data);
+            if (!data.success) {
+                console.error('API Error:', data.error);
+                showEmptyWithMessage(data.error || 'Failed to load professionals');
+                hideLoading();
+                return;
+            }
+            
+            allProfessionals = data.professionals || [];
+            filteredProfessionals = [...allProfessionals];
+            console.log(`Loaded ${allProfessionals.length} professionals`);
+            
+            // Store pagination info for later use
+            window.currentPagination = data.pagination;
+            
+            // Display region message if provided
+            if (data.region_message) {
+                displayRegionMessage(data.region_message, data.available_regions);
+            } else {
+                hideRegionMessage();
+            }
+            
+            renderProfessionals(filteredProfessionals);
+            hideLoading();
+        })
+        .catch(error => {
+            console.error('Error loading professionals:', error);
+            showEmptyWithMessage('Unable to load professionals. Please try again later.');
+            hideLoading();
+        });
 }
 
 function loadMockData(service) {
@@ -271,49 +289,63 @@ function loadMockData(service) {
    FILTERING LOGIC
 =========================== */
 function applyFilters() {
-    filteredProfessionals = allProfessionals.filter(professional => {
-        // Service Type Filter
-        if (currentFilters.serviceType) {
-            // Check both 'service' and 'serviceType' properties for compatibility
-            const professionalService = (professional.serviceType || professional.service || '').toLowerCase();
-            if (professionalService !== currentFilters.serviceType.toLowerCase()) return false;
-        }
+    // Get service from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const service = urlParams.get('service') || 'all';
+    
+    // Check if we're using the real API
+    const useAPI = typeof USE_REAL_API !== 'undefined' && USE_REAL_API;
+    
+    if (useAPI) {
+        // Use backend API for filtering
+        console.log('Applying filters via API with current filters:', currentFilters);
+        fetchProfessionalsFromAPI(service, 1);  // Reset to page 1 when filters change
+    } else {
+        // Client-side filtering for mock data
+        filteredProfessionals = allProfessionals.filter(professional => {
+            // Service Type Filter
+            if (currentFilters.serviceType) {
+                // Check both 'service' and 'serviceType' properties for compatibility
+                const professionalService = (professional.serviceType || professional.service || '').toLowerCase();
+                if (professionalService !== currentFilters.serviceType.toLowerCase()) return false;
+            }
 
-        // Price Filter
-        if (currentFilters.price) {
-            const priceMap = { 'budget': '$', 'moderate': '$$', 'premium': '$$$', 'luxury': '$$$$' };
-            if (professional.priceRange !== priceMap[currentFilters.price]) return false;
-        }
+            // Price Filter
+            if (currentFilters.price) {
+                const priceMap = { 'budget': '$', 'moderate': '$$', 'premium': '$$$', 'luxury': '$$$$' };
+                if (professional.priceRange !== priceMap[currentFilters.price]) return false;
+            }
 
-        // Rating Filter
-        if (currentFilters.rating) {
-            if (professional.rating < parseFloat(currentFilters.rating)) return false;
-        }
+            // Rating Filter
+            if (currentFilters.rating) {
+                if (professional.rating < parseFloat(currentFilters.rating)) return false;
+            }
 
-        // Verified Filter
-        if (currentFilters.verified && !professional.verified) return false;
+            // Verified Filter
+            if (currentFilters.verified && !professional.verified) return false;
 
-        // Availability Filter
-        if (currentFilters.availability && professional.availability !== currentFilters.availability) return false;
+            // Availability Filter
+            if (currentFilters.availability && professional.availability !== currentFilters.availability) return false;
 
-        // Region Filter
-        if (currentFilters.region) {
-            const professionalRegion = (professional.region || professional.state || '').toLowerCase();
-            if (professionalRegion !== currentFilters.region.toLowerCase()) return false;
-        }
+            // Region Filter
+            if (currentFilters.region) {
+                const professionalRegion = (professional.region || professional.state || '').toLowerCase();
+                if (professionalRegion !== currentFilters.region.toLowerCase()) return false;
+            }
 
-        // Location Filter (simple text match - in production use geolocation)
-        if (currentFilters.location) {
-            const locationLower = currentFilters.location.toLowerCase();
-            const professionalLocation = (professional.location || professional.city || '').toLowerCase();
-            if (!professionalLocation.includes(locationLower)) return false;
-        }
+            // Location Filter (simple text match - in production use geolocation)
+            if (currentFilters.location) {
+                const locationLower = currentFilters.location.toLowerCase();
+                const professionalLocation = (professional.location || professional.city || '').toLowerCase();
+                if (!professionalLocation.includes(locationLower)) return false;
+            }
 
-        return true;
-    });
+            return true;
+        });
 
-    sortProfessionals(sortSelect.value);
-    renderProfessionals(filteredProfessionals);
+        sortProfessionals(sortSelect.value);
+        renderProfessionals(filteredProfessionals);
+    }
 }
 
 /* ===========================

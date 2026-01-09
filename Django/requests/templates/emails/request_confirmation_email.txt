@@ -1,0 +1,35 @@
+REQUEST CONFIRMATION
+====================
+
+Hi {{ user_name }},
+
+Thank you for submitting your service request! We've received your request and will help you connect with the right service provider.
+
+YOUR REQUEST DETAILS
+====================
+
+Request ID: #{{ request_id }}
+Provider: {{ provider_name }}
+Description: {{ description }}
+{% if offered_price %}Offered Budget: ${{ offered_price|floatformat:2 }}
+{% endif %}Submitted: {{ created_at|date:"M d, Y H:i" }}
+
+WHAT HAPPENS NEXT?
+==================
+
+We are sending your request to the service provider. They will review your request and contact you directly if they're interested in helping you.
+
+Typical response time: 24-48 hours
+
+TRACK YOUR REQUEST
+==================
+
+You can monitor the status of your request anytime from your dashboard:
+{{ dashboard_link }}
+
+If you need to modify or cancel this request, you can do so from your dashboard.
+
+---
+
+This is an automated email from LocaPro. Please do not reply to this email.
+© 2024 LocaPro. All rights reserved.
