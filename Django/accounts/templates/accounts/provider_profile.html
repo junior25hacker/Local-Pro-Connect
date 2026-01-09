@@ -1,0 +1,951 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Provider Profile - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+    }
+    
+    .profile-hero {
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        color: white;
+        padding: 3rem 0 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,106.7C1248,96,1344,96,1392,96L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        opacity: 0.3;
+    }
+    
+    .profile-header-card {
+        background: white;
+        border-radius: 16px;
+        margin-top: -60px;
+        margin-bottom: 2rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 76, 153, 0.15);
+        position: relative;
+        z-index: 10;
+        border-top: 4px solid #FFC300;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-header-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 76, 153, 0.2);
+    }
+    
+    .profile-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+    }
+    
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        background: linear-gradient(135deg, #004C99 0%, #00A65A 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        color: white;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 76, 153, 0.3);
+        border: 6px solid white;
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-avatar::after {
+        content: '⭐';
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: #FFC300;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(0, 76, 153, 0.4);
+    }
+    
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-avatar {
+            width: 130px;
+            height: 130px;
+            font-size: 3rem;
+            margin: 0 auto;
+        }
+    }
+    
+    .profile-info h2 {
+        color: #004C99;
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+        font-size: 2rem;
+    }
+    
+    .profile-info p {
+        color: #666;
+        margin: 0.4rem 0;
+        font-size: 1.05rem;
+        font-weight: 500;
+    }
+    
+    .profile-info p strong {
+        color: #004C99;
+    }
+    
+    .profile-rating {
+        background: linear-gradient(135deg, #FFC300 0%, #FFD700 100%);
+        color: #333;
+        padding: 1.25rem 2rem;
+        border-radius: 20px;
+        font-weight: 700;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 8px 25px rgba(255, 195, 0, 0.4);
+        border: 3px solid #FFF;
+        transition: all 0.3s ease;
+    }
+    
+    .profile-rating:hover {
+        transform: scale(1.05);
+        box-shadow: 0 10px 30px rgba(255, 195, 0, 0.5);
+    }
+    
+    @media (max-width: 768px) {
+        .profile-rating {
+            width: fit-content;
+            margin: 1rem auto;
+            padding: 1rem 1.5rem;
+        }
+    }
+    
+    .rating-stars {
+        font-size: 1.5rem;
+        color: #FF6B00;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .rating-text {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    
+    .rating-text:first-child {
+        font-size: 2rem;
+        color: #004C99;
+    }
+    
+    .call-btn-large {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 1rem;
+    }
+    
+    .call-btn-large:hover {
+        background-color: #008a4a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+        color: white;
+    }
+    
+    .section-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 76, 153, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, #004C99, #00A65A);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .section-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.15);
+        transform: translateY(-3px);
+    }
+    
+    .section-card:hover::before {
+        opacity: 1;
+    }
+    
+    .section-title {
+        color: #004C99;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .section-title i {
+        color: #00A65A;
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 0.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 166, 90, 0.2);
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+    
+    .info-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .info-item:hover {
+        background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+        border-color: #004C99;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 76, 153, 0.2);
+    }
+    
+    .info-label {
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        letter-spacing: 1px;
+    }
+    
+    .info-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #004C99;
+        text-shadow: 2px 2px 4px rgba(0, 76, 153, 0.1);
+    }
+    
+    .description-text {
+        color: #666;
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .review-item {
+        border-bottom: 1px solid #E8E8E8;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .review-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .reviewer-name {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .review-date {
+        font-size: 0.9rem;
+        color: #999;
+    }
+    
+    .review-stars {
+        color: #FFB800;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .review-text {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .write-review-btn {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+    
+    .write-review-btn:hover {
+        background-color: #008a4a;
+    }
+    
+    .breadcrumb {
+        background: transparent;
+        margin: 1rem 0;
+    }
+    
+    .breadcrumb a {
+        color: #004C99;
+    }
+    
+    .verification-badge {
+        background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+        border-left: 6px solid #00A65A;
+        position: relative;
+    }
+    
+    .verification-badge::after {
+        content: '✓';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 4rem;
+        color: #00A65A;
+        opacity: 0.1;
+        font-weight: bold;
+    }
+    
+    .verification-badge i {
+        font-size: 3.5rem;
+        color: #00A65A;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .verification-badge h4 {
+        color: #004C99;
+        margin-bottom: 0.75rem;
+        font-weight: 800;
+        font-size: 1.5rem;
+    }
+    
+    .verification-badge p {
+        font-weight: 500;
+    }
+
+    .action-btn-large {
+        width: 100%;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #00A65A 0%, #008a4a 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 4px 15px rgba(0, 166, 90, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .action-btn-large::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .action-btn-large:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .action-btn-large:hover {
+        background: linear-gradient(135deg, #008a4a 0%, #00A65A 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 166, 90, 0.4);
+        color: white;
+    }
+    
+    .action-btn-large i {
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .action-btn-large:hover i {
+        transform: scale(1.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Hero Section -->
+<div class="profile-hero"></div>
+
+<div class="container py-4">
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if provider_profile and provider_profile.profile_picture %}
+                    <img src="{{ provider_profile.profile_picture.url }}" alt="Profile picture">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+            
+            <div class="profile-info">
+                <h2>{{ provider_profile.company_name }}</h2>
+                <p><strong>Service Type:</strong> {{ provider_profile.get_service_type_display }}</p>
+                <p><strong>Location:</strong> {{ provider_profile.city }}, {{ provider_profile.state }}</p>
+                <p><strong>Experience:</strong> {{ provider_profile.years_experience }}+ years</p>
+            </div>
+            
+            <div class="profile-rating">
+                <div class="rating-text">
+                    <span>{{ provider_profile.rating|default:"0" }}</span>/5
+                </div>
+                <div class="rating-stars">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= provider_profile.rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="rating-text">
+                    <span>{{ provider_profile.total_reviews }}</span> reviews
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <a href="/requests/create/" class="action-btn-large">
+                <i class="fas fa-paper-plane"></i> Send Service Request
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="/" class="action-btn-large" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);">
+                <i class="fas fa-search"></i> Browse Services
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- About Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-briefcase"></i> About Your Business
+                </h3>
+                <p class="description-text">
+                    {{ provider_profile.bio|default:"No business description added yet." }}
+                </p>
+            </div>
+
+            <!-- Company Info Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-building"></i> Company Details
+                </h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Services Completed</div>
+                        <div class="info-value">{{ provider_profile.services_rendered }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Total Reviews</div>
+                        <div class="info-value">{{ provider_profile.total_reviews }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Experience</div>
+                        <div class="info-value">{{ provider_profile.years_experience }}+</div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Phone</h6>
+                        <p class="fs-5 fw-bold">{{ provider_profile.phone }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Service Type</h6>
+                        <p class="fs-5 fw-bold">{{ provider_profile.get_service_type_display }}</p>
+                    </div>
+                </div>
+
+                <h6 class="text-muted mb-2 mt-3">Business Address</h6>
+                <p class="fs-5">
+                    {{ provider_profile.business_address }}<br>
+                    <small class="text-muted">{{ provider_profile.city }}, {{ provider_profile.state }} {{ provider_profile.zip_code }}</small>
+                </p>
+            </div>
+
+            <!-- Edit Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-edit"></i> Profile Management
+                </h3>
+                <p class="description-text mb-3">Manage your professional profile and keep your information up to date.</p>
+                <a href="#" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="fas fa-edit me-2"></i> Edit Profile
+                </a>
+                <a href="#" class="btn btn-secondary btn-lg ms-2" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">
+                    <i class="fas fa-camera me-2"></i> Upload Photo
+                </a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Info Card -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Quick Info
+                </h3>
+                <div style="text-align: left;">
+                    <div class="info-label mb-3">Account Status</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">
+                        {% if provider_profile.is_verified %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Verified</span>
+                        {% else %}
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> Pending Review</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mb-3">Email</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.email }}</div>
+
+                    <div class="info-label mb-3">Username</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.username }}</div>
+
+                    <div class="info-label mb-3">Member Since</div>
+                    <div style="color: #333; font-weight: 600;">{{ user.date_joined|date:"F d, Y" }}</div>
+                </div>
+            </div>
+
+            <!-- Verification Badge -->
+            <div class="section-card verification-badge text-center">
+                <div>
+                    <i class="fas fa-shield-alt"></i>
+                    <h4>Verified Professional</h4>
+                    <p style="color: #666; font-size: 0.9rem; margin-bottom: 0;">
+                        Your profile has been verified and is visible to customers on Local Pro Connect.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Sign Out Section -->
+            <div class="section-card text-center">
+                <a href="/accounts/logout/" class="btn btn-outline-danger btn-lg w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Your Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editProfileForm" method="POST" action="/accounts/api/provider/profile/">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- Company Name -->
+                    <div class="mb-3">
+                        <label for="editCompanyName" class="form-label">Company Name</label>
+                        <input type="text" class="form-control" id="editCompanyName" name="company_name" value="{{ provider_profile.company_name|default:'' }}">
+                    </div>
+
+                    <!-- Service Type -->
+                    <div class="mb-3">
+                        <label for="editServiceType" class="form-label">Service Type</label>
+                        <select class="form-select" id="editServiceType" name="service_type">
+                            <option value="">Select a service type</option>
+                            <option value="plumbing" {% if provider_profile.service_type == 'plumbing' %}selected{% endif %}>Plumbing</option>
+                            <option value="electrical" {% if provider_profile.service_type == 'electrical' %}selected{% endif %}>Electrical</option>
+                            <option value="carpentry" {% if provider_profile.service_type == 'carpentry' %}selected{% endif %}>Carpentry</option>
+                            <option value="cleaning" {% if provider_profile.service_type == 'cleaning' %}selected{% endif %}>Cleaning</option>
+                            <option value="tutoring" {% if provider_profile.service_type == 'tutoring' %}selected{% endif %}>Tutoring</option>
+                            <option value="hvac" {% if provider_profile.service_type == 'hvac' %}selected{% endif %}>HVAC</option>
+                            <option value="roofing" {% if provider_profile.service_type == 'roofing' %}selected{% endif %}>Roofing</option>
+                            <option value="landscaping" {% if provider_profile.service_type == 'landscaping' %}selected{% endif %}>Landscaping</option>
+                            <option value="painting" {% if provider_profile.service_type == 'painting' %}selected{% endif %}>Painting</option>
+                            <option value="other" {% if provider_profile.service_type == 'other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="editPhone" name="phone" value="{{ provider_profile.phone|default:'' }}">
+                    </div>
+
+                    <!-- Business Address -->
+                    <div class="mb-3">
+                        <label for="editAddress" class="form-label">Business Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="business_address" value="{{ provider_profile.business_address|default:'' }}">
+                    </div>
+
+                    <!-- City -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editCity" class="form-label">City</label>
+                            <input type="text" class="form-control" id="editCity" name="city" value="{{ provider_profile.city|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editState" class="form-label">State</label>
+                            <input type="text" class="form-control" id="editState" name="state" value="{{ provider_profile.state|default:'' }}">
+                        </div>
+                    </div>
+
+                    <!-- Zip Code -->
+                    <div class="mb-3">
+                        <label for="editZip" class="form-label">Zip Code</label>
+                        <input type="text" class="form-control" id="editZip" name="zip_code" value="{{ provider_profile.zip_code|default:'' }}">
+                    </div>
+
+                    <!-- Years of Experience -->
+                    <div class="mb-3">
+                        <label for="editYears" class="form-label">Years of Experience</label>
+                        <input type="number" class="form-control" id="editYears" name="years_experience" value="{{ provider_profile.years_experience|default:0 }}" min="0">
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="mb-3">
+                        <label for="editBio" class="form-label">Professional Bio</label>
+                        <textarea class="form-control" id="editBio" name="bio" rows="4">{{ provider_profile.bio|default:'' }}</textarea>
+                    </div>
+
+                    <!-- Service Description -->
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Service Description</label>
+                        <textarea class="form-control" id="editDescription" name="service_description" rows="4">{{ provider_profile.service_description|default:'' }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="uploadPhotoForm" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="profilePhoto" class="form-label">Choose Photo</label>
+                        <input type="file" class="form-control" id="profilePhoto" name="profile_picture" accept="image/*" required>
+                        <small class="text-muted">Allowed formats: JPG, PNG, GIF. Max size: 5MB</small>
+                    </div>
+                    <div id="photoPreview" class="text-center" style="display: none; margin-top: 15px;">
+                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; max-height: 300px;">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="uploadPhotoBtn">
+                        <i class="fas fa-upload me-2"></i>Upload Photo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Request Service Modal -->
+<div class="modal fade" id="requestServiceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="requestServiceForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="serviceDescription" class="form-label">Service Description</label>
+                        <textarea class="form-control" id="serviceDescription" name="description" rows="4" placeholder="Describe what service you need..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="preferredDate" class="form-label">Preferred Date</label>
+                        <input type="date" class="form-control" id="preferredDate" name="preferred_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="preferredTime" class="form-label">Preferred Time</label>
+                        <input type="time" class="form-control" id="preferredTime" name="preferred_time">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactPhone" class="form-label">Your Contact Phone</label>
+                        <input type="tel" class="form-control" id="contactPhone" name="contact_phone" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="submitRequestBtn">
+                        <i class="fas fa-paper-plane me-2"></i>Send Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Edit Profile Form Handler
+document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const saveBtn = document.getElementById('saveProfileBtn');
+    
+    // Disable button during submission
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    
+    fetch('/accounts/api/provider/profile/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            alert('Profile updated successfully!');
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+            // Reload page to show updated data
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to update profile'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving your profile');
+    })
+    .finally(() => {
+        // Re-enable button
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+    });
+});
+
+// Photo Preview Handler
+document.getElementById('profilePhoto').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('previewImg').src = event.target.result;
+            document.getElementById('photoPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// Upload Photo Form Handler
+document.getElementById('uploadPhotoForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const uploadBtn = document.getElementById('uploadPhotoBtn');
+    
+    uploadBtn.disabled = true;
+    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+    
+    fetch('/accounts/api/provider/profile/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Photo uploaded successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('uploadPhotoModal')).hide();
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to upload photo'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while uploading');
+    })
+    .finally(() => {
+        uploadBtn.disabled = false;
+        uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Photo';
+    });
+});
+
+// Request Service Form Handler
+document.getElementById('requestServiceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = document.getElementById('submitRequestBtn');
+    
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+    
+    fetch('/accounts/api/service-request/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Service request sent successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('requestServiceModal')).hide();
+            document.getElementById('requestServiceForm').reset();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to send request'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while sending your request');
+    })
+    .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Send Request';
+    });
+});
+</script>
+
+{% endblock %}

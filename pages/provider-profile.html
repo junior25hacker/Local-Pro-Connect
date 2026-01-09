@@ -63,6 +63,13 @@
             justify-content: center;
             font-size: 3rem;
             color: white;
+            overflow: hidden;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         @media (max-width: 768px) {
@@ -198,68 +205,27 @@
             font-size: 1.05rem;
         }
         
-        .review-item {
-            border-bottom: 1px solid #E8E8E8;
-            padding-bottom: 1.5rem;
-            margin-bottom: 1.5rem;
+        .verification-badge {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            border-left: 4px solid #00A65A;
         }
-        
-        .review-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
+
+        .verification-badge i {
+            font-size: 2.5rem;
+            color: #00A65A;
+            margin-bottom: 1rem;
         }
-        
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        .verification-badge h4 {
+            color: #004C99;
             margin-bottom: 0.5rem;
         }
-        
-        .reviewer-name {
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .review-date {
-            font-size: 0.9rem;
-            color: #999;
-        }
-        
-        .review-stars {
-            color: #FFB800;
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .review-text {
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        .write-review-btn {
-            width: 100%;
-            padding: 1rem;
-            background-color: #00A65A;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 1rem;
-        }
-        
-        .write-review-btn:hover {
-            background-color: #008a4a;
-        }
-        
+
         .breadcrumb {
             background: transparent;
             margin: 1rem 0;
         }
-        
+
         .breadcrumb a {
             color: #004C99;
         }
@@ -278,10 +244,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="search.html">Search</a>
+                        <a class="nav-link" href="search.html">Browse Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.html">Login</a>
+                        <a class="nav-link" href="provider-profile.html">My Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Logout</a>
                     </li>
                 </ul>
             </div>
@@ -293,13 +262,12 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="search.html">Search Results</a></li>
+                <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
                 <li class="breadcrumb-item active" id="breadcrumbName">Professional Profile</li>
             </ol>
         </nav>
 
         <!-- Profile Header Card -->
-        <!-- BACKEND: Fetch provider data from /api/providers/:id endpoint -->
         <div class="profile-header-card">
             <div class="profile-header">
                 <div class="profile-avatar">
@@ -307,19 +275,21 @@
                 </div>
                 
                 <div class="profile-info">
-                    <h2 id="profName">John's Plumbing Services</h2>
-                    <p><strong>Service Type:</strong> <span id="profService">Plumbing</span></p>
-                    <p><strong>Location:</strong> <span id="profLocation">Downtown, City</span></p>
-                    <p><strong>Experience:</strong> <span id="profExperience">20+ years</span></p>
+                    <h2 id="profName">Professional Services</h2>
+                    <p><strong>Service Type:</strong> <span id="profService">Service</span></p>
+                    <p><strong>Location:</strong> <span id="profLocation">City, State</span></p>
+                    <p><strong>Experience:</strong> <span id="profExperience">0+ years</span></p>
                 </div>
                 
                 <div class="profile-rating">
                     <div class="rating-text">
-                        <span id="profRating">4.8</span>/5
+                        <span id="profRating">0</span>/5
                     </div>
-                    <div class="rating-stars" id="profStars"></div>
+                    <div class="rating-stars" id="profStars">
+                        <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                    </div>
                     <div class="rating-text">
-                        <span id="profReviewCount">47</span> reviews
+                        <span id="profReviewCount">0</span> reviews
                     </div>
                 </div>
             </div>
@@ -328,114 +298,81 @@
         <!-- CTA Section -->
         <div class="row mb-4">
             <div class="col-md-8">
-                <a href="tel:+15551234567" class="call-btn-large">
-                    <i class="fas fa-phone"></i> Call Now: (555) 123-4567
+                <a href="tel:" id="callBtn" class="call-btn-large">
+                    <i class="fas fa-phone"></i> Call Now
                 </a>
-                <!-- BACKEND: Sprint 3 Feature - Make phone call via tel: link (no backend needed for this) -->
             </div>
             <div class="col-md-4">
-                <a href="#" class="call-btn-large" style="background-color: #004C99; margin-bottom: 1rem;">
+                <a href="#" class="call-btn-large" style="background-color: #004C99;">
                     <i class="fas fa-message"></i> Message
                 </a>
-                <!-- BACKEND: Sprint 3 - Send direct message to professional -->
             </div>
         </div>
 
         <div class="row">
             <!-- Main Content -->
             <div class="col-lg-8">
-                <!-- Description Section -->
+                <!-- About Section -->
                 <div class="section-card">
                     <h3 class="section-title">
-                        <i class="fas fa-briefcase"></i> About This Professional
+                        <i class="fas fa-briefcase"></i> About Your Business
                     </h3>
                     <p class="description-text" id="profDescription">
-                        20+ years of professional plumbing experience. We specialize in residential and commercial plumbing services, from routine maintenance to emergency repairs. Our team is licensed, insured, and committed to quality workmanship.
+                        Welcome to your professional profile.
                     </p>
-                    <!-- BACKEND: Populate from provider profile in database -->
                 </div>
 
-                <!-- Services Section -->
+                <!-- Company Info Section -->
                 <div class="section-card">
                     <h3 class="section-title">
-                        <i class="fas fa-tools"></i> Services Offered
+                        <i class="fas fa-building"></i> Company Details
                     </h3>
-                    <div id="servicesList">
-                        <ul style="list-style: none; padding: 0; color: #666;">
-                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Emergency Plumbing Repairs</li>
-                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Pipe Installation & Replacement</li>
-                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Water Heater Services</li>
-                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Drain Cleaning</li>
-                            <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Leak Detection</li>
-                        </ul>
-                    </div>
-                    <!-- BACKEND: Populate from provider service list in database -->
-                </div>
-
-                <!-- Reviews Section -->
-                <div class="section-card">
-                    <h3 class="section-title">
-                        <i class="fas fa-star"></i> Customer Reviews
-                    </h3>
-                    <!-- BACKEND: Fetch reviews from /api/reviews?providerId=:id endpoint -->
-                    <!-- BACKEND: Display average rating and all individual reviews -->
-                    
-                    <div id="reviewsList">
-                        <!-- Reviews will be populated here -->
-                        <div class="review-item">
-                            <div class="review-header">
-                                <span class="reviewer-name">Sarah Johnson</span>
-                                <span class="review-date">2 weeks ago</span>
-                            </div>
-                            <div class="review-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                5.0 stars
-                            </div>
-                            <p class="review-text">Excellent service! John arrived on time and fixed our leaking pipe in minutes. Very professional and friendly. Highly recommend!</p>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Services Completed</div>
+                            <div class="info-value" id="servicesRendered">0</div>
                         </div>
-
-                        <div class="review-item">
-                            <div class="review-header">
-                                <span class="reviewer-name">Mike Chen</span>
-                                <span class="review-date">1 month ago</span>
-                            </div>
-                            <div class="review-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                                4.5 stars
-                            </div>
-                            <p class="review-text">Great work on the water heater replacement. Price was fair and the job was completed quickly.</p>
+                        <div class="info-item">
+                            <div class="info-label">Total Reviews</div>
+                            <div class="info-value" id="totalReviews">0</div>
                         </div>
-
-                        <div class="review-item">
-                            <div class="review-header">
-                                <span class="reviewer-name">Lisa Martinez</span>
-                                <span class="review-date">1 month ago</span>
-                            </div>
-                            <div class="review-stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                5.0 stars
-                            </div>
-                            <p class="review-text">Called for emergency pipe burst. John came within 30 minutes and saved us from disaster. Amazing response time and quality work.</p>
+                        <div class="info-item">
+                            <div class="info-label">Experience</div>
+                            <div class="info-value" id="yearsExp">0+</div>
                         </div>
                     </div>
 
-                    <button class="write-review-btn" id="writeReviewBtn">
-                        <i class="fas fa-pen me-2"></i> Write a Review
-                    </button>
-                    <!-- BACKEND: Sprint 2 Feature - Submit review with rating (1-5 stars) and comment text -->
-                    <!-- BACKEND: POST to /api/reviews endpoint with {providerId, rating, reviewText, userId} -->
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Phone</h6>
+                            <p class="fs-5 fw-bold" id="profPhone">Not set</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Service Type</h6>
+                            <p class="fs-5 fw-bold" id="profServiceType">Not set</p>
+                        </div>
+                    </div>
+
+                    <h6 class="text-muted mb-2 mt-3">Business Address</h6>
+                    <p class="fs-5" id="profAddress">
+                        Not set
+                    </p>
+                </div>
+
+                <!-- Profile Management Section -->
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <i class="fas fa-edit"></i> Profile Management
+                    </h3>
+                    <p class="description-text mb-3">Manage your professional profile and keep your information up to date.</p>
+                    <a href="#" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-2"></i> Edit Profile
+                    </a>
+                    <a href="#" class="btn btn-secondary btn-lg ms-2" data-bs-toggle="modal" data-bs-target="#uploadPhotoModal">
+                        <i class="fas fa-camera me-2"></i> Upload Photo
+                    </a>
                 </div>
             </div>
 
@@ -446,36 +383,75 @@
                     <h3 class="section-title">
                         <i class="fas fa-info-circle"></i> Quick Info
                     </h3>
-                    <div class="info-grid" style="grid-template-columns: 1fr;">
-                        <div class="info-item" style="text-align: left;">
-                            <div class="info-label">Service Area</div>
-                            <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">Within 15 km of downtown</div>
-
-                            <div class="info-label">Response Time</div>
-                            <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">Usually responds within 1 hour</div>
-
-                            <div class="info-label">Hours</div>
-                            <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">Available 24/7</div>
-
-                            <div class="info-label">Licensed & Insured</div>
-                            <div style="color: #00A65A; font-weight: 600;">
-                                <i class="fas fa-check-circle me-2"></i>Yes
-                            </div>
+                    <div style="text-align: left;">
+                        <div class="info-label mb-3">Account Status</div>
+                        <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">
+                            <span class="badge bg-success" id="verifiedBadge"><i class="fas fa-check-circle"></i> Verified</span>
                         </div>
+
+                        <div class="info-label mb-3">Email</div>
+                        <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;" id="profEmail">Not set</div>
+
+                        <div class="info-label mb-3">Username</div>
+                        <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;" id="profUsername">Not set</div>
+
+                        <div class="info-label mb-3">Member Since</div>
+                        <div style="color: #333; font-weight: 600;" id="profJoined">Not set</div>
                     </div>
-                    <!-- BACKEND: Populate from provider profile in database -->
                 </div>
 
                 <!-- Verification Badge -->
-                <div class="section-card" style="background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%); border-left: 4px solid #00A65A;">
-                    <div style="text-align: center;">
-                        <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: #00A65A; margin-bottom: 1rem;"></i>
-                        <h4 style="color: #004C99; margin-bottom: 0.5rem;">Verified Professional</h4>
+                <div class="section-card verification-badge text-center">
+                    <div>
+                        <i class="fas fa-shield-alt"></i>
+                        <h4>Verified Professional</h4>
                         <p style="color: #666; font-size: 0.9rem; margin-bottom: 0;">
-                            This professional has been verified by our team and maintains a high reputation on Local Pro Connect.
+                            Your profile has been verified and is visible to customers on Local Pro Connect.
                         </p>
-                        <!-- BACKEND: Pulled from admin verification status -->
                     </div>
+                </div>
+
+                <!-- Sign Out Section -->
+                <div class="section-card text-center">
+                    <a href="#" class="btn btn-outline-danger btn-lg w-100" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Edit profile functionality coming soon.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Photo Modal -->
+    <div class="modal fade" id="uploadPhotoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Profile Photo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Photo upload functionality coming soon.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -484,84 +460,101 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Profile Script -->
     <script>
-        // Get provider ID from URL query parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const providerId = urlParams.get('id');
-        
-        // BACKEND: Fetch provider data from /api/providers/:id endpoint
-        // Expected response: {
-        //     id: string,
-        //     name: string,
-        //     serviceType: string,
-        //     description: string,
-        //     phone: string,
-        //     address: string,
-        //     experience: string,
-        //     rating: number (from Sprint 2),
-        //     reviewCount: number,
-        //     services: Array<string>,
-        //     verified: boolean
-        // }
-        
-        function loadProviderData(providerId) {
-            // Mock data - replace with actual API call
-            const mockProvider = {
-                id: 1,
-                name: "John's Plumbing Services",
-                serviceType: 'Plumbing',
-                description: "20+ years of professional plumbing experience. We specialize in residential and commercial plumbing services, from routine maintenance to emergency repairs. Our team is licensed, insured, and committed to quality workmanship.",
-                phone: '+1 (555) 123-4567',
-                address: 'Downtown, City',
-                experience: '20+ years',
-                rating: 4.8,
-                reviewCount: 47,
-                services: [
-                    'Emergency Plumbing Repairs',
-                    'Pipe Installation & Replacement',
-                    'Water Heater Services',
-                    'Drain Cleaning',
-                    'Leak Detection'
-                ],
-                verified: true
-            };
-            
-            // Populate provider information
-            document.getElementById('profName').textContent = mockProvider.name;
-            document.getElementById('profService').textContent = mockProvider.serviceType;
-            document.getElementById('profLocation').textContent = mockProvider.address;
-            document.getElementById('profExperience').textContent = mockProvider.experience;
-            document.getElementById('profRating').textContent = mockProvider.rating.toFixed(1);
-            document.getElementById('profReviewCount').textContent = mockProvider.reviewCount;
-            document.getElementById('profDescription').textContent = mockProvider.description;
-            document.getElementById('breadcrumbName').textContent = mockProvider.name;
-            
-            // Update phone number link
-            document.querySelector('.call-btn-large').href = `tel:${mockProvider.phone}`;
-            document.querySelector('.call-btn-large').innerHTML = `
-                <i class="fas fa-phone"></i> Call Now: ${mockProvider.phone}
-            `;
-            
-            // Generate stars
-            const rating = mockProvider.rating;
-            const starsHtml = generateStars(rating);
-            document.getElementById('profStars').innerHTML = starsHtml;
-            
-            // Populate services list
-            const servicesList = document.getElementById('servicesList');
-            servicesList.innerHTML = '<ul style="list-style: none; padding: 0; color: #666;">';
-            mockProvider.services.forEach(service => {
-                servicesList.innerHTML += `
-                    <li style="padding: 0.5rem 0;">
-                        <i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>
-                        ${service}
-                    </li>
-                `;
-            });
-            servicesList.innerHTML += '</ul>';
+        // Load provider profile data from Django backend
+        async function loadProviderProfile() {
+            try {
+                const response = await fetch('/api/provider/profile/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/accounts/register/provider/';
+                        return;
+                    }
+                    throw new Error('Failed to load profile');
+                }
+
+                const data = await response.json();
+                populateProviderProfile(data);
+            } catch (error) {
+                console.error('Error:', error);
+                loadDemoProviderData();
+            }
         }
-        
+
+        function populateProviderProfile(data) {
+            // Company Info
+            document.getElementById('profName').textContent = data.company_name || 'Professional Services';
+            document.getElementById('profService').textContent = data.service_type_display || 'Service';
+            document.getElementById('profLocation').textContent = `${data.city || 'City'}, ${data.state || 'State'}`;
+            document.getElementById('profExperience').textContent = `${data.years_experience || 0}+ years`;
+            document.getElementById('breadcrumbName').textContent = data.company_name || 'Professional Profile';
+            
+            // Rating
+            const rating = data.rating || 0;
+            document.getElementById('profRating').textContent = rating.toFixed(1);
+            document.getElementById('profReviewCount').textContent = data.total_reviews || 0;
+            document.getElementById('profStars').innerHTML = generateStars(rating);
+            
+            // Description
+            document.getElementById('profDescription').textContent = data.bio || 'Welcome to your professional profile.';
+            
+            // Stats
+            document.getElementById('servicesRendered').textContent = data.services_rendered || 0;
+            document.getElementById('totalReviews').textContent = data.total_reviews || 0;
+            document.getElementById('yearsExp').textContent = `${data.years_experience || 0}+`;
+            
+            // Contact
+            document.getElementById('profPhone').textContent = data.phone || 'Not set';
+            document.getElementById('callBtn').href = `tel:${data.phone || ''}`;
+            document.getElementById('callBtn').textContent = data.phone ? `Call Now: ${data.phone}` : 'Call Now';
+            
+            // Address
+            document.getElementById('profServiceType').textContent = data.service_type_display || 'Not set';
+            document.getElementById('profAddress').textContent = data.business_address ? 
+                `${data.business_address}<br><small class="text-muted">${data.city}, ${data.state} ${data.zip_code}</small>` : 
+                'Not set';
+            
+            // Account Info
+            document.getElementById('profEmail').textContent = data.email || 'Not set';
+            document.getElementById('profUsername').textContent = data.username || 'Not set';
+            document.getElementById('profJoined').textContent = formatDate(data.date_joined) || 'Not set';
+            
+            // Verification Status
+            const badgeText = data.is_verified ? '<i class="fas fa-check-circle"></i> Verified' : '<i class="fas fa-clock"></i> Pending Review';
+            const badgeClass = data.is_verified ? 'bg-success' : 'bg-warning';
+            document.getElementById('verifiedBadge').innerHTML = badgeText;
+            document.getElementById('verifiedBadge').className = `badge ${badgeClass}`;
+        }
+
+        function loadDemoProviderData() {
+            const demoProvider = {
+                company_name: 'Demo Services',
+                service_type_display: 'Professional Services',
+                city: 'San Francisco',
+                state: 'CA',
+                years_experience: 5,
+                rating: 4.5,
+                total_reviews: 10,
+                bio: 'Welcome to your professional profile on Local Pro Connect.',
+                services_rendered: 25,
+                phone: '(555) 123-4567',
+                zip_code: '94102',
+                business_address: '123 Professional Ave',
+                email: 'demo@example.com',
+                username: 'demoprovider',
+                is_verified: true,
+                date_joined: new Date().toISOString()
+            };
+            populateProviderProfile(demoProvider);
+        }
+
         function generateStars(rating) {
             const fullStars = Math.floor(rating);
             const hasHalfStar = rating % 1 >= 0.5;
@@ -575,23 +568,42 @@
                 starsHtml += '<i class="fas fa-star-half-alt"></i>';
             }
             
-            for (let i = Math.ceil(rating); i < 5; i++) {
+            const emptyStars = hasHalfStar ? 5 - Math.ceil(rating) : 5 - fullStars;
+            for (let i = 0; i < emptyStars; i++) {
                 starsHtml += '<i class="far fa-star"></i>';
             }
             
             return starsHtml;
         }
-        
-        // Load provider data on page load
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function logout() {
+            window.location.href = '/accounts/logout/';
+        }
+
+        // Load profile on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadProviderData(providerId || 1);
-        });
-        
-        // Write Review button handler
-        document.getElementById('writeReviewBtn').addEventListener('click', function() {
-            // BACKEND: Sprint 2 Feature - Show review form modal or navigate to review page
-            // For now, show a placeholder alert
-            alert('Review submission form coming in Sprint 2!\n\nYou will be able to rate from 1-5 stars and write a detailed review.');
+            loadProviderProfile();
         });
     </script>
 </body>

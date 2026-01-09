@@ -1,0 +1,18 @@
+Watching for file changes with StatReloader
+System check identified some issues:
+
+WARNINGS:
+?: (staticfiles.W004) The directory '/home/jh/Documents/ICTU/ICTU-intro_Software_Eng/LocaProConnect-WebAPP/Django/assets' in the STATICFILES_DIRS setting does not exist.
+
+System check identified 1 issue (0 silenced).
+[26/Dec/2025 15:14:32] "GET /admin/ HTTP/1.1" 302 0
+[26/Dec/2025 15:16:09] "GET /admin/ HTTP/1.1" 302 0
+[26/Dec/2025 15:16:17] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+[26/Dec/2025 15:16:24] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+[26/Dec/2025 15:16:46] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+[26/Dec/2025 15:16:47] "POST /admin/login/ HTTP/1.1" 302 0
+[26/Dec/2025 15:16:54] "GET /admin/ HTTP/1.1" 200 6097
+[26/Dec/2025 15:17:08] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+[26/Dec/2025 15:17:08] "GET /admin/login/?next=/admin/ HTTP/1.1" 200 4173
+[26/Dec/2025 15:17:09] "POST /admin/login/ HTTP/1.1" 302 0
+[26/Dec/2025 15:17:09] "GET /admin/ HTTP/1.1" 200 6097

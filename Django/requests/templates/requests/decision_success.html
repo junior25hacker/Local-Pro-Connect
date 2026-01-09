@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Decision Submitted{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if action == 'accepted' %}
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 64px;"></i>
+                        </div>
+                        <h1 class="card-title text-success mb-3">Request Accepted!</h1>
+                        <p class="lead">Thank you for accepting this service request.</p>
+                        <p class="text-muted">
+                            The customer has been notified of your acceptance and will be reaching out to you soon 
+                            to discuss the details and scheduling.
+                        </p>
+                    {% elif action == 'declined' %}
+                        <div class="mb-4">
+                            <i class="fas fa-times-circle text-danger" style="font-size: 64px;"></i>
+                        </div>
+                        <h1 class="card-title text-danger mb-3">Request Declined</h1>
+                        <p class="lead">Your decline has been recorded.</p>
+                        <p class="text-muted">
+                            The customer has been notified and will be exploring other service providers. 
+                            Thank you for letting us know!
+                        </p>
+                    {% endif %}
+
+                    <div class="alert alert-info mt-4">
+                        <strong>Request Details:</strong>
+                        <p><strong>Request ID:</strong> #{{ service_request.id }}</p>
+                        <p><strong>Service Type:</strong> {{ service_request.provider_name }}</p>
+                    </div>
+
+                    <div class="mt-5">
+                        <p class="text-muted mb-3">What would you like to do next?</p>
+                        <div class="d-grid gap-2 d-sm-flex justify-content-center">
+                            <a href="/" class="btn btn-primary btn-lg">
+                                <i class="fas fa-home"></i> Return to Home
+                            </a>
+                            <a href="https://locapro.com/requests/" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-list"></i> View All Requests
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f5f5f5;
+    }
+    .card {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Local Pro Connect</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        }
+        
+        .profile-hero {
+            background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 70px;
+        }
+        
+        .profile-header-card {
+            background: white;
+            border-radius: 12px;
+            margin-top: -30px;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .profile-header {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-header {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #004C99 0%, #00A65A 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            overflow: hidden;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+                font-size: 2.5rem;
+                margin: 0 auto;
+            }
+        }
+        
+        .profile-info h2 {
+            color: #004C99;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-info p {
+            color: #666;
+            margin: 0.25rem 0;
+        }
+        
+        .user-status-badge {
+            background: #E3F2FD;
+            color: #004C99;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .user-status-badge {
+                width: fit-content;
+                margin: 1rem auto;
+            }
+        }
+        
+        .call-btn-large {
+            width: 100%;
+            padding: 1rem;
+            background-color: #00A65A;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            margin-bottom: 1rem;
+        }
+        
+        .call-btn-large:hover {
+            background-color: #008a4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+            color: white;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            color: #004C99;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-title i {
+            color: #00A65A;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #004C99;
+        }
+        
+        .description-text {
+            color: #666;
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        
+        .welcome-badge {
+            background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+            border-left: 4px solid #00A65A;
+        }
+        
+        .tips-section {
+            background: linear-gradient(135deg, #F0F4C3 0%, #FFF9C4 100%);
+            border-left: 4px solid #FFC300;
+        }
+
+        .tips-section h4 {
+            color: #F57F17;
+            margin-bottom: 1rem;
+        }
+
+        .tips-section ul {
+            list-style: none;
+            padding: 0;
+            color: #666;
+        }
+
+        .tips-section li {
+            padding: 0.5rem 0;
+        }
+
+        .tips-section i.fa-check {
+            color: #00A65A;
+            margin-right: 0.75rem;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            margin: 1rem 0;
+        }
+
+        .breadcrumb a {
+            color: #004C99;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="../index.html">
+                <i class="fas fa-tools me-2"></i>Local Pro Connect
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="search.html">Search Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-profile.html">My Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Hero Section -->
+    <div class="profile-hero"></div>
+
+    <div class="container py-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+                <li class="breadcrumb-item active">My Profile</li>
+            </ol>
+        </nav>
+
+        <!-- Profile Header Card -->
+        <div class="profile-header-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                
+                <div class="profile-info">
+                    <h2 id="userName">John Doe</h2>
+                    <p><strong>Email:</strong> <span id="userEmail">john@example.com</span></p>
+                    <p><strong>Username:</strong> <span id="userUsername">johndoe</span></p>
+                    <p><strong>Member Since:</strong> <span id="userJoined">January 1, 2024</span></p>
+                </div>
+                
+                <div class="user-status-badge">
+                    <i class="fas fa-check-circle"></i>
+                    Active
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <a href="search.html" class="call-btn-large">
+                    <i class="fas fa-search"></i> Browse Services
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="#" class="call-btn-large" style="background-color: #004C99;">
+                    <i class="fas fa-bookmark"></i> Saved Services
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <!-- Welcome Section -->
+                <div class="section-card welcome-badge">
+                    <h3 class="section-title">
+                        <i class="fas fa-home"></i> Welcome!
+                    </h3>
+                    <p class="description-text">
+                        Your account is all set up and ready to go. Start browsing and booking local service professionals today.
+                    </p>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <i class="fas fa-user-circle"></i> Personal Information
+                    </h3>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">First Name</h6>
+                            <p class="fs-5 fw-bold" id="firstName">Not set</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Last Name</h6>
+                            <p class="fs-5 fw-bold" id="lastName">Not set</p>
+                        </div>
+                    </div>
+                    <h6 class="text-muted mb-2">Email</h6>
+                    <p class="fs-5" id="emailDisplay">john@example.com</p>
+                </div>
+
+                <!-- Address Information Section -->
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i> Address Information
+                    </h3>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Phone</h6>
+                            <p class="fs-5" id="userPhone">Not set</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">City</h6>
+                            <p class="fs-5" id="userCity">Not set</p>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">State</h6>
+                            <p class="fs-5" id="userState">Not set</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">ZIP Code</h6>
+                            <p class="fs-5" id="userZip">Not set</p>
+                        </div>
+                    </div>
+                    <h6 class="text-muted mb-2">Street Address</h6>
+                    <p class="fs-5" id="userAddress">Not set</p>
+                </div>
+
+                <!-- Browse Services Section -->
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <i class="fas fa-hammer"></i> Find Services
+                    </h3>
+                    <p class="description-text mb-3">
+                        Browse local professionals and book services directly through our platform. All professionals are verified and rated by customers.
+                    </p>
+                    <a href="search.html" class="btn btn-success btn-lg">
+                        <i class="fas fa-search me-2"></i> Browse All Services
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Quick Info Card -->
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <i class="fas fa-info-circle"></i> Quick Info
+                    </h3>
+                    <div style="text-align: left;">
+                        <div class="info-label mb-3">Account Status</div>
+                        <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Active</span>
+                        </div>
+
+                        <div class="info-label mb-3">Username</div>
+                        <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;" id="sidebarUsername">johndoe</div>
+
+                        <div class="info-label mb-3">Member Since</div>
+                        <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;" id="sidebarJoined">January 1, 2024</div>
+
+                        <div class="info-label mb-3">Account Type</div>
+                        <div style="color: #333; font-weight: 600;">
+                            <span class="badge bg-info">Service Seeker</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Guide -->
+                <div class="section-card tips-section">
+                    <h4>
+                        <i class="fas fa-lightbulb me-2"></i> Getting Started
+                    </h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i>Complete your profile</li>
+                        <li><i class="fas fa-check"></i>Browse service providers</li>
+                        <li><i class="fas fa-check"></i>Book a service</li>
+                        <li><i class="fas fa-check"></i>Leave a review</li>
+                    </ul>
+                </div>
+
+                <!-- Edit Profile Section -->
+                <div class="section-card">
+                    <h3 class="section-title">
+                        <i class="fas fa-edit"></i> Actions
+                    </h3>
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#editModal">
+                            <i class="fas fa-edit me-2"></i> Edit Profile
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-lg" onclick="logout()">
+                            <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Profile editing functionality coming soon.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Load user data from Django backend
+        async function loadUserProfile() {
+            try {
+                const response = await fetch('/api/user/profile/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/accounts/register/user/';
+                        return;
+                    }
+                    throw new Error('Failed to load profile');
+                }
+
+                const data = await response.json();
+                populateProfile(data);
+            } catch (error) {
+                console.error('Error:', error);
+                // Fallback to demo data if API not available
+                loadDemoData();
+            }
+        }
+
+        function populateProfile(data) {
+            // Populate user info
+            document.getElementById('userName').textContent = data.full_name || 'User';
+            document.getElementById('userEmail').textContent = data.email || '';
+            document.getElementById('userUsername').textContent = data.username || '';
+            document.getElementById('userJoined').textContent = formatDate(data.date_joined) || '';
+            
+            // First and Last Names
+            document.getElementById('firstName').textContent = data.first_name || 'Not set';
+            document.getElementById('lastName').textContent = data.last_name || 'Not set';
+            document.getElementById('emailDisplay').textContent = data.email || '';
+            
+            // Address info
+            document.getElementById('userPhone').textContent = data.phone || 'Not set';
+            document.getElementById('userCity').textContent = data.city || 'Not set';
+            document.getElementById('userState').textContent = data.state || 'Not set';
+            document.getElementById('userZip').textContent = data.zip_code || 'Not set';
+            document.getElementById('userAddress').textContent = data.address || 'Not set';
+            
+            // Sidebar
+            document.getElementById('sidebarUsername').textContent = data.username || '';
+            document.getElementById('sidebarJoined').textContent = formatDate(data.date_joined) || '';
+        }
+
+        function loadDemoData() {
+            // Demo data for testing
+            const demoUser = {
+                full_name: 'Demo User',
+                first_name: 'Demo',
+                last_name: 'User',
+                email: 'demo@example.com',
+                username: 'demouser',
+                phone: '(555) 123-4567',
+                city: 'San Francisco',
+                state: 'CA',
+                zip_code: '94102',
+                address: '123 Main Street',
+                date_joined: new Date().toISOString()
+            };
+            populateProfile(demoUser);
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function logout() {
+            // Logout functionality
+            window.location.href = '/accounts/logout/';
+        }
+
+        // Load profile on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserProfile();
+        });
+    </script>
+</body>
+</html>

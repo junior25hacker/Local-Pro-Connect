@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Request Acceptance{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title text-success mb-4">
+                        <i class="fas fa-check-circle"></i> Confirm Acceptance
+                    </h1>
+
+                    <div class="alert alert-info">
+                        <strong>Request Details:</strong>
+                        <p><strong>Request ID:</strong> #{{ service_request.id }}</p>
+                        <p><strong>From:</strong> {{ service_request.user.get_full_name|default:service_request.user.username }}</p>
+                        <p><strong>Service Type:</strong> {{ service_request.provider_name }}</p>
+                        <p><strong>Description:</strong> {{ service_request.description }}</p>
+                        {% if service_request.date_time %}
+                        <p><strong>Requested Date/Time:</strong> {{ service_request.date_time|date:"M d, Y H:i" }}</p>
+                        {% endif %}
+                        {% if service_request.price_range %}
+                        <p><strong>Price Range:</strong> {{ service_request.price_range }}</p>
+                        {% endif %}
+                        {% if service_request.urgent %}
+                        <p><span class="badge bg-danger">URGENT</span></p>
+                        {% endif %}
+                    </div>
+
+                    <p class="lead">Are you sure you want to accept this service request?</p>
+                    <p class="text-muted">Once you accept, the customer will be notified and you'll be able to discuss the details directly.</p>
+
+                    <form method="POST" class="mt-4">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-sm-flex justify-content-center">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-check"></i> Yes, Accept This Request
+                            </button>
+                            <a href="/" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

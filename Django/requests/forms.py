@@ -1,0 +1,141 @@
+from django import forms
+from django.core.exceptions import ValidationError
+from .models import ServiceRequest, PriceRange
+from accounts.models import ProviderProfile
+
+
+class ServiceRequestForm(forms.ModelForm):
+    """
+    Request form with provider selection options:
+    - provider_choice: preferred dropdown of providers (from ProviderProfile)
+    - provider_name: fallback free-text if provider is not listed
+    """
+    provider_choice = forms.ModelChoiceField(
+        queryset=ProviderProfile.objects.select_related("user").all(),
+        required=False,
+        empty_label="Select a provider (recommended)",
+        widget=forms.Select(attrs={"class": "input-select"}),
+        help_text="Choose a provider from the list, or enter a name below if not listed.",
+        label="Select Provider",
+    )
+
+    provider_name = forms.CharField(
+        max_length=255,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter provider name (fallback)...",
+                "class": "input-field",
+            }
+        ),
+        help_text="If you cannot find the provider in the list, enter their name here.",
+        label="Provider Name (fallback)",
+    )
+    
+    offered_price = forms.DecimalField(
+        required=False,
+        min_value=0,
+        max_digits=10,
+        decimal_places=2,
+        widget=forms.NumberInput(
+            attrs={
+                "placeholder": "Enter your offered price...",
+                "class": "input-field",
+                "step": "0.01",
+            }
+        ),
+        help_text="The price you're willing to pay for this service.",
+        label="Offered Price (optional)",
+    )
+
+    class Meta:
+        model = ServiceRequest
+        fields = [
+            "provider_choice",
+            "provider_name",
+            "description",
+            "offered_price",
+            "date_time",
+            "price_range",
+            "urgent",
+        ]
+
+        widgets = {
+            "description": forms.Textarea(
+                attrs={
+                    "placeholder": "Describe the problem...",
+                    "rows": 4,
+                    "class": "input-textarea",
+                }
+            ),
+            "date_time": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",
+                    "class": "input-field",
+                }
+            ),
+            "price_range": forms.Select(
+                attrs={
+                    "class": "input-select",
+                }
+            ),
+            "urgent": forms.CheckboxInput(
+                attrs={
+                    "class": "urgent-toggle",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Optional fields
+        self.fields["date_time"].required = False
+        self.fields["price_range"].required = False
+        # Populate price ranges
+        self.fields["price_range"].queryset = PriceRange.objects.all()
+        if hasattr(self.fields["price_range"], "empty_label"):
+            self.fields["price_range"].empty_label = "Select price range (optional)"
+
+    def clean(self):
+        cleaned = super().clean()
+        provider_choice = cleaned.get("provider_choice")
+        provider_name = (cleaned.get("provider_name") or "").strip()
+        if not provider_choice and not provider_name:
+            raise forms.ValidationError("Please select a provider or enter a provider name.")
+        
+        # Price validation: Check if offered_price meets provider's minimum
+        offered_price = cleaned.get("offered_price")
+        if provider_choice and offered_price is not None:
+            # Get provider's minimum acceptable price
+            provider_min_price = provider_choice.min_price
+            
+            if offered_price < provider_min_price:
+                provider_name_display = provider_choice.company_name or provider_choice.user.get_full_name() or provider_choice.user.username
+                raise ValidationError(
+                    f"The offered price (${offered_price:.2f}) is below the minimum required by "
+                    f"{provider_name_display} (${provider_min_price:.2f}). "
+                    f"Please offer at least ${provider_min_price:.2f} or select a different provider."
+                )
+        
+        return cleaned
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        provider_choice = self.cleaned_data.get("provider_choice")
+        provider_name = (self.cleaned_data.get("provider_name") or "").strip()
+
+        if provider_choice:
+            # Attach provider user and set a display name for convenience
+            instance.provider = provider_choice.user
+            display_name = (
+                getattr(provider_choice, "company_name", None)
+                or provider_choice.user.get_full_name()
+                or provider_choice.user.get_username()
+            )
+            instance.provider_name = display_name
+        else:
+            instance.provider_name = provider_name
+
+        if commit:
+            instance.save()
+        return instance

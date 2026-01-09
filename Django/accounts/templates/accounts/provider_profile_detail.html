@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Your Provider Profile - Local Pro Connect{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Profile Card -->
+        <div class="col-md-4">
+            <div class="card sticky-top">
+                <div class="card-body text-center">
+                    {% if provider_profile and provider_profile.profile_picture %}
+                        <img src="{{ provider_profile.profile_picture.url }}" alt="Profile picture" class="img-fluid rounded mb-3" style="max-height: 250px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded mb-3 p-5">
+                            <i class="fas fa-image fa-5x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <h5>{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted small">{{ provider_profile.company_name }}</p>
+                    
+                    {% if provider_profile.is_verified %}
+                        <span class="badge bg-success mb-2">
+                            <i class="fas fa-check-circle"></i> Verified
+                        </span>
+                    {% endif %}
+                    
+                    <div class="my-3">
+                        <div class="text-warning">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= provider_profile.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="text-dark ms-2">{{ provider_profile.rating }}</span>
+                        </div>
+                        <small class="text-muted">({{ provider_profile.total_reviews }} reviews)</small>
+                    </div>
+                    
+                    <hr>
+                    <div class="d-grid gap-2">
+                        <a href="#editProfile" class="btn btn-primary btn-sm">Edit Profile</a>
+                        <a href="#uploadPhoto" class="btn btn-outline-secondary btn-sm">Upload Photo</a>
+                        <a href="/accounts/logout/" class="btn btn-outline-danger btn-sm">Sign Out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Profile Information</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Company Name</h6>
+                            <p class="fs-5">{{ provider_profile.company_name }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Service Type</h6>
+                            <p class="fs-5">{{ provider_profile.get_service_type_display }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Phone</h6>
+                            <p class="fs-5">{{ provider_profile.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Years of Experience</h6>
+                            <p class="fs-5">{{ provider_profile.years_experience }} years</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="text-muted">Business Address</h6>
+                        <p class="fs-5">
+                            {{ provider_profile.business_address }}<br>
+                            {{ provider_profile.city }}, {{ provider_profile.state }} {{ provider_profile.zip_code }}
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="text-muted">Bio</h6>
+                        <p class="fs-5">{{ provider_profile.bio|default:"No bio added yet" }}</p>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h6 class="text-muted">Services Rendered</h6>
+                            <p class="fs-5 text-success">{{ provider_profile.services_rendered }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="text-muted">Total Reviews</h6>
+                            <p class="fs-5 text-info">{{ provider_profile.total_reviews }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <h6 class="text-muted">Status</h6>
+                            <p class="fs-5">
+                                {% if provider_profile.is_verified %}
+                                    <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Info -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Account Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Email</h6>
+                            <p class="fs-5">{{ user.email }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Username</h6>
+                            <p class="fs-5">{{ user.username }}</p>
+                        </div>
+                    </div>
+                    <p class="text-muted small">Account created: {{ user.date_joined|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

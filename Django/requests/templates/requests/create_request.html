@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Create Request{% endblock %}
+
+{% block content %}
+<div class="request-container">
+    <div class="request-card">
+        <div class="request-header">
+            <h1 class="request-title">🏠 Submit a Service Request</h1>
+            <p class="request-subtitle">Tell us what you need help with and connect with qualified professionals</p>
+            <div style="margin-top: 16px; padding: 12px; background: rgba(255, 195, 0, 0.2); border-radius: 8px; border: 2px solid rgba(255, 195, 0, 0.4);">
+                <strong>✨ New Professional Design Active!</strong>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="request-form">
+            {% csrf_token %}
+            
+            <!-- Provider Selection -->
+            <div class="form-section">
+                {% if form.non_field_errors %}
+                    <div class="form-errors">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <div class="form-group">
+                    <label for="{{ form.provider_choice.id_for_label }}" class="form-label">
+                        <span class="label-text">Select a Provider</span>
+                        <span class="label-optional">(choose from list)</span>
+                    </label>
+                    {{ form.provider_choice }}
+                    {% if form.provider_choice.errors %}
+                        <div class="field-error">{{ form.provider_choice.errors }}</div>
+                    {% endif %}
+                    <span class="form-hint">Can't find the provider? Enter a name below.</span>
+                </div>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label for="{{ form.provider_name.id_for_label }}" class="form-label">
+                        <span class="label-text">Provider Name (fallback)</span>
+                        <span class="label-optional">(optional)</span>
+                    </label>
+                    {{ form.provider_name }}
+                    {% if form.provider_name.errors %}
+                        <div class="field-error">{{ form.provider_name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        <span class="label-text">What do you need help with?</span>
+                        <span class="label-required">*</span>
+                    </label>
+                    {{ form.description }}
+                    <span class="form-hint">Describe your project or problem in detail</span>
+                </div>
+            </div>
+            
+            <!-- Date/Time -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="{{ form.date_time.id_for_label }}" class="form-label">
+                        <span class="label-text">When do you need it done?</span>
+                        <span class="label-optional">(optional)</span>
+                    </label>
+                    {{ form.date_time }}
+                    <span class="form-hint">Leave blank if timing is flexible</span>
+                </div>
+            </div>
+            
+            <!-- Price Range & Urgent Toggle (Side by side) -->
+            <div class="form-row">
+                <div class="form-section form-section-half">
+                    <div class="form-group">
+                        <label for="{{ form.price_range.id_for_label }}" class="form-label">
+                            <span class="label-text">Budget</span>
+                            <span class="label-optional">(optional)</span>
+                        </label>
+                        {{ form.price_range }}
+                    </div>
+                </div>
+                
+                <div class="form-section form-section-half">
+                    <div class="form-group urgent-group">
+                        <label class="form-label">
+                            <span class="label-text">Priority</span>
+                        </label>
+                        <div class="urgent-wrapper">
+                            {{ form.urgent }}
+                            <label for="{{ form.urgent.id_for_label }}" class="urgent-label">Mark as urgent</label>
+                        </div>
+                        <span class="form-hint">Professionals see urgent requests first</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Photos -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="id_photos" class="form-label">
+                        <span class="label-text">Add Photos</span>
+                        <span class="label-optional">(optional)</span>
+                    </label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="id_photos" name="photos" multiple class="file-input">
+                        <div class="file-input-placeholder">
+                            <svg class="upload-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span class="upload-text">Click to upload photos or drag and drop</span>
+                        </div>
+                    </div>
+                    <div class="photo-preview-container"></div>
+                    <span class="form-hint">Supports JPG and PNG formats. Multiple files accepted</span>
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <span>Submit Request</span>
+                </button>
+                <button type="button" class="btn btn-secondary btn-lg" onclick="history.back()">
+                    <span>Cancel</span>
+                </button>
+            </div>
+            
+            <p class="form-footer-note">
+                ✅ <strong>Professional Design v2.0</strong> — We'll help connect you with qualified professionals who match your needs.
+            </p>
+        </form>
+    </div>
+</div>
+
+<script src="{% static 'js/request.js' %}"></script>
+{% endblock %}

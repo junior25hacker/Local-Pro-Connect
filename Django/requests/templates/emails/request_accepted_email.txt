@@ -1,0 +1,45 @@
+Your Request Has Been Accepted!
+=================================
+
+Hi {{ customer_name }},
+
+Great news! {{ provider_name }} has accepted your service request.
+
+REQUEST DETAILS
+===============
+Request ID: #{{ request_id }}
+Service: {{ provider_name }}
+Description: {{ description }}
+
+{% if date_time %}
+Requested Date/Time: {{ date_time|date:"M d, Y H:i" }}
+{% endif %}
+
+{% if price_range %}
+Price Range: {{ price_range }}
+{% endif %}
+
+Accepted At: {{ accepted_at|date:"M d, Y H:i" }}
+
+SERVICE PROVIDER INFORMATION
+===========================
+{{ provider_name }}
+
+{% if provider_contact %}
+Contact: {{ provider_contact }}
+{% endif %}
+
+{% if provider_email %}
+Email: {{ provider_email }}
+{% endif %}
+
+You should expect to hear from the service provider soon to discuss scheduling and any additional details.
+
+If you need to contact them or manage your request, visit your dashboard:
+{{ dashboard_link }}
+
+Thank you for using LocaPro!
+
+---
+This is an automated email from LocaPro. Please do not reply to this email.
+© 2024 LocaPro. All rights reserved.

@@ -1,0 +1,78 @@
+New Service Request
+===================
+
+Hi {{ provider_name }},
+
+You have received a new service request from a customer. Please review the details below and decide whether to accept or decline this request.
+
+REQUEST DETAILS
+===============
+Request ID: #{{ request_id }}
+Description: {{ description }}
+
+{% if date_time %}
+Requested Date/Time: {{ date_time|date:"M d, Y g:i A" }}
+{% endif %}
+
+{% if price_range %}
+Budget: {{ price_range }}
+{% endif %}
+
+Status: {{ status|title }}
+
+{% if urgent %}
+Priority: URGENT
+{% endif %}
+
+DISTANCE INFORMATION
+====================
+{% if distance %}
+Distance between customer and provider: {{ distance|floatformat:1 }} miles
+
+{% if customer_address %}
+Customer Location: {{ customer_address }}
+{% endif %}
+
+{% if provider_address %}
+Your Location: {{ provider_address }}
+{% endif %}
+{% else %}
+Distance information not available
+{% endif %}
+
+CUSTOMER INFORMATION
+====================
+Name: {{ customer_name }}
+
+{% if customer_email %}
+Email: {{ customer_email }}
+{% endif %}
+
+PROVIDER INFORMATION
+====================
+Name: {{ provider_name }}
+
+{% if company_name %}
+Company: {{ company_name }}
+{% endif %}
+
+{% if service_type %}
+Service Type: {{ service_type }}
+{% endif %}
+
+WHAT WOULD YOU LIKE TO DO?
+==========================
+
+Accept this request:
+{{ accept_link }}
+
+Decline this request:
+{{ decline_link }}
+
+Note: Decision links expire in 7 days ({{ expires_at|date:"M d, Y H:i" }})
+
+If you have any questions about this request, you can contact the customer directly.
+
+---
+This is an automated email from Local Pro Connect. Please do not reply to this email.
+© 2024 Local Pro Connect. All rights reserved.

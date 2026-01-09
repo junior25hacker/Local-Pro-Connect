@@ -1,0 +1,792 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+        min-height: 100vh;
+    }
+    
+    .profile-hero {
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        color: white;
+        padding: 3rem 0 5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,106.7C1248,96,1344,96,1392,96L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        opacity: 0.3;
+    }
+    
+    .profile-header-card {
+        background: white;
+        border-radius: 16px;
+        margin-top: -60px;
+        margin-bottom: 2rem;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 76, 153, 0.15);
+        position: relative;
+        z-index: 10;
+        border-top: 4px solid #00A65A;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-header-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(0, 76, 153, 0.2);
+    }
+    
+    .profile-header {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 2rem;
+        align-items: center;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-header {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+    }
+    
+    .profile-avatar {
+        width: 140px;
+        height: 140px;
+        background: linear-gradient(135deg, #004C99 0%, #00A65A 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        color: white;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 76, 153, 0.3);
+        border: 5px solid white;
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 30px rgba(0, 76, 153, 0.4);
+    }
+    
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    @media (max-width: 768px) {
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            font-size: 3rem;
+            margin: 0 auto;
+        }
+    }
+    
+    .profile-info h2 {
+        color: #004C99;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .profile-info p {
+        color: #666;
+        margin: 0.25rem 0;
+    }
+    
+    .user-status-badge {
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        color: #00A65A;
+        padding: 1rem 1.75rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        box-shadow: 0 4px 15px rgba(0, 166, 90, 0.2);
+        border: 2px solid #00A65A;
+        transition: all 0.3s ease;
+    }
+    
+    .user-status-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 166, 90, 0.3);
+    }
+    
+    .user-status-badge i {
+        font-size: 1.3rem;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .user-status-badge {
+            width: fit-content;
+            margin: 1rem auto;
+            font-size: 1rem;
+            padding: 0.85rem 1.5rem;
+        }
+    }
+    
+    .call-btn-large {
+        width: 100%;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #00A65A 0%, #008a4a 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.15rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 166, 90, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .call-btn-large::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .call-btn-large:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .call-btn-large:hover {
+        background: linear-gradient(135deg, #008a4a 0%, #00A65A 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 166, 90, 0.4);
+        color: white;
+    }
+    
+    .call-btn-large i {
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .call-btn-large:hover i {
+        transform: scale(1.2);
+    }
+    
+    .action-btn-large {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 0.75rem;
+    }
+    
+    .action-btn-large:hover {
+        background-color: #008a4a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+        color: white;
+    }
+    
+    .section-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 76, 153, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .section-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, #004C99, #00A65A);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .section-card:hover {
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.15);
+        transform: translateY(-3px);
+    }
+    
+    .section-card:hover::before {
+        opacity: 1;
+    }
+    
+    .section-title {
+        color: #004C99;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .section-title i {
+        color: #00A65A;
+        font-size: 1.4rem;
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 0.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 166, 90, 0.2);
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    .info-item {
+        text-align: center;
+    }
+    
+    .info-label {
+        font-size: 0.9rem;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .info-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #004C99;
+    }
+    
+    .description-text {
+        color: #666;
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+    
+    .review-item {
+        border-bottom: 1px solid #E8E8E8;
+        padding-bottom: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .review-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .reviewer-name {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .review-date {
+        font-size: 0.9rem;
+        color: #999;
+    }
+    
+    .review-stars {
+        color: #FFB800;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .review-text {
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .write-review-btn {
+        width: 100%;
+        padding: 1rem;
+        background-color: #00A65A;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 1rem;
+    }
+    
+    .write-review-btn:hover {
+        background-color: #008a4a;
+    }
+    
+    .breadcrumb {
+        background: transparent;
+        margin: 1rem 0;
+    }
+    
+    .breadcrumb a {
+        color: #004C99;
+    }
+    
+    .welcome-badge {
+        background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+        border-left: 6px solid #00A65A;
+        position: relative;
+    }
+    
+    .welcome-badge::after {
+        content: '🎉';
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 2.5rem;
+        opacity: 0.2;
+    }
+    
+    .welcome-badge .section-title i {
+        color: #00A65A;
+    }
+    
+    .verification-badge {
+        background: linear-gradient(135deg, #E8F5E9 0%, #F1F8E9 100%);
+        border-left: 6px solid #00A65A;
+        position: relative;
+    }
+    
+    .verification-badge::after {
+        content: '✓';
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 4rem;
+        color: #00A65A;
+        opacity: 0.1;
+        font-weight: bold;
+    }
+    
+    .verification-badge i {
+        font-size: 3rem;
+        color: #00A65A;
+        margin-bottom: 1rem;
+        animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .verification-badge h4 {
+        color: #004C99;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .tips-section {
+        background: linear-gradient(135deg, #FFF9C4 0%, #FFF59D 100%);
+        border-left: 6px solid #FFC300;
+        position: relative;
+    }
+    
+    .tips-section::after {
+        content: '💡';
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 2.5rem;
+        opacity: 0.2;
+    }
+
+    .tips-section h4 {
+        color: #F57F17;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .tips-section ul {
+        list-style: none;
+        padding: 0;
+        color: #666;
+    }
+
+    .tips-section li {
+        padding: 0.75rem 0;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        padding-left: 0.5rem;
+    }
+    
+    .tips-section li:hover {
+        background: rgba(255, 195, 0, 0.1);
+        padding-left: 1rem;
+    }
+
+    .tips-section i.fa-check {
+        color: #00A65A;
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Profile Hero Section -->
+<div class="profile-hero"></div>
+
+<div class="container py-4">
+    <!-- Profile Header Card -->
+    <div class="profile-header-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            
+            <div class="profile-info">
+                <h2>{{ user.get_full_name|default:user.username }}</h2>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Member Since:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+            </div>
+            
+            <div class="user-status-badge">
+                <i class="fas fa-check-circle"></i>
+                Active
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <a href="/requests/create/" class="call-btn-large">
+                <i class="fas fa-paper-plane"></i> Request Service
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="/" class="call-btn-large" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);">
+                <i class="fas fa-search"></i> Browse Services
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Welcome Section -->
+            <div class="section-card welcome-badge">
+                <h3 class="section-title">
+                    <i class="fas fa-home"></i> Welcome, {{ user.first_name|default:user.username }}!
+                </h3>
+                <p class="description-text">
+                    Your account is all set up and ready to go. Start browsing and booking local service professionals today.
+                </p>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-user-circle"></i> Personal Information
+                </h3>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">First Name</h6>
+                        <p class="fs-5 fw-bold">{{ user.first_name|default:"Not set" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Last Name</h6>
+                        <p class="fs-5 fw-bold">{{ user.last_name|default:"Not set" }}</p>
+                    </div>
+                </div>
+                <h6 class="text-muted mb-2">Email</h6>
+                <p class="fs-5">{{ user.email }}</p>
+            </div>
+
+            <!-- Address Information Section -->
+            {% if user_profile %}
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i> Address Information
+                </h3>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">Phone</h6>
+                        <p class="fs-5">{{ user_profile.phone|default:"Not set" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">City</h6>
+                        <p class="fs-5">{{ user_profile.city|default:"Not set" }}</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">State</h6>
+                        <p class="fs-5">{{ user_profile.state|default:"Not set" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-2">ZIP Code</h6>
+                        <p class="fs-5">{{ user_profile.zip_code|default:"Not set" }}</p>
+                    </div>
+                </div>
+                <h6 class="text-muted mb-2">Street Address</h6>
+                <p class="fs-5">{{ user_profile.address|default:"Not set" }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Browse Services Section -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-hammer"></i> Find Services
+                </h3>
+                <p class="description-text mb-3">
+                    Browse local professionals and book services directly through our platform. All professionals are verified and rated by customers.
+                </p>
+                <a href="/" class="btn btn-success btn-lg">
+                    <i class="fas fa-search me-2"></i> Browse All Services
+                </a>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Info Card -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> Quick Info
+                </h3>
+                <div style="text-align: left;">
+                    <div class="info-label mb-3">Account Status</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">
+                        {% if user.is_active %}
+                            <span class="badge bg-success"><i class="fas fa-check-circle"></i> Active</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="fas fa-times-circle"></i> Inactive</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="info-label mb-3">Username</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.username }}</div>
+
+                    <div class="info-label mb-3">Member Since</div>
+                    <div style="color: #333; font-weight: 600; margin-bottom: 1.5rem;">{{ user.date_joined|date:"F d, Y" }}</div>
+
+                    <div class="info-label mb-3">Last Login</div>
+                    <div style="color: #333; font-weight: 600;">
+                        {% if user.last_login %}
+                            {{ user.last_login|date:"F d, Y \a\t g:i A" }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Guide -->
+            <div class="section-card" style="background: linear-gradient(135deg, #F0F4C3 0%, #FFF9C4 100%); border-left: 4px solid #FFC300;">
+                <h4 style="color: #F57F17; margin-bottom: 1rem;">
+                    <i class="fas fa-lightbulb me-2"></i> Getting Started
+                </h4>
+                <ul style="list-style: none; padding: 0; color: #666;">
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Complete your profile</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Browse service providers</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Book a service</li>
+                    <li style="padding: 0.5rem 0;"><i class="fas fa-check" style="color: #00A65A; margin-right: 0.75rem;"></i>Leave a review</li>
+                </ul>
+            </div>
+
+            <!-- Edit Profile Section -->
+            <div class="section-card text-center">
+                <button class="btn btn-primary btn-lg w-100 mb-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    <i class="fas fa-edit me-2"></i> Edit Profile
+                </button>
+                <a href="/accounts/logout/" class="btn btn-outline-danger btn-lg w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Your Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editProfileForm" method="POST" action="/accounts/api/user/profile/">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <!-- First Name -->
+                    <div class="mb-3">
+                        <label for="editFirstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="editFirstName" name="first_name" value="{{ user.first_name|default:'' }}">
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="mb-3">
+                        <label for="editLastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="editLastName" name="last_name" value="{{ user.last_name|default:'' }}">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" value="{{ user.email|default:'' }}">
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                        <label for="editPhone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="editPhone" name="phone" value="{{ user_profile.phone|default:'' }}">
+                    </div>
+
+                    <!-- Address -->
+                    <div class="mb-3">
+                        <label for="editAddress" class="form-label">Street Address</label>
+                        <input type="text" class="form-control" id="editAddress" name="address" value="{{ user_profile.address|default:'' }}">
+                    </div>
+
+                    <!-- City -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editCity" class="form-label">City</label>
+                            <input type="text" class="form-control" id="editCity" name="city" value="{{ user_profile.city|default:'' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editState" class="form-label">State</label>
+                            <input type="text" class="form-control" id="editState" name="state" value="{{ user_profile.state|default:'' }}">
+                        </div>
+                    </div>
+
+                    <!-- Zip Code -->
+                    <div class="mb-3">
+                        <label for="editZip" class="form-label">ZIP Code</label>
+                        <input type="text" class="form-control" id="editZip" name="zip_code" value="{{ user_profile.zip_code|default:'' }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const form = this;
+    const formData = new FormData(form);
+    const saveBtn = document.getElementById('saveProfileBtn');
+    
+    // Disable button during submission
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    
+    fetch('/accounts/api/user/profile/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            alert('Profile updated successfully!');
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+            // Reload page to show updated data
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Failed to update profile'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving your profile');
+    })
+    .finally(() => {
+        // Re-enable button
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+    });
+});
+</script>
+
+{% endblock %}

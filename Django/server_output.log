@@ -1,0 +1,28 @@
+Watching for file changes with StatReloader
+[03/Jan/2026 23:41:07] "GET / HTTP/1.1" 200 2720
+[03/Jan/2026 23:45:13] "GET /pages/login.html HTTP/1.1" 304 0
+Not Found: /assets/image/logo.png
+[03/Jan/2026 23:45:13] "GET /assets/image/logo.png HTTP/1.1" 404 6963
+[03/Jan/2026 23:45:13] "GET /accounts/auth/ HTTP/1.1" 200 0
+Not Found: /favicon.ico
+[03/Jan/2026 23:45:13] "GET /favicon.ico HTTP/1.1" 404 6933
+Not Found: /favicon.ico
+[03/Jan/2026 23:45:13] "GET /favicon.ico HTTP/1.1" 404 6933
+Not Found: /assets/image/logo.png
+[03/Jan/2026 23:52:28] "GET /assets/image/logo.png HTTP/1.1" 404 6963
+[03/Jan/2026 23:52:28] "GET /accounts/auth/ HTTP/1.1" 200 0
+Not Found: /favicon.ico
+[03/Jan/2026 23:52:28] "GET /favicon.ico HTTP/1.1" 404 6933
+Not Found: /assets/image/logo.png
+[03/Jan/2026 23:52:49] "GET /assets/image/logo.png HTTP/1.1" 404 6963
+[03/Jan/2026 23:52:49] "GET /accounts/auth/ HTTP/1.1" 200 0
+Not Found: /favicon.ico
+[03/Jan/2026 23:52:49] "GET /favicon.ico HTTP/1.1" 404 6933
+[03/Jan/2026 23:53:01] "POST /accounts/auth/ HTTP/1.1" 200 194
+[03/Jan/2026 23:53:06] "GET /accounts/profile/provider/ HTTP/1.1" 200 35707
+Not Found: /favicon.ico
+[03/Jan/2026 23:53:06] "GET /favicon.ico HTTP/1.1" 404 6933
+[03/Jan/2026 23:53:10] "GET /requests/create/ HTTP/1.1" 200 13153
+[03/Jan/2026 23:53:10] "GET /static/assets/image/Gemini_Generated_Image_10go4k10go4k10go.png HTTP/1.1" 404 2095
+Not Found: /favicon.ico
+[03/Jan/2026 23:53:10] "GET /favicon.ico HTTP/1.1" 404 6933

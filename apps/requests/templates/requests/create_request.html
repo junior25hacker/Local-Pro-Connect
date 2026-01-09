@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Create Request{% endblock %}
+
+{% block content %}
+<div class="request-page">
+    <h1>REQUEST</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Description -->
+        <label for="{{ form.description.id_for_label }}">Describe problem</label>
+        {{ form.description }}
+        
+        <!-- Date/Time -->
+        <label for="{{ form.date_time.id_for_label }}">Date/time (optional)</label>
+        {{ form.date_time }}
+        
+        <!-- Price Range -->
+        <label for="{{ form.price_range.id_for_label }}">Price range (optional)</label>
+        {{ form.price_range }}
+        
+        <!-- Urgent Toggle -->
+        {{ form.urgent }}
+        <label for="{{ form.urgent.id_for_label }}">Mark as urgent</label>
+        
+        <!-- Photos -->
+        <label for="id_photos">Photos (optional)</label>
+        <input type="file" id="id_photos" name="photos" multiple>
+        
+        <div class="buttons">
+            <button type="submit" class="request-button">Request</button>
+            <button type="button" class="back-button" onclick="history.back()">Back</button>
+        </div>
+    </form>
+</div>
+
+<script src="{% static 'js/request.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,54 @@
+Request Update
+===============
+
+Hi {{ customer_name }},
+
+Unfortunately, {{ provider_name }} has declined your service request. However, don't worry - there are other providers available who may be able to help!
+
+REQUEST DETAILS
+===============
+Request ID: #{{ request_id }}
+Service: {{ provider_name }}
+Description: {{ description }}
+
+{% if date_time %}
+Requested Date/Time: {{ date_time|date:"M d, Y H:i" }}
+{% endif %}
+
+{% if price_range %}
+Price Range: {{ price_range }}
+{% endif %}
+
+Declined At: {{ declined_at|date:"M d, Y H:i" }}
+
+{% if decline_reason or decline_message %}
+REASON FOR DECLINING
+====================
+
+{% if decline_reason %}
+Reason Category: {{ decline_reason_display }}
+{% endif %}
+
+{% if decline_message %}
+Additional Details:
+{{ decline_message }}
+{% endif %}
+
+{% endif %}
+
+WHAT'S NEXT?
+============
+
+You can:
+- Try other providers: Search for alternative service providers in your area
+- Adjust your request: Modify the price range or timeline to find a better match
+- Contact support: If you need help, our support team is here to assist
+
+Visit your dashboard to explore other options:
+{{ dashboard_link }}
+
+We're sorry it didn't work out this time. We'll be here if you need help with future requests!
+
+---
+This is an automated email from LocaPro. Please do not reply to this email.
+© 2024 LocaPro. All rights reserved.
