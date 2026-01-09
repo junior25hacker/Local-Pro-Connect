@@ -13,8 +13,12 @@ urlpatterns = [
     path('register/provider/', views.register_provider, name='register_provider'),
     path('profile/user/', views.user_profile, name='user_profile'),
     path('profile/provider/', views.provider_profile, name='provider_profile'),
+<<<<<<< HEAD
+    path('emergency/', views.emergency_request, name='emergency_request'),
+=======
     path('profile/provider/<int:provider_id>/edit/', views.edit_provider_profile, name='edit_provider_profile'),
     path('dashboard/provider/', views.provider_dashboard, name='provider_dashboard'),
+>>>>>>> 52a5e9701da7e4a57974d7d77f93dbe0f8158811
     path('logout/', views.logout_view, name='logout'),
     # Search (protected - requires login)
     path('search/', views.search_page, name='search_page'),

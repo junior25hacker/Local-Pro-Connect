@@ -209,6 +209,73 @@
         transform: scale(1.2);
     }
     
+    .emergency-btn-large {
+        width: 100%;
+        padding: 1.25rem;
+        background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.15rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        position: relative;
+        overflow: hidden;
+        animation: emergency-pulse 2s infinite;
+    }
+    
+    .emergency-btn-large::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .emergency-btn-large:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .emergency-btn-large:hover {
+        background: linear-gradient(135deg, #C82333 0%, #DC3545 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        color: white;
+        animation: none;
+    }
+    
+    .emergency-btn-large i {
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .emergency-btn-large:hover i {
+        transform: scale(1.2);
+    }
+    
+    @keyframes emergency-pulse {
+        0%, 100% {
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        50% {
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5), 0 0 20px rgba(220, 53, 69, 0.3);
+        }
+    }
+    
     .action-btn-large {
         width: 100%;
         padding: 1rem;
@@ -526,12 +593,17 @@
 
     <!-- CTA Section -->
     <div class="row mb-4">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <a href="/requests/create/" class="call-btn-large">
                 <i class="fas fa-paper-plane"></i> Request Service
             </a>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <a href="/accounts/emergency/" class="emergency-btn-large">
+                <i class="fas fa-exclamation-triangle"></i> Emergency Help
+            </a>
+        </div>
+        <div class="col-md-4">
             <a href="/" class="call-btn-large" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);">
                 <i class="fas fa-search"></i> Browse Services
             </a>
