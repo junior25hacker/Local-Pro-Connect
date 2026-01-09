@@ -9,6 +9,7 @@ class UserProfile(models.Model):
 	city = models.CharField(max_length=100, blank=True)
 	state = models.CharField(max_length=50, blank=True)
 	zip_code = models.CharField(max_length=10, blank=True)
+	profile_picture = models.ImageField(upload_to='profiles/', null=True, blank=True)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
@@ -53,6 +54,13 @@ class ProviderProfile(models.Model):
 	
 	# Pricing and location fields
 	min_price = models.DecimalField(max_digits=10, decimal_places=2, default=50.00, help_text="Minimum service price")
+	max_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, help_text="Maximum service price (for display range)")
+	SERVICE_RATE_CHOICES = [
+		('hourly', 'Hourly'),
+		('fixed', 'Fixed Price'),
+		('custom', 'Custom Quote'),
+	]
+	service_rate = models.CharField(max_length=20, choices=SERVICE_RATE_CHOICES, default='fixed', help_text="How this provider charges for services")
 	latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, help_text="Current latitude for live tracking")
 	longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True, help_text="Current longitude for live tracking")
 	

@@ -15,7 +15,11 @@ Requested Date/Time: {{ date_time|date:"M d, Y g:i A" }}
 {% endif %}
 
 {% if price_range %}
-Budget: {{ price_range }}
+Budget Category: {{ price_range }}
+{% endif %}
+
+{% if offered_price %}
+Offered Budget: ${{ offered_price|floatformat:2 }}
 {% endif %}
 
 Status: {{ status|title }}

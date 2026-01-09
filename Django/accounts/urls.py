@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'accounts'
+
 urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login_page, name='login_page'),
@@ -11,6 +13,8 @@ urlpatterns = [
     path('register/provider/', views.register_provider, name='register_provider'),
     path('profile/user/', views.user_profile, name='user_profile'),
     path('profile/provider/', views.provider_profile, name='provider_profile'),
+    path('profile/provider/<int:provider_id>/edit/', views.edit_provider_profile, name='edit_provider_profile'),
+    path('dashboard/provider/', views.provider_dashboard, name='provider_dashboard'),
     path('logout/', views.logout_view, name='logout'),
     # Search (protected - requires login)
     path('search/', views.search_page, name='search_page'),
@@ -25,4 +29,5 @@ urlpatterns = [
     path('api/service-request/', views.api_service_request, name='api_service_request'),
     path('api/contact/', views.api_contact, name='api_contact'),
     path('api/professionals/', views.api_professionals_list, name='api_professionals_list'),
+    path('api/filter/', views.api_professionals_list, name='api_filter_professionals'),  # Alias for filtering
 ]

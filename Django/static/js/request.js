@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         initializePhotoUpload();
         initializeFormValidation();
         addFormEnhancements();
+        initializeBudgetSlider();
     }
 
     // ===========================
@@ -331,6 +332,232 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         });
+    }
+
+    // ===========================
+    // BUDGET SLIDER FUNCTIONALITY
+    // ===========================
+    function initializeBudgetSlider() {
+        const slider = document.getElementById("budget_slider");
+        const budgetValue = document.getElementById("budget_value");
+        const budgetAmount = document.getElementById("budget_amount");
+        const providerSelect = document.querySelector("select[name='provider_choice']");
+        const providerMinHint = document.getElementById("provider_min_hint");
+        const providerMinValue = document.getElementById("provider_min_value");
+        const rangeMinLabel = document.getElementById("range_min_label");
+        const sliderWrapper = document.querySelector(".budget-slider-wrapper");
+
+        if (!slider || !budgetValue || !budgetAmount) return;
+
+        // Provider minimum prices (will be fetched dynamically)
+        const providerMinPrices = {};
+
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'decimal',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        // Update budget display
+        function updateBudgetDisplay(value) {
+            // Add animation class
+            budgetValue.classList.add("updating");
+            
+            // Update value
+            budgetValue.textContent = formatCurrency(value);
+            budgetAmount.value = value;
+            
+            // Remove animation class after animation
+            setTimeout(() => {
+                budgetValue.classList.remove("updating");
+            }, 150);
+        }
+
+        // Check if budget is below provider minimum
+        function checkMinimumBudget(currentValue, minPrice) {
+            if (minPrice > 0 && currentValue < minPrice) {
+                sliderWrapper.classList.add("below-minimum");
+                return false;
+            } else {
+                sliderWrapper.classList.remove("below-minimum");
+                return true;
+            }
+        }
+
+        // Update slider based on provider selection
+        function updateSliderForProvider(providerId) {
+            if (!providerId) {
+                // No provider selected, reset to default
+                slider.min = 0;
+                slider.dataset.providerMin = 0;
+                providerMinHint.style.display = "none";
+                rangeMinLabel.textContent = "$0";
+                rangeMinLabel.classList.remove("provider-min-active");
+                sliderWrapper.classList.remove("below-minimum");
+                return;
+            }
+
+            // Fetch provider minimum price via AJAX
+            fetchProviderMinPrice(providerId);
+        }
+
+        // Fetch provider minimum price from server
+        function fetchProviderMinPrice(providerId) {
+            // Check cache first
+            if (providerMinPrices[providerId] !== undefined) {
+                applyProviderMinPrice(providerMinPrices[providerId]);
+                return;
+            }
+
+            // Fetch from API endpoint
+            fetch(`/requests/api/provider/${providerId}/min-price/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const minPrice = data.min_price;
+                        // Cache the result
+                        providerMinPrices[providerId] = minPrice;
+                        applyProviderMinPrice(minPrice);
+                    } else {
+                        console.error('Failed to fetch provider min price:', data.error);
+                        // Use default fallback
+                        const defaultMin = 50;
+                        providerMinPrices[providerId] = defaultMin;
+                        applyProviderMinPrice(defaultMin);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching provider min price:', error);
+                    // Use default fallback
+                    const defaultMin = 50;
+                    providerMinPrices[providerId] = defaultMin;
+                    applyProviderMinPrice(defaultMin);
+                });
+        }
+
+        // Apply provider minimum price to slider
+        function applyProviderMinPrice(minPrice) {
+            slider.dataset.providerMin = minPrice;
+            
+            // Update minimum label
+            rangeMinLabel.textContent = `$${formatCurrency(minPrice)}`;
+            rangeMinLabel.classList.add("provider-min-active");
+            
+            // Show provider minimum hint
+            providerMinValue.textContent = `$${formatCurrency(minPrice)}`;
+            providerMinHint.style.display = "block";
+            
+            // If current value is below minimum, adjust it
+            const currentValue = parseInt(slider.value);
+            if (currentValue < minPrice) {
+                slider.value = minPrice;
+                updateBudgetDisplay(minPrice);
+            }
+            
+            // Check if below minimum
+            checkMinimumBudget(parseInt(slider.value), minPrice);
+        }
+
+        // Slider input event (real-time update)
+        slider.addEventListener("input", function() {
+            const value = parseInt(this.value);
+            updateBudgetDisplay(value);
+            
+            // Check against provider minimum
+            const providerMin = parseInt(this.dataset.providerMin || 0);
+            checkMinimumBudget(value, providerMin);
+        });
+
+        // Slider change event (final value)
+        slider.addEventListener("change", function() {
+            const value = parseInt(this.value);
+            const providerMin = parseInt(this.dataset.providerMin || 0);
+            
+            // Snap to minimum if below
+            if (providerMin > 0 && value < providerMin) {
+                this.value = providerMin;
+                updateBudgetDisplay(providerMin);
+                
+                // Show warning
+                showMinimumWarning(providerMin);
+            }
+        });
+
+        // Show warning when user tries to go below minimum
+        function showMinimumWarning(minPrice) {
+            const wrapper = sliderWrapper;
+            wrapper.classList.add("below-minimum");
+            
+            // Add shake animation
+            setTimeout(() => {
+                wrapper.classList.remove("below-minimum");
+            }, 500);
+        }
+
+        // Provider selection change event
+        if (providerSelect) {
+            providerSelect.addEventListener("change", function() {
+                const providerId = this.value;
+                updateSliderForProvider(providerId);
+            });
+            
+            // Initialize on page load if provider is pre-selected
+            if (providerSelect.value) {
+                updateSliderForProvider(providerSelect.value);
+            }
+        }
+
+        // Keyboard navigation support
+        slider.addEventListener("keydown", function(e) {
+            const currentValue = parseInt(this.value);
+            const step = parseInt(this.step || 50);
+            const providerMin = parseInt(this.dataset.providerMin || 0);
+            
+            // Arrow keys
+            if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+                const newValue = Math.max(providerMin, currentValue - step);
+                this.value = newValue;
+                updateBudgetDisplay(newValue);
+                checkMinimumBudget(newValue, providerMin);
+                e.preventDefault();
+            } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+                const newValue = Math.min(parseInt(this.max), currentValue + step);
+                this.value = newValue;
+                updateBudgetDisplay(newValue);
+                checkMinimumBudget(newValue, providerMin);
+                e.preventDefault();
+            } else if (e.key === "Home") {
+                this.value = providerMin;
+                updateBudgetDisplay(providerMin);
+                checkMinimumBudget(providerMin, providerMin);
+                e.preventDefault();
+            } else if (e.key === "End") {
+                this.value = this.max;
+                updateBudgetDisplay(parseInt(this.max));
+                checkMinimumBudget(parseInt(this.max), providerMin);
+                e.preventDefault();
+            }
+        });
+
+        // Touch device support
+        let touchStartValue = 0;
+        slider.addEventListener("touchstart", function() {
+            touchStartValue = parseInt(this.value);
+        });
+
+        slider.addEventListener("touchend", function() {
+            const touchEndValue = parseInt(this.value);
+            if (touchStartValue !== touchEndValue) {
+                const providerMin = parseInt(this.dataset.providerMin || 0);
+                checkMinimumBudget(touchEndValue, providerMin);
+            }
+        });
+
+        // Initialize with default value
+        updateBudgetDisplay(parseInt(slider.value));
     }
 
     // ===========================

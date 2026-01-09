@@ -11,6 +11,10 @@ from .views import (
     live_provider_tracking,
     locations_autocomplete,
     api_demo_providers,
+    api_provider_min_price,
+    api_request_decline,
+    api_request_accept,
+    api_request_edit,
 )
 
 app_name = "requests"
@@ -25,6 +29,14 @@ urlpatterns = [
     path("export/pdf/", export_requests_pdf, name="export_requests_pdf"),
     path("<int:request_id>/tracking/", live_provider_tracking, name="live_provider_tracking"),
     path("<int:request_id>/", request_detail, name="request_detail"),
+    
+    # API Endpoints
     path("api/locations-autocomplete/", locations_autocomplete, name="locations_autocomplete"),
     path("api/demo-providers/", api_demo_providers, name="api_demo_providers"),
+    path("api/provider/<int:provider_id>/min-price/", api_provider_min_price, name="api_provider_min_price"),
+    
+    # Modal API Endpoints
+    path("api/<int:request_id>/decline/", api_request_decline, name="api_request_decline"),
+    path("api/<int:request_id>/accept/", api_request_accept, name="api_request_accept"),
+    path("api/<int:request_id>/edit/", api_request_edit, name="api_request_edit"),
 ]

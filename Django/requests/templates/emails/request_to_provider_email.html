@@ -157,8 +157,15 @@
 
             {% if price_range %}
             <div class="detail-row">
-                <span class="detail-label">Budget:</span>
+                <span class="detail-label">Budget Category:</span>
                 <span class="detail-value">{{ price_range }}</span>
+            </div>
+            {% endif %}
+
+            {% if offered_price %}
+            <div class="detail-row">
+                <span class="detail-label">Offered Budget:</span>
+                <span class="detail-value" style="color: #27ae60; font-weight: bold;">${{ offered_price|floatformat:2 }}</span>
             </div>
             {% endif %}
 
