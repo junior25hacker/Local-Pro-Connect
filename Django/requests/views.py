@@ -89,10 +89,9 @@ def create_request(request):
     - Only regular users (non-providers) can create requests
     - Providers should be blocked from creating requests
     """
-    # Check if current user is a provider - providers cannot create requests
+    # Providers must not be able to access the New Request page (strict RBAC)
     if hasattr(request.user, 'provider_profile'):
-        messages.error(request, 'Service providers cannot create service requests.')
-        return redirect('accounts:provider_dashboard')
+        return HttpResponseForbidden('Service providers cannot create service requests.')
 
     if request.method == "POST":
         form = ServiceRequestForm(request.POST, request.FILES)
@@ -331,6 +330,7 @@ def rejection_modal_demo(request):
 
 
 @login_required
+@provider_required
 def request_list(request):
     """
     Display a list of service requests for the logged-in user.
@@ -344,19 +344,13 @@ def request_list(request):
     """
     user = request.user
     
-    # Determine if user is a provider
-    is_provider = hasattr(user, 'provider_profile')
+    # Provider-only view (enforced by @provider_required)
+    is_provider = True
     
-    if is_provider:
-        # Show requests directed to this provider
-        requests_list = ServiceRequest.objects.filter(
-            provider=user
-        ).select_related('user', 'provider', 'price_range').prefetch_related('photos')
-    else:
-        # Show requests created by this user
-        requests_list = ServiceRequest.objects.filter(
-            user=user
-        ).select_related('user', 'provider', 'price_range').prefetch_related('photos')
+    # Show requests directed to this provider
+    requests_list = ServiceRequest.objects.filter(
+        provider=user
+    ).select_related('user', 'provider', 'price_range').prefetch_related('photos')
     
     # Calculate distances for each request
     requests_with_distance = []
