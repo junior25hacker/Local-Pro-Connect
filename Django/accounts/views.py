@@ -16,12 +16,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 import json
 import logging
-<<<<<<< HEAD
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from requests.models import ServiceRequest
-=======
->>>>>>> 52a5e9701da7e4a57974d7d77f93dbe0f8158811
 
 logger = logging.getLogger(__name__)
 
@@ -213,7 +210,6 @@ def provider_profile(request):
     return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
 
 
-<<<<<<< HEAD
 @login_required
 def emergency_request(request):
     """
@@ -315,7 +311,6 @@ View request: {request.build_absolute_uri(f'/requests/detail/{emergency_request.
     }
 
     return render(request, 'accounts/emergency_request.html', context)
-=======
 @read_only_profile
 def provider_profile_detail(request, provider_id):
     """
@@ -460,7 +455,6 @@ def edit_provider_profile(request, provider_id=None):
     }
     
     return render(request, 'accounts/provider_profile_edit.html', context)
->>>>>>> 52a5e9701da7e4a57974d7d77f93dbe0f8158811
 
 
 @require_http_methods(['GET'])
