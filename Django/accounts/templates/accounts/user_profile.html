@@ -574,7 +574,17 @@
     <div class="profile-header-card">
         <div class="profile-header">
             <div class="profile-avatar">
-                <i class="fas fa-user"></i>
+                {% if user_profile and user_profile.profile_picture %}
+                    <img src="{{ user_profile.profile_picture.url }}" alt="Profile photo">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+
+            <div class="text-center" style="min-width: 180px;">
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadUserPhotoModal" type="button" style="margin-top: 0.75rem;">
+                    <i class="fas fa-camera me-2"></i> Upload Photo
+                </button>
             </div>
             
             <div class="profile-info">
@@ -598,6 +608,7 @@
                 <i class="fas fa-paper-plane"></i> Request Service
             </a>
         </div>
+<<<<<<< HEAD
         <div class="col-md-4">
             <a href="/accounts/emergency/" class="emergency-btn-large">
                 <i class="fas fa-exclamation-triangle"></i> Emergency Help
@@ -605,6 +616,10 @@
         </div>
         <div class="col-md-4">
             <a href="/" class="call-btn-large" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);">
+=======
+        <div class="col-md-6">
+            <a href="http://127.0.0.1:5500/index.html" class="call-btn-large" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);">
+>>>>>>> main
                 <i class="fas fa-search"></i> Browse Services
             </a>
         </div>
@@ -681,7 +696,7 @@
                 <p class="description-text mb-3">
                     Browse local professionals and book services directly through our platform. All professionals are verified and rated by customers.
                 </p>
-                <a href="/" class="btn btn-success btn-lg">
+                <a href="http://127.0.0.1:5500/index.html" class="btn btn-success btn-lg">
                     <i class="fas fa-search me-2"></i> Browse All Services
                 </a>
             </div>
@@ -817,33 +832,76 @@
     </div>
 </div>
 
+<!-- Upload Photo Modal -->
+<div class="modal fade" id="uploadUserPhotoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Profile Photo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="uploadUserPhotoForm" method="POST" action="/accounts/api/user/profile/" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="userProfilePhotoInput">Choose an image</label>
+                        <input class="form-control" type="file" id="userProfilePhotoInput" name="profile_picture" accept="image/*" required>
+                        <div class="form-text">PNG/JPG recommended.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="uploadUserPhotoBtn">
+                        <i class="fas fa-upload me-2"></i>Upload
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+// CSRF helper
+// Note: settings.py sets CSRF_COOKIE_HTTPONLY=True, so JS cannot read csrftoken from cookies.
+// Read the CSRF token from Django's hidden form input instead.
+function getCsrfTokenFromForm(formEl) {
+    const input = formEl ? formEl.querySelector('input[name="csrfmiddlewaretoken"]') : null;
+    return input ? input.value : '';
+}
+
+async function parseJsonSafe(response) {
+    const contentType = response.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+        return await response.json();
+    }
+    const text = await response.text();
+    return { success: false, error: text || `Unexpected response (HTTP ${response.status})` };
+}
+
 document.getElementById('editProfileForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const form = this;
     const formData = new FormData(form);
     const saveBtn = document.getElementById('saveProfileBtn');
-    
+
     // Disable button during submission
     saveBtn.disabled = true;
     saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-    
+
     fetch('/accounts/api/user/profile/', {
         method: 'POST',
         body: formData,
         headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCsrfTokenFromForm(form)
         }
     })
-    .then(response => response.json())
+    .then(parseJsonSafe)
     .then(data => {
         if (data.success) {
-            // Show success message
             alert('Profile updated successfully!');
-            // Close modal
             bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
-            // Reload page to show updated data
             location.reload();
         } else {
             alert('Error: ' + (data.error || 'Failed to update profile'));
@@ -854,11 +912,58 @@ document.getElementById('editProfileForm').addEventListener('submit', function(e
         alert('An error occurred while saving your profile');
     })
     .finally(() => {
-        // Re-enable button
         saveBtn.disabled = false;
         saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
     });
 });
+
+// Upload Photo Form Handler
+const uploadUserPhotoForm = document.getElementById('uploadUserPhotoForm');
+if (uploadUserPhotoForm) {
+    uploadUserPhotoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const formData = new FormData(form);
+        const uploadBtn = document.getElementById('uploadUserPhotoBtn');
+
+        if (uploadBtn) {
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+        }
+
+        fetch('/accounts/api/user/profile/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCsrfTokenFromForm(form)
+            }
+        })
+        .then(parseJsonSafe)
+        .then(data => {
+            if (data.success) {
+                alert('Photo uploaded successfully!');
+                const modalEl = document.getElementById('uploadUserPhotoModal');
+                const modal = modalEl ? bootstrap.Modal.getInstance(modalEl) : null;
+                if (modal) modal.hide();
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Failed to upload photo'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while uploading your photo');
+        })
+        .finally(() => {
+            if (uploadBtn) {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload';
+            }
+        });
+    });
+}
 </script>
 
 {% endblock %}
