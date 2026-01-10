@@ -1,0 +1,737 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Emergency Service Request - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(
+       135deg,
+       rgba(225, 245, 254, 1.0) 0%,
+       rgba(179, 229, 252, 0.9) 100%
+       ),
+       url("{% static 'images/Gemini_Generated_Image_10go4k10go4k10go.jpg' %}");
+        
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+ 
+    
+
+    .emergency-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .emergency-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .emergency-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: emergency-bg 4s ease-in-out infinite;
+    }
+
+    @keyframes emergency-bg {
+        0%, 100% { transform: scale(1); opacity: 0.3; }
+        50% { transform: scale(1.1); opacity: 0.5; }
+    }
+
+    .emergency-header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .emergency-header p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 2;
+    }
+
+    .emergency-alert {
+        background: linear-gradient(135deg, #FFF3CD 0%, #FFEAA7 100%);
+        border: 2px solid #FFC107;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
+    }
+
+    .emergency-alert h3 {
+        color: #856404;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .emergency-alert p {
+        color: #856404;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .emergency-form-container {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .emergency-form-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+   .form-section {
+
+        background: rgba(255, 255, 255, 0.95); /* Added slight transparency */
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        backdrop-filter: blur(5px); /* Adds a modern frosted glass effect */
+    }
+
+    .form-section h3 {
+        
+        color: #DC3545;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #DC3545;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        outline: none;
+    }
+
+    .emergency-type-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .emergency-type-option {
+        background: #f8f9fa;
+        border: 2px solid #dee2e6;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .emergency-type-option:hover {
+        border-color: #DC3545;
+        background: #fff5f5;
+        transform: translateY(-2px);
+    }
+
+    .emergency-type-option.selected {
+        border-color: #DC3545;
+        background: #fff5f5;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+    }
+
+    .emergency-type-option input[type="radio"] {
+        display: none;
+    }
+
+    .emergency-type-option .icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .emergency-type-option .label {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .location-section {
+        background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+        border: 2px solid #2196F3;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .location-section h4 {
+        color: #1565C0;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .location-display {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-top: 1rem;
+        border: 1px solid #e9ecef;
+    }
+
+    .location-coords {
+        font-family: monospace;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .btn-location {
+        background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .btn-location:hover {
+        background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+
+    .btn-location:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .providers-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .providers-section h3 {
+        color: #28A745;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .provider-card {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .provider-card:hover {
+        border-color: #28A745;
+        background: #f8fff8;
+        transform: translateY(-2px);
+    }
+
+    .provider-card.selected {
+        border-color: #28A745;
+        background: #f8fff8;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+    }
+
+    .provider-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .provider-avatar {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #28A745 0%, #20C997 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .provider-info h4 {
+        margin: 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .provider-info p {
+        margin: 0.25rem 0;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .provider-distance {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #28A745;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .submit-section {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    .btn-emergency-submit {
+        background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+        color: white;
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        animation: emergency-pulse 2s infinite;
+    }
+
+    .btn-emergency-submit:hover {
+        background: linear-gradient(135deg, #C82333 0%, #BD2130 100%);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        animation: none;
+    }
+
+    .btn-emergency-submit:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        animation: none;
+    }
+
+    @keyframes emergency-pulse {
+        0%, 100% {
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        50% {
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5), 0 0 20px rgba(220, 53, 69, 0.3);
+        }
+    }
+
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, #D4EDDA 0%, #C3E6CB 100%);
+        border: 2px solid #28A745;
+        color: #155724;
+        padding: 1rem;
+        border-radius: 10px;
+        margin-top: 1rem;
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .emergency-header h1 {
+            font-size: 2rem;
+        }
+
+        .emergency-form-container {
+            gap: 1rem;
+        }
+
+        .form-section, .providers-section, .submit-section {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="emergency-container"> 
+    <!-- Emergency Header -->
+    <div class="emergency-header">
+        <h1><i class="fas fa-exclamation-triangle"></i> Emergency Assistance</h1>
+        <p>Get immediate help from nearby service providers</p>
+    </div>
+
+    <!-- Emergency Alert -->
+    <div class="emergency-alert">
+        <h3><i class="fas fa-bell"></i> Emergency Response Active</h3>
+        <p>Your location will be shared with selected providers. Help is on the way!</p>
+    </div>
+
+    <form id="emergencyForm" method="post" action="{% url 'emergency_request' %}">
+        {% csrf_token %}
+
+        <div class="emergency-form-container">
+            <!-- Main Form Section -->
+            <div class="form-section">
+                <h3><i class="fas fa-clipboard-list"></i> Emergency Details</h3>
+
+                <!-- Emergency Type Selection -->
+                <div class="form-group">
+                    <label class="form-label">Type of Emergency <span style="color: #DC3545;">*</span></label>
+                    <div class="emergency-type-grid">
+                        <label class="emergency-type-option" for="emergency_plumbing">
+                            <input type="radio" id="emergency_plumbing" name="emergency_type" value="plumbing" required>
+                            <span class="icon">🔧</span>
+                            <span class="label">Plumbing</span>
+                        </label>
+                        <label class="emergency-type-option" for="emergency_electrical">
+                            <input type="radio" id="emergency_electrical" name="emergency_type" value="electrical" required>
+                            <span class="icon">⚡</span>
+                            <span class="label">Electrical</span>
+                        </label>
+                        <label class="emergency-type-option" for="emergency_hvac">
+                            <input type="radio" id="emergency_hvac" name="emergency_type" value="hvac" required>
+                            <span class="icon">🌡️</span>
+                            <span class="label">HVAC</span>
+                        </label>
+                        <label class="emergency-type-option" for="emergency_locksmith">
+                            <input type="radio" id="emergency_locksmith" name="emergency_type" value="locksmith" required>
+                            <span class="icon">🔐</span>
+                            <span class="label">Locksmith</span>
+                        </label>
+                        <label class="emergency-type-option" for="emergency_appliance">
+                            <input type="radio" id="emergency_appliance" name="emergency_type" value="appliance" required>
+                            <span class="icon">🏠</span>
+                            <span class="label">Appliance</span>
+                        </label>
+                        <label class="emergency-type-option" for="emergency_other">
+                            <input type="radio" id="emergency_other" name="emergency_type" value="other" required>
+                            <span class="icon">🚨</span>
+                            <span class="label">Other</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label" for="description">Describe Your Emergency <span style="color: #DC3545;">*</span></label>
+                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Please describe the emergency situation in detail..." required></textarea>
+                </div>
+
+                <!-- Contact Phone -->
+                <div class="form-group">
+                    <label class="form-label" for="contact_phone">Contact Phone <span style="color: #DC3545;">*</span></label>
+                    <input type="tel" class="form-control" id="contact_phone" name="contact_phone" placeholder="(555) 123-4567" value="{{ user_profile.phone|default:'' }}" required>
+                </div>
+
+                <!-- Location Section -->
+                <div class="location-section">
+                    <h4><i class="fas fa-map-marker-alt"></i> Share Your Location</h4>
+                    <p>Your current location will help providers reach you faster.</p>
+
+                    <button type="button" id="shareLocationBtn" class="btn-location">
+                        <i class="fas fa-crosshairs"></i> Share My Location
+                    </button>
+
+                    <div id="locationDisplay" class="location-display" style="display: none;">
+                        <strong>Current Location:</strong><br>
+                        <span id="locationAddress">Getting address...</span><br>
+                        <span class="location-coords" id="locationCoords"></span>
+                    </div>
+
+                    <!-- Hidden location inputs -->
+                    <input type="hidden" id="location_lat" name="location_lat">
+                    <input type="hidden" id="location_lng" name="location_lng">
+                    <input type="hidden" id="address" name="address">
+                </div>
+            </div>
+
+            <!-- Providers Section -->
+            <div class="providers-section">
+                <h3><i class="fas fa-users"></i> Select Provider</h3>
+                <p>Choose a nearby provider to send your emergency request to:</p>
+
+                {% for provider in nearby_providers %}
+                <div class="provider-card" data-provider-id="{{ provider.user.id }}">
+                    <div class="provider-header">
+                        <div class="provider-avatar">
+                            {{ provider.user.first_name|slice:":1"|upper|default:provider.company_name|slice:":1"|upper }}
+                        </div>
+                        <div class="provider-info">
+                            <h4>{{ provider.company_name|default:provider.user.get_full_name }}</h4>
+                            <p>{{ provider.get_service_type_display }}</p>
+                        </div>
+                    </div>
+                    <div class="provider-distance">
+                        <i class="fas fa-map-marker-alt"></i> ~2.3 mi
+                    </div>
+                    <input type="radio" name="selected_provider" value="{{ provider.user.id }}" style="display: none;">
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: #666; padding: 2rem;">
+                    <i class="fas fa-search"></i><br>
+                    No providers found in your area.
+                </p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="submit-section">
+            <button type="submit" id="submitEmergencyBtn" class="btn-emergency-submit" disabled>
+                <i class="fas fa-paper-plane"></i> Send Emergency Request
+            </button>
+
+            <div id="successMessage" class="success-message">
+                <i class="fas fa-check-circle"></i> Emergency request sent successfully! Help is on the way.
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+// Emergency form functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('emergencyForm');
+    const shareLocationBtn = document.getElementById('shareLocationBtn');
+    const locationDisplay = document.getElementById('locationDisplay');
+    const locationAddress = document.getElementById('locationAddress');
+    const locationCoords = document.getElementById('locationCoords');
+    const submitBtn = document.getElementById('submitEmergencyBtn');
+    const emergencyTypeOptions = document.querySelectorAll('.emergency-type-option');
+    const providerCards = document.querySelectorAll('.provider-card');
+
+    let currentLocation = null;
+    let selectedProvider = null;
+
+    // Emergency type selection
+    emergencyTypeOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove selected class from all options
+            emergencyTypeOptions.forEach(opt => opt.classList.remove('selected'));
+            // Add selected class to clicked option
+            this.classList.add('selected');
+            // Check the radio button
+            this.querySelector('input[type="radio"]').checked = true;
+            validateForm();
+        });
+    });
+
+    // Provider selection
+    providerCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selected class from all cards
+            providerCards.forEach(c => c.classList.remove('selected'));
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            // Check the radio button
+            this.querySelector('input[type="radio"]').checked = true;
+            selectedProvider = this.dataset.providerId;
+            validateForm();
+        });
+    });
+
+    // Location sharing
+    shareLocationBtn.addEventListener('click', function() {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+            return;
+        }
+
+        this.innerHTML = '<span class="loading"></span> Getting location...';
+        this.disabled = true;
+
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                currentLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+
+                // Update hidden inputs
+                document.getElementById('location_lat').value = currentLocation.lat;
+                document.getElementById('location_lng').value = currentLocation.lng;
+
+                // Display location
+                locationCoords.textContent = `${currentLocation.lat.toFixed(6)}, ${currentLocation.lng.toFixed(6)}`;
+
+                // Try to get address (reverse geocoding would be done server-side in production)
+                locationAddress.textContent = `Lat: ${currentLocation.lat.toFixed(4)}, Lng: ${currentLocation.lng.toFixed(4)}`;
+                document.getElementById('address').value = locationAddress.textContent;
+
+                locationDisplay.style.display = 'block';
+                shareLocationBtn.innerHTML = '<i class="fas fa-check"></i> Location Shared';
+                shareLocationBtn.style.background = 'linear-gradient(135deg, #28A745 0%, #20C997 100%)';
+
+                validateForm();
+            },
+            function(error) {
+                console.error('Error getting location:', error);
+                alert('Unable to get your location. Please check your browser permissions.');
+                shareLocationBtn.innerHTML = '<i class="fas fa-crosshairs"></i> Share My Location';
+                shareLocationBtn.disabled = false;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+            }
+        );
+    });
+
+    // Form validation
+    function validateForm() {
+        const emergencyType = document.querySelector('input[name="emergency_type"]:checked');
+        const description = document.getElementById('description').value.trim();
+        const contactPhone = document.getElementById('contact_phone').value.trim();
+        const hasLocation = currentLocation !== null;
+        const hasProvider = selectedProvider !== null;
+
+        const isValid = emergencyType && description && contactPhone && hasLocation && hasProvider;
+        submitBtn.disabled = !isValid;
+
+        if (isValid) {
+            submitBtn.style.opacity = '1';
+        } else {
+            submitBtn.style.opacity = '0.6';
+        }
+    }
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if (!currentLocation) {
+            alert('Please share your location first.');
+            return;
+        }
+
+        if (!selectedProvider) {
+            alert('Please select a provider.');
+            return;
+        }
+
+        // Show loading state
+        submitBtn.innerHTML = '<span class="loading"></span> Sending Request...';
+        submitBtn.disabled = true;
+
+        // Submit form
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('successMessage').style.display = 'block';
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Request Sent!';
+                submitBtn.style.background = 'linear-gradient(135deg, #28A745 0%, #20C997 100%)';
+
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = '{% url "user_profile" %}';
+                }, 3000);
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error occurred'));
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emergency Request';
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while sending your request. Please try again.');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Emergency Request';
+            submitBtn.disabled = false;
+        });
+    });
+
+    // Real-time validation
+    document.getElementById('description').addEventListener('input', validateForm);
+    document.getElementById('contact_phone').addEventListener('input', validateForm);
+
+    // Initialize validation
+    validateForm();
+});
+</script>
+
+{% endblock %}
