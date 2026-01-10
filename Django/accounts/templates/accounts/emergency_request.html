@@ -31,7 +31,7 @@
     .emergency-header {
         text-align: center;
         margin-bottom: 3rem;
-        background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
         color: white;
         padding: 3rem 2rem;
         border-radius: 20px;
@@ -442,7 +442,7 @@
         <p>Your location will be shared with selected providers. Help is on the way!</p>
     </div>
 
-    <form id="emergencyForm" method="post" action="{% url 'emergency_request' %}">
+    <form id="emergencyForm" method="post" action="{% url 'accounts:emergency_request' %}">
         {% csrf_token %}
 
         <div class="emergency-form-container">
@@ -709,7 +709,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Redirect after success
                 setTimeout(() => {
-                    window.location.href = '{% url "user_profile" %}';
+                    window.location.href = '{% url "accounts:user_profile" %}';
                 }, 3000);
             } else {
                 alert('Error: ' + (data.error || 'Unknown error occurred'));
