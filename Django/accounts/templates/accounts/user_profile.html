@@ -614,7 +614,7 @@
             </a>
         </div>
         <div class="col-md-4 d-flex">
-            <a href="/professionals/" class="call-btn-large flex-fill text-center" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);" title="Browse all services">
+            <a href="{% url 'accounts:search_page' %}" class="call-btn-large flex-fill text-center" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);" title="Browse all services">
                 <i class="fas fa-search me-2"></i> Browse Services
             </a>
         </div>
@@ -691,7 +691,7 @@
                 <p class="description-text mb-3">
                     Browse local professionals and book services directly through our platform. All professionals are verified and rated by customers.
                 </p>
-                <a href="http://127.0.0.1:5500/index.html" class="btn btn-success btn-lg">
+                <a href="{% url 'accounts:professionals_list' %}?service=all" class="btn btn-success btn-lg">
                     <i class="fas fa-search me-2"></i> Browse All Services
                 </a>
             </div>
