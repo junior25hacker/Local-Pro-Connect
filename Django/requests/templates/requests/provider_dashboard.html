@@ -10,30 +10,6 @@
             <h1>Provider Dashboard</h1>
             <hr>
             
-            <!-- Provider Info -->
-            <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Your Business Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p><strong>Company Name:</strong> {{ provider_profile.company_name }}</p>
-                            <p><strong>Service Type:</strong> {{ provider_profile.get_service_type_display }}</p>
-                            <p><strong>Location:</strong> {{ provider_profile.city }}, {{ provider_profile.state }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong>Phone:</strong> {{ provider_profile.phone }}</p>
-                            <p><strong>Experience:</strong> {{ provider_profile.years_experience }} years</p>
-                            <p><strong>Rating:</strong> ⭐ {{ provider_profile.rating }}/5.0 ({{ provider_profile.total_reviews }} reviews)</p>
-                        </div>
-                    </div>
-                    <a href="{% url 'accounts:edit_provider_profile' provider_profile.id %}" class="btn btn-sm btn-primary">
-                        Edit Profile
-                    </a>
-                </div>
-            </div>
-            
             <!-- Statistics -->
             <div class="row mb-4">
                 <div class="col-md-4">

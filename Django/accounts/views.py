@@ -165,14 +165,38 @@ def register_provider(request):
     if request.method == 'POST':
         form = ProviderRegistrationForm(request.POST)
         if form.is_valid():
+            # Use email as username if no username provided
+            email = form.cleaned_data.get('email') or ''
+            username = form.cleaned_data.get('username')
+            
+            # If email is provided and username is not, generate username from email
+            if email and not username:
+                username = email.split('@')[0]
+                # Ensure username is unique
+                base_username = username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+            
             user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data.get('email') or '',
+                username=username,
+                email=email,
                 password=form.cleaned_data['password1'],
                 first_name=form.cleaned_data.get('first_name') or '',
                 last_name=form.cleaned_data.get('last_name') or '',
             )
-            ProviderProfile.objects.create(
+            
+            # Store service_type_other in service_description if provided
+            service_type_other = form.cleaned_data.get('service_type_other', '')
+            service_desc = ''
+            if service_type_other:
+                service_desc = f"Service Type: {service_type_other}"
+            
+            # Handle profile picture upload
+            profile_picture = request.FILES.get('profile_picture')
+            
+            provider_profile = ProviderProfile.objects.create(
                 user=user,
                 company_name=form.cleaned_data.get('company_name') or '',
                 service_type=form.cleaned_data.get('service_type') or 'other',
@@ -182,14 +206,21 @@ def register_provider(request):
                 state=form.cleaned_data.get('state') or '',
                 zip_code=form.cleaned_data.get('zip_code') or '',
                 bio=form.cleaned_data.get('bio') or '',
+                service_description=service_desc,
                 years_experience=form.cleaned_data.get('years_experience') or 0,
             )
+            
+            # Save profile picture if uploaded
+            if profile_picture:
+                provider_profile.profile_picture = profile_picture
+                provider_profile.save()
+            
             auth.login(request, user)
             messages.success(request, f'Welcome {user.first_name or user.username}!')
             return redirect('accounts:provider_profile')
     else:
         form = ProviderRegistrationForm()
-    return render(request, 'accounts/register_provider.html', {'form': form})
+    return render(request, 'accounts/register_provider_multistep.html', {'form': form})
 
 
 def user_profile(request):
@@ -197,7 +228,7 @@ def user_profile(request):
     if not request.user.is_authenticated:
         return redirect('accounts:register_user')
     user_profile = UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/user_profile.html', {'user_profile': user_profile})
+    return render(request, 'accounts/user_profile_redesign.html', {'user_profile': user_profile})
 
 
 def provider_profile(request):
@@ -205,7 +236,7 @@ def provider_profile(request):
     if not request.user.is_authenticated:
         return redirect('accounts:register_provider')
     provider_profile = ProviderProfile.objects.get(user=request.user) if ProviderProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
+    return render(request, 'accounts/provider_profile_redesign.html', {'provider_profile': provider_profile})
 
 
 @login_required
