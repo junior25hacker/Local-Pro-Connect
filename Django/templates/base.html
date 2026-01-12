@@ -405,17 +405,13 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li>
                                 <a class="dropdown-item" href="{% url 'accounts:user_profile' %}">
-                                    <i class="fas fa-user"></i>
-                                    <span>My Profile</span>
+                                    My Profile
                                 </a>
                             </li>
-                            {# Provider-only links removed from global nav.
-                               They should only be available inside the provider profile UI. #}
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item logout-item" href="{% url 'accounts:logout' %}">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout</span>
+                                    Logout
                                 </a>
                             </li>
                         </ul>
