@@ -236,7 +236,7 @@ def provider_profile(request):
     if not request.user.is_authenticated:
         return redirect('accounts:register_provider')
     provider_profile = ProviderProfile.objects.get(user=request.user) if ProviderProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
+    return render(request, 'accounts/provider_profile_redesign.html', {'provider_profile': provider_profile})
 
 
 @login_required
