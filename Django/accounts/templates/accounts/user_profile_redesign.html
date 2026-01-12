@@ -859,62 +859,259 @@
     </div>
 </div>
 
-<!-- Edit Profile Modal -->
+<!-- Edit Profile Modal - Redesigned -->
 <div class="modal fade" id="editProfileModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-edit me-2"></i>Edit Your Profile</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 60px rgba(0, 76, 153, 0.2);">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal)); color: white; border-radius: 20px 20px 0 0; padding: 2rem; border: none;">
+                <div>
+                    <h4 class="modal-title mb-2" style="font-weight: 800; font-size: 1.75rem;"><i class="fas fa-user-edit me-3"></i>Edit Your Profile</h4>
+                    <p class="mb-0" style="font-size: 0.95rem; opacity: 0.95;">Update your personal information and contact details</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1); opacity: 1;"></button>
             </div>
             <form id="editProfileForm" method="POST" action="/accounts/api/user/profile/">
                 {% csrf_token %}
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="editFirstName" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="editFirstName" name="first_name" value="{{ user.first_name|default:'' }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editLastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="editLastName" name="last_name" value="{{ user.last_name|default:'' }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="editEmail" name="email" value="{{ user.email|default:'' }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editPhone" class="form-label">Phone Number</label>
-                        <input type="tel" class="form-control" id="editPhone" name="phone" value="{{ user_profile.phone|default:'' }}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editAddress" class="form-label">Street Address</label>
-                        <input type="text" class="form-control" id="editAddress" name="address" value="{{ user_profile.address|default:'' }}">
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="editCity" class="form-label">City</label>
-                            <input type="text" class="form-control" id="editCity" name="city" value="{{ user_profile.city|default:'' }}">
+                <div class="modal-body" style="padding: 2.5rem; background: var(--bg-light);">
+                    
+                    <!-- Personal Information Section -->
+                    <div class="edit-section-user">
+                        <div class="section-header-user">
+                            <div class="section-icon-user">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h5>Personal Information</h5>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="editState" class="form-label">State</label>
-                            <input type="text" class="form-control" id="editState" name="state" value="{{ user_profile.state|default:'' }}">
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="editFirstName" class="form-label-custom-user">
+                                    <i class="fas fa-id-badge me-2"></i>First Name
+                                </label>
+                                <input type="text" class="form-control-custom-user" id="editFirstName" name="first_name" 
+                                       value="{{ user.first_name|default:'' }}" placeholder="Enter your first name">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="editLastName" class="form-label-custom-user">
+                                    <i class="fas fa-id-badge me-2"></i>Last Name
+                                </label>
+                                <input type="text" class="form-control-custom-user" id="editLastName" name="last_name" 
+                                       value="{{ user.last_name|default:'' }}" placeholder="Enter your last name">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="editEmail" class="form-label-custom-user">
+                                <i class="fas fa-envelope me-2"></i>Email Address <span style="color: var(--emergency-red);">*</span>
+                            </label>
+                            <input type="email" class="form-control-custom-user" id="editEmail" name="email" 
+                                   value="{{ user.email|default:'' }}" placeholder="your.email@example.com" required>
+                            <small class="form-hint-user">This is your primary contact and login email</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="editPhone" class="form-label-custom-user">
+                                <i class="fas fa-phone me-2"></i>Phone Number
+                            </label>
+                            <input type="tel" class="form-control-custom-user" id="editPhone" name="phone" 
+                                   value="{{ user_profile.phone|default:'' }}" placeholder="+237 6XX XXX XXX">
+                            <small class="form-hint-user">Providers may contact you via phone for service details</small>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="editZip" class="form-label">ZIP Code</label>
-                        <input type="text" class="form-control" id="editZip" name="zip_code" value="{{ user_profile.zip_code|default:'' }}">
+                    
+                    <!-- Address Information Section -->
+                    <div class="edit-section-user">
+                        <div class="section-header-user">
+                            <div class="section-icon-user">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h5>Address Information</h5>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="editAddress" class="form-label-custom-user">
+                                <i class="fas fa-home me-2"></i>Street Address
+                            </label>
+                            <input type="text" class="form-control-custom-user" id="editAddress" name="address" 
+                                   value="{{ user_profile.address|default:'' }}" placeholder="Your street address">
+                            <small class="form-hint-user">This helps providers locate you for services</small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <label for="editCity" class="form-label-custom-user">
+                                    <i class="fas fa-city me-2"></i>City
+                                </label>
+                                <input type="text" class="form-control-custom-user" id="editCity" name="city" 
+                                       value="{{ user_profile.city|default:'' }}" placeholder="e.g., Douala">
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label for="editState" class="form-label-custom-user">
+                                    <i class="fas fa-map me-2"></i>State / Region
+                                </label>
+                                <select class="form-control-custom-user" id="editState" name="state">
+                                    <option value="">Select Region</option>
+                                    <option value="Adamawa" {% if user_profile.state == 'Adamawa' %}selected{% endif %}>Adamawa</option>
+                                    <option value="Centre" {% if user_profile.state == 'Centre' %}selected{% endif %}>Centre</option>
+                                    <option value="East" {% if user_profile.state == 'East' %}selected{% endif %}>East</option>
+                                    <option value="Far North" {% if user_profile.state == 'Far North' %}selected{% endif %}>Far North</option>
+                                    <option value="Littoral" {% if user_profile.state == 'Littoral' %}selected{% endif %}>Littoral</option>
+                                    <option value="North" {% if user_profile.state == 'North' %}selected{% endif %}>North</option>
+                                    <option value="Northwest" {% if user_profile.state == 'Northwest' %}selected{% endif %}>Northwest</option>
+                                    <option value="South" {% if user_profile.state == 'South' %}selected{% endif %}>South</option>
+                                    <option value="Southwest" {% if user_profile.state == 'Southwest' %}selected{% endif %}>Southwest</option>
+                                    <option value="West" {% if user_profile.state == 'West' %}selected{% endif %}>West</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label for="editZip" class="form-label-custom-user">
+                                    <i class="fas fa-mailbox me-2"></i>ZIP / Postal Code
+                                </label>
+                                <input type="text" class="form-control-custom-user" id="editZip" name="zip_code" 
+                                       value="{{ user_profile.zip_code|default:'' }}" placeholder="e.g., 237">
+                            </div>
+                        </div>
                     </div>
+                    
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn-primary-custom" id="saveProfileBtn">
-                        <i class="fas fa-save me-2"></i>Save Changes
+                <div class="modal-footer" style="padding: 1.75rem 2.5rem; background: white; border-top: 3px solid var(--light-blue); border-radius: 0 0 20px 20px;">
+                    <button type="button" class="btn-cancel-custom-user" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn-save-custom-user" id="saveProfileBtn">
+                        <i class="fas fa-check-circle me-2"></i>Save Changes
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<style>
+/* User Edit Modal Styles */
+.edit-section-user {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border: 2px solid var(--light-blue);
+    transition: all 0.3s ease;
+}
+
+.edit-section-user:hover {
+    border-color: var(--accent-teal);
+    box-shadow: 0 4px 20px rgba(0, 188, 212, 0.15);
+}
+
+.section-header-user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--light-blue);
+}
+
+.section-icon-user {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--light-blue), var(--light-green));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-blue);
+    font-size: 1.3rem;
+}
+
+.section-header-user h5 {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.form-label-custom-user {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-label-custom-user i {
+    color: var(--accent-teal);
+}
+
+.form-control-custom-user {
+    width: 100%;
+    padding: 0.875rem 1.125rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-control-custom-user:focus {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+    outline: none;
+}
+
+.form-control-custom-user:hover {
+    border-color: var(--secondary-blue);
+}
+
+.form-hint-user {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.btn-cancel-custom-user {
+    background: white;
+    border: 2px solid #6c757d;
+    color: #6c757d;
+    padding: 0.875rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-cancel-custom-user:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-save-custom-user {
+    background: linear-gradient(135deg, var(--primary-blue), var(--accent-teal));
+    border: none;
+    color: white;
+    padding: 0.875rem 2.5rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-save-custom-user:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 188, 212, 0.4);
+}
+
+.btn-save-custom-user:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
 
 <!-- Upload Photo Modal -->
 <div class="modal fade" id="uploadUserPhotoModal" tabindex="-1">
