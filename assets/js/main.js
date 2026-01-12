@@ -150,3 +150,105 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// ========================================
+// SCROLL ANIMATIONS
+// ========================================
+
+// Intersection Observer for scroll animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+            // Optionally unobserve after animation
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+// Observe all elements with animate-on-scroll class
+document.addEventListener('DOMContentLoaded', () => {
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+    animatedElements.forEach(el => observer.observe(el));
+});
+
+// ========================================
+// NAVBAR SCROLL EFFECT
+// ========================================
+
+let lastScroll = 0;
+const navbar = document.querySelector('.navbar');
+
+window.addEventListener('scroll', () => {
+    const currentScroll = window.pageYOffset;
+    
+    // Add shadow on scroll
+    if (currentScroll > 10) {
+        navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+    } else {
+        navbar.style.boxShadow = 'none';
+    }
+    
+    lastScroll = currentScroll;
+});
+
+// ========================================
+// SMOOTH COUNTER ANIMATION (for statistics)
+// ========================================
+
+function animateCounter(element, target, duration = 2000) {
+    let start = 0;
+    const increment = target / (duration / 16);
+    
+    const timer = setInterval(() => {
+        start += increment;
+        if (start >= target) {
+            element.textContent = Math.round(target);
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.round(start);
+        }
+    }, 16);
+}
+
+// ========================================
+// PARALLAX EFFECT FOR HERO SECTION
+// ========================================
+
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroSection = document.querySelector('.hero-section');
+    
+    if (heroSection && scrolled < window.innerHeight) {
+        heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+    }
+});
+
+// ========================================
+// CARD TILT EFFECT (Optional subtle 3D effect)
+// ========================================
+
+document.querySelectorAll('.service-card, .feature-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.02)`;
+    });
+    
+    card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+    });
+});
