@@ -152,7 +152,7 @@ def create_request(request):
         "price_ranges": price_ranges,
     }
 
-    return render(request, "requests/create_request.html", context)
+    return render(request, "requests/create_request_redesign.html", context)
 
 
 @login_required
