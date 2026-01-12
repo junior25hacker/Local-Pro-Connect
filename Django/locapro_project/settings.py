@@ -166,3 +166,6 @@ if DEBUG and (not EMAIL_HOST_USER) and os.environ.get('EMAIL_BACKEND') is None:
 # Site Configuration
 # SITE_URL used for building absolute links when request object is not available
 SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
+
+# Contact form receiver email
+CONTACT_RECEIVER_EMAIL = os.environ.get('CONTACT_RECEIVER_EMAIL', 'sandracollehkayeh@gmail.com')
