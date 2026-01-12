@@ -663,22 +663,42 @@ def api_contact(request):
     message = request.POST.get('message', '').strip()
 
     if not name or not email or not subject or not message:
-        return JsonResponse({'success': False, 'error': 'All fields are required.'}, status=400)
+        # If AJAX request, return JSON; otherwise simple HTML
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({'success': False, 'error': 'All fields are required.'}, status=400)
+        return render(request, 'base.html', {
+            'title': 'Contact Error',
+            'content': 'All fields are required.'
+        })
 
     try:
         full_subject = f"Contact form: {subject}"
-        full_message = f"From: {name} <{email}>\n\n{message}"
+        full_message = (
+            f"From: {name} <{email}>\n\n"
+            f"Message:\n{message}\n\n"
+            f"Source IP: {request.META.get('REMOTE_ADDR')}\n"
+        )
         send_mail(
-            full_subject,
-            full_message,
-            getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@example.com'),
-            [getattr(settings, 'CONTACT_RECEIVER_EMAIL', 'admin@example.com')],
+            subject=full_subject,
+            message=full_message,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@example.com'),
+            recipient_list=[getattr(settings, 'CONTACT_RECEIVER_EMAIL', 'admin@example.com')],
             fail_silently=False,
         )
-        # Return simple HTML so normal form posts render nicely
-        return JsonResponse({'success': True, 'message': 'Message sent successfully.'})
+        # AJAX vs regular form POST response handling
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({'success': True, 'message': 'Message sent successfully.'})
+        # Render a minimal success page for non-AJAX form submissions
+        return render(request, 'accounts/registration_success.html', {
+            'title': 'Message Sent',
+        })
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        return render(request, 'base.html', {
+            'title': 'Contact Error',
+            'content': f'Failed to send message: {str(e)}'
+        }, status=500)
 
 @require_http_methods(['GET'])
 def api_check_auth(request):

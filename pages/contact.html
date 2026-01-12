@@ -526,6 +526,43 @@
         </div>
     </div>
 
+    <!-- AJAX handler for contact form -->
+    <script>
+        (function() {
+            const form = document.getElementById('contactForm');
+            const successEl = document.getElementById('successMessage');
+            const errorEl = document.getElementById('errorMessage');
+
+            function show(el) { el.style.display = 'block'; }
+            function hide(el) { el.style.display = 'none'; }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                hide(successEl);
+                hide(errorEl);
+
+                const formData = new FormData(form);
+                try {
+                    const resp = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await resp.json().catch(() => ({ success: resp.ok }));
+                    if (resp.ok && data.success !== false) {
+                        show(successEl);
+                        form.reset();
+                    } else {
+                        errorEl.textContent = (data && (data.error || data.message)) || 'Failed to send message. Please try again later.';
+                        show(errorEl);
+                    }
+                } catch (err) {
+                    errorEl.textContent = 'Network error. Please check your connection and try again.';
+                    show(errorEl);
+                }
+            });
+        })();
+    </script>
+
     <!-- JavaScript for validation, submission & feedback -->
     <script>
         document.getElementById("contactForm").addEventListener("submit", async function(event) {
