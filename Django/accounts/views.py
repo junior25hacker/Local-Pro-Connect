@@ -228,7 +228,7 @@ def user_profile(request):
     if not request.user.is_authenticated:
         return redirect('accounts:register_user')
     user_profile = UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/user_profile.html', {'user_profile': user_profile})
+    return render(request, 'accounts/user_profile_redesign.html', {'user_profile': user_profile})
 
 
 def provider_profile(request):
