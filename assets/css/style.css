@@ -1,4 +1,144 @@
 /* Local Pro Connect Custom Styles - Brand Colors from Logo */
+
+/* ========================================
+   ANIMATION KEYFRAMES
+   ======================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+/* ========================================
+   ANIMATION CLASSES
+   ======================================== */
+
+.animate-on-scroll {
+    opacity: 0;
+    transition: all 0.6s ease-out;
+}
+
+.animate-on-scroll.animated {
+    opacity: 1;
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.fade-in-down {
+    animation: fadeInDown 0.8s ease-out forwards;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.8s ease-out forwards;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.8s ease-out forwards;
+}
+
+.scale-in {
+    animation: scaleIn 0.6s ease-out forwards;
+}
+
+/* Stagger animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* ========================================
+   ENHANCED INTERACTIVE ELEMENTS
+   ======================================== */
 :root {
     --primary-blue: #0052CC;
     --accent-green: #17B890;
@@ -178,12 +318,32 @@ body {
     transition: all 0.3s ease;
     white-space: nowrap;
     min-width: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+.search-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.search-btn:hover::before {
+    width: 300px;
+    height: 300px;
 }
 
 .search-btn:hover {
     background-color: #139a77;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(23, 184, 144, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(23, 184, 144, 0.4);
 }
 
 .search-btn:active {
@@ -230,20 +390,47 @@ body {
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
     border-top: 4px solid var(--accent-green);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background: linear-gradient(to top, rgba(23, 184, 144, 0.1), transparent);
+    transition: height 0.4s ease;
+}
+
+.feature-card:hover::after {
+    height: 100%;
 }
 
 .feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-12px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    border-top-color: var(--primary-blue);
 }
 
 .feature-icon {
     font-size: 3rem;
     color: var(--accent-green);
     margin-bottom: 1rem;
+    transition: all 0.4s ease;
+    display: inline-block;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.15) translateY(-5px);
+    color: var(--primary-blue);
 }
 
 .feature-title {
@@ -512,12 +699,31 @@ form#provider-edit-form .form-label {
     transition: all 0.3s ease;
     position: relative;
     z-index: 1;
+    overflow: hidden;
+}
+
+.cta-button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s;
+}
+
+.cta-button:hover::after {
+    width: 300px;
+    height: 300px;
 }
 
 .cta-button:hover {
     background-color: #ffb800;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 195, 0, 0.4);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(255, 195, 0, 0.5);
 }
 
 .testimonials-section {
@@ -532,6 +738,14 @@ form#provider-edit-form .form-label {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
     margin-bottom: 2rem;
     border-left: 4px solid var(--accent-yellow);
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.testimonial-card:hover {
+    transform: translateX(8px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    border-left-width: 8px;
 }
 
 .star-rating {
@@ -650,20 +864,44 @@ footer {
     border-radius: 12px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease;
+}
+
+.service-card:hover::before {
+    left: 100%;
 }
 
 .service-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-8px) scale(1.03);
     border-color: var(--accent-green);
-    box-shadow: 0 8px 20px rgba(0, 82, 204, 0.15);
+    box-shadow: 0 12px 30px rgba(0, 82, 204, 0.25);
 }
 
 .service-icon {
     font-size: 2.5rem;
     color: var(--primary-blue);
     margin-bottom: 0.75rem;
+    transition: all 0.4s ease;
+    display: inline-block;
+}
+
+.service-card:hover .service-icon {
+    transform: scale(1.2) rotate(8deg);
+    color: var(--accent-green);
 }
 
 .service-name {
@@ -707,6 +945,14 @@ footer {
     font-size: 1.5rem;
     font-weight: 700;
     flex-shrink: 0;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 12px rgba(23, 184, 144, 0.3);
+}
+
+.step-card:hover .step-number {
+    transform: scale(1.15) rotate(360deg);
+    background-color: var(--primary-blue);
+    box-shadow: 0 6px 20px rgba(0, 82, 204, 0.4);
 }
 
 .step-content h3 {
