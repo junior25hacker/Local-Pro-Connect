@@ -251,7 +251,7 @@
         box-shadow: none;
     }
 
-    .providers-section {
+    .providers-section { display: none;
         background: white;
         border-radius: 15px;
         padding: 2rem;
@@ -517,7 +517,7 @@
                 <p>Choose a nearby provider to send your emergency request to:</p>
 
                 {% for provider in nearby_providers %}
-                <div class="provider-card" data-provider-id="{{ provider.user.id }}">
+                <div class="provider-card" data-provider-id="{{ provider.user.id }}" data-lat="{{ provider.latitude|default_if_none:'' }}" data-lng="{{ provider.longitude|default_if_none:'' }}">
                     <div class="provider-header">
                         <div class="provider-avatar">
                             {{ provider.user.first_name|slice:":1"|upper|default:provider.company_name|slice:":1"|upper }}
@@ -528,7 +528,7 @@
                         </div>
                     </div>
                     <div class="provider-distance">
-                        <i class="fas fa-map-marker-alt"></i> ~2.3 mi
+                        <i class="fas fa-map-marker-alt"></i> calculating...
                     </div>
                     <input type="radio" name="selected_provider" value="{{ provider.user.id }}" style="display: none;">
                 </div>
@@ -564,7 +564,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const locationCoords = document.getElementById('locationCoords');
     const submitBtn = document.getElementById('submitEmergencyBtn');
     const emergencyTypeOptions = document.querySelectorAll('.emergency-type-option');
-    const providerCards = document.querySelectorAll('.provider-card');
+    let providerCards = document.querySelectorAll('.provider-card');
 
     let currentLocation = null;
     let selectedProvider = null;
@@ -627,6 +627,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 locationDisplay.style.display = 'block';
                 shareLocationBtn.innerHTML = '<i class="fas fa-check"></i> Location Shared';
                 shareLocationBtn.style.background = 'linear-gradient(135deg, #28A745 0%, #20C997 100%)';
+
+                // After getting location, compute distances and sort providers
+                updateProviderDistancesAndSort();
+
+                // Reveal providers section after sharing location
+                document.querySelector('.providers-section').style.display = 'block';
 
                 validateForm();
             },
@@ -718,6 +724,44 @@ document.addEventListener('DOMContentLoaded', function() {
     // Real-time validation
     document.getElementById('description').addEventListener('input', validateForm);
     document.getElementById('contact_phone').addEventListener('input', validateForm);
+
+    // Compute distance between two lat/lng points (Haversine formula)
+    function haversine(lat1, lon1, lat2, lon2) {
+        function toRad(x) { return x * Math.PI / 180; }
+        const R = 6371; // km
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c; // in km
+    }
+
+    function updateProviderDistancesAndSort() {
+        if (!currentLocation) return;
+        const container = document.querySelector('.providers-section');
+        providerCards = Array.from(document.querySelectorAll('.provider-card'));
+        providerCards.forEach(card => {
+            const lat = parseFloat(card.getAttribute('data-lat'));
+            const lng = parseFloat(card.getAttribute('data-lng'));
+            const distanceEl = card.querySelector('.provider-distance');
+            if (!isNaN(lat) && !isNaN(lng)) {
+                const km = haversine(currentLocation.lat, currentLocation.lng, lat, lng);
+                const mi = km * 0.621371;
+                distanceEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${mi.toFixed(1)} mi`;
+                card.dataset.distance = mi.toFixed(3);
+            } else {
+                distanceEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> distance unavailable`;
+                card.dataset.distance = Number.MAX_SAFE_INTEGER;
+            }
+        });
+        // Sort provider cards by distance ascending
+        providerCards.sort((a,b) => parseFloat(a.dataset.distance) - parseFloat(b.dataset.distance));
+        const listParent = container.querySelector('.providers-section');
+        const parent = container; // the immediate parent holds the cards
+        providerCards.forEach(card => parent.appendChild(card));
+    }
 
     // Initialize validation
     validateForm();
