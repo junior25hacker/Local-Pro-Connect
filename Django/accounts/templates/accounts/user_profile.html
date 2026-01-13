@@ -582,10 +582,43 @@
             </div>
 
             <div class="text-center" style="min-width: 180px;">
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#uploadUserPhotoModal" type="button" style="margin-top: 0.75rem;">
-                    <i class="fas fa-camera me-2"></i> Upload Photo
-                </button>
+                <form id="uploadPhotoForm" enctype="multipart/form-data" style="display: inline-block;">
+                    <label for="photoInput" class="btn btn-outline-primary btn-sm" style="margin-top: 0.75rem; cursor: pointer;">
+                        <i class="fas fa-camera me-2"></i> Upload Photo
+                        <input type="file" id="photoInput" name="profile_picture" accept="image/*" style="display: none;" onchange="handlePhotoUpload(this)">
+                    </label>
+                </form>
             </div>
+
+            <script>
+            function handlePhotoUpload(input) {
+                if (input.files && input.files[0]) {
+                    const formData = new FormData();
+                    formData.append('profile_picture', input.files[0]);
+
+                    fetch('/accounts/api/user/profile/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Reload the page to show new photo
+                            window.location.reload();
+                        } else {
+                            alert('Failed to upload photo: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error uploading photo. Please try again.');
+                    });
+                }
+            }
+            </script>
             
             <div class="profile-info">
                 <h2>{{ user.get_full_name|default:user.username }}</h2>
