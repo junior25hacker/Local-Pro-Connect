@@ -1,0 +1,34 @@
+Hi {{ provider_name }},
+
+You've received a new {{ stars }}-star rating from {{ customer_name }} for Request #{{ request_id }}!
+
+Rating Details:
+- Stars: {{ star_display }} ({{ stars }}/5)
+- Customer: {{ customer_name }}
+- Request: #{{ request_id }} - {{ description }}
+- Submitted: {{ submitted_at|date:"F j, Y \a\t g:i A" }}
+
+Customer Review:
+"{{ feedback }}"
+
+{% if quality_rating or timeliness_rating or communication_rating or professionalism_rating %}
+Detailed Ratings:
+{% if quality_rating %}- Work Quality: {{ quality_rating }}/5{% endif %}
+{% if timeliness_rating %}- Timeliness: {{ timeliness_rating }}/5{% endif %}
+{% if communication_rating %}- Communication: {{ communication_rating }}/5{% endif %}
+{% if professionalism_rating %}- Professionalism: {{ professionalism_rating }}/5{% endif %}
+{% endif %}
+
+{% if would_recommend %}✓ Customer would recommend you to others{% else %}✗ Customer would not recommend you{% endif %}
+{% if would_hire_again %}✓ Customer would hire you again{% else %}✗ Customer would not hire you again{% endif %}
+
+{% if stars >= 4 %}Congratulations on the excellent rating! Keep up the great work.{% elif stars == 3 %}This is a good rating. Consider following up with the customer to see how you can improve.{% else %}We recommend reaching out to understand how you can improve your service quality.{% endif %}
+
+Visit your dashboard to view all your ratings and manage your profile.
+
+Best regards,
+The LocaPro Team
+
+---
+This is an automated message from LocaPro.
+Visit {{ site_url }} to manage your services.

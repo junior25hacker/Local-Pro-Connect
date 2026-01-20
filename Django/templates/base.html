@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Local Pro Connect{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{% static 'assets/image/newlogo.png' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -81,16 +82,25 @@
         .profile-avatar {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            max-width: 40px;
+            max-height: 40px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #FFC300;
             box-shadow: 0 2px 8px rgba(255, 195, 0, 0.3);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
         
         .profile-avatar-fallback {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            max-width: 40px;
+            max-height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #FFC300 0%, #FFD54F 100%);
             color: #003366;
@@ -103,6 +113,7 @@
             box-shadow: 0 2px 8px rgba(255, 195, 0, 0.3);
             transition: all 0.3s ease;
             text-transform: uppercase;
+            flex-shrink: 0;
         }
         
         .profile-dropdown-toggle {
@@ -114,6 +125,9 @@
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            white-space: nowrap;
+            overflow: hidden;
+            max-height: 48px;
         }
         
         .profile-dropdown-toggle:hover {
@@ -404,17 +418,13 @@
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                             <li>
                                 <a class="dropdown-item" href="{% url 'accounts:user_profile' %}">
-                                    <i class="fas fa-user"></i>
-                                    <span>My Profile</span>
+                                    My Profile
                                 </a>
                             </li>
-                            {# Provider-only links removed from global nav.
-                               They should only be available inside the provider profile UI. #}
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <a class="dropdown-item logout-item" href="{% url 'accounts:logout' %}">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout</span>
+                                    Logout
                                 </a>
                             </li>
                         </ul>

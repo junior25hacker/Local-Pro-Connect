@@ -139,6 +139,27 @@
                     <p class="text-muted small">Account created: {{ user.date_joined|date:"M d, Y" }}</p>
                 </div>
             </div>
+
+            <!-- Action Buttons -->
+            {% if not is_own_profile %}
+            <div class="card mt-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Back Button (Left) -->
+                        <a href="{% url 'accounts:professionals_list' %}?service={{ provider_profile.service_type }}" 
+                           class="btn btn-outline-secondary btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Back to List
+                        </a>
+                        
+                        <!-- Request Service Button (Right) -->
+                        <a href="{% url 'requests:create_request' %}?provider={{ provider_profile.id }}" 
+                           class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Request Service
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

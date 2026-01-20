@@ -366,20 +366,20 @@ def determine_price_range(min_price):
         min_price (Decimal or float): Minimum price
         
     Returns:
-        str: Price range symbol ('$', '$$', '$$$', or '$$$$')
+        str: Price range symbol with CFA indicator
     """
     try:
         price = float(min_price) if min_price else 0
         if price < 50:
-            return '$'
+            return 'CFA'
         elif price < 150:
-            return '$$'
+            return 'CFA'
         elif price < 300:
-            return '$$$'
+            return 'CFA'
         else:
-            return '$$$$'
+            return 'CFA'
     except (ValueError, TypeError):
-        return '$$'
+        return 'CFA'
 
 
 def get_region_alternatives(queryset):

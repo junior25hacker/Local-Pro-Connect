@@ -25,6 +25,11 @@ from .export_utils import (
     format_request_for_export
 )
 
+# Email functionality
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
+
 
 # Geocodio Autocomplete proxy endpoint
 import requests as ext_requests
@@ -32,6 +37,75 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 
 GEOCODIO_API_KEY = '054587d60047e4d609f91e55ed7876849766576'
+
+
+def send_provider_notification_email(service_request):
+    """
+    Send professional email notification to the selected provider about a new service request.
+    
+    Args:
+        service_request: ServiceRequest instance
+    """
+    if not service_request.provider or not service_request.provider.email:
+        raise ValueError("Provider or provider email not found")
+    
+    # Create or get decision token for provider actions
+    from .models import RequestDecisionToken
+    decision_token, created = RequestDecisionToken.objects.get_or_create(
+        service_request=service_request,
+        defaults={'used': False}
+    )
+    
+    # Build email context with distance information
+    distance_info = {}
+    if service_request.distance_km is not None:
+        distance_info = {
+            'distance_km': float(service_request.distance_km),
+            'distance_display': service_request.get_distance_display(),
+        }
+    
+    context = {
+        'service_request': service_request,
+        'provider': service_request.provider,
+        'customer': service_request.user,
+        'customer_name': service_request.user.get_full_name() or service_request.user.username,
+        'provider_name': service_request.provider.get_full_name() or service_request.provider.username,
+        'request_id': service_request.id,
+        'description': service_request.description,
+        'date_time': service_request.date_time,
+        'budget_amount': service_request.offered_price,
+        'price_range': service_request.price_range,
+        'urgent': service_request.urgent,
+        'created_at': service_request.created_at,
+        'site_url': getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000'),
+        'accept_url': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/decision/{service_request.id}/accept/{decision_token.token}/",
+        'decline_url': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/decision/{service_request.id}/decline/{decision_token.token}/",
+        'token': decision_token.token,
+        'address_string': service_request.address_string,
+        'has_location': service_request.has_location(),
+        **distance_info,  # Include distance information if available
+    }
+    
+    # Email subject
+    subject = f"New Service Request #{service_request.id} - {service_request.user.get_full_name() or service_request.user.username}"
+    
+    # Load email templates
+    text_body = render_to_string('emails/request_to_provider_email.txt', context)
+    html_body = render_to_string('emails/request_to_provider_email.html', context)
+    
+    # Create and send email
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=text_body,
+        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@locapro.com'),
+        to=[service_request.provider.email]
+    )
+    email.attach_alternative(html_body, "text/html")
+    
+    # Send the email
+    email.send()
+    
+    logger.info(f"Provider notification email sent to {service_request.provider.email} for request #{service_request.id}")
 
 @require_GET
 @csrf_exempt
@@ -100,7 +174,62 @@ def create_request(request):
             # Save the main ServiceRequest with current user
             service_request = form.save(commit=False)
             service_request.user = request.user
+            
+            # Handle provider selection from the dropdown
+            provider_id = request.POST.get('provider')
+            if provider_id:
+                try:
+                    from django.contrib.auth.models import User
+                    selected_provider = User.objects.get(id=provider_id)
+                    service_request.provider = selected_provider
+                    service_request.provider_name = selected_provider.get_full_name() or selected_provider.username
+                except User.DoesNotExist:
+                    messages.error(request, 'Selected provider not found.')
+                    return render(request, "requests/create_request.html", {
+                        "form": form,
+                        "price_ranges": PriceRange.objects.all().order_by("min_price"),
+                        "providers": ProviderProfile.objects.select_related('user').filter(user__is_active=True).order_by('company_name'),
+                    })
+            
+            # Handle budget amount from the slider
+            budget_amount = request.POST.get('budget_amount')
+            if budget_amount:
+                try:
+                    service_request.offered_price = Decimal(budget_amount)
+                except (ValueError, TypeError):
+                    service_request.offered_price = None
+            
+            # Handle urgent location coordinates
+            if service_request.urgent:
+                urgent_lat = request.POST.get('urgent_latitude')
+                urgent_lon = request.POST.get('urgent_longitude')
+                if urgent_lat and urgent_lon:
+                    try:
+                        service_request.latitude = Decimal(urgent_lat)
+                        service_request.longitude = Decimal(urgent_lon)
+                        logger.info(f"Urgent request coordinates captured: {urgent_lat}, {urgent_lon}")
+                    except (ValueError, TypeError):
+                        logger.warning(f"Invalid urgent coordinates: {urgent_lat}, {urgent_lon}")
+            
+            # Handle regular service address
+            service_address = request.POST.get('service_address')
+            if service_address:
+                service_request.address_string = service_address
+            
             service_request.save()
+            
+            # Calculate distance to provider if coordinates are available
+            if (service_request.latitude and service_request.longitude and 
+                service_request.provider and hasattr(service_request.provider, 'provider_profile')):
+                try:
+                    provider_profile = service_request.provider.provider_profile
+                    distance = service_request.calculate_distance_to_provider(provider_profile)
+                    if distance is not None:
+                        service_request.distance_km = distance
+                        service_request.save(update_fields=['distance_km'])
+                        logger.info(f"Distance calculated: {distance:.1f} km for request #{service_request.id}")
+                except Exception as e:
+                    logger.warning(f"Could not calculate distance for request #{service_request.id}: {e}")
 
             # Handle uploaded photos (optional, multiple)
             photos = request.FILES.getlist("photos")
@@ -109,6 +238,16 @@ def create_request(request):
                     service_request=service_request,
                     image=photo,
                 )
+
+            # Send email notification to the selected provider
+            if service_request.provider and service_request.provider.email:
+                try:
+                    send_provider_notification_email(service_request)
+                    logger.info(f"Email notification sent to provider {service_request.provider.email} for request #{service_request.id}")
+                except Exception as e:
+                    logger.error(f"Failed to send email to provider: {str(e)}")
+                    # Don't fail the request creation if email fails
+                    messages.warning(request, 'Request created successfully, but we could not send the email notification. The provider has been notified through other means.')
 
             # Log budget information for reporting
             if service_request.offered_price:
@@ -123,9 +262,6 @@ def create_request(request):
                     f"Budget ${service_request.offered_price:.2f} validated against provider minimum "
                     f"${service_request.provider.provider_profile.min_price:.2f}"
                 )
-
-            # Token generation and email notifications are handled by post_save signals
-            # Keep the request handling snappy and rely on signals for side-effects.
 
             # Redirect to success page
             return redirect("requests:create_request_success")
@@ -144,12 +280,18 @@ def create_request(request):
         
         form = ServiceRequestForm(initial=initial_data)
 
+    # Get all available providers for the dropdown
+    providers = ProviderProfile.objects.select_related('user').filter(
+        user__is_active=True
+    ).order_by('company_name', 'user__first_name', 'user__last_name')
+
     # Pass price ranges to template
     price_ranges = PriceRange.objects.all().order_by("min_price")
 
     context = {
         "form": form,
         "price_ranges": price_ranges,
+        "providers": providers,
     }
 
     return render(request, "requests/create_request.html", context)
@@ -347,10 +489,19 @@ def request_list(request):
     # Provider-only view (enforced by @provider_required)
     is_provider = True
     
-    # Show requests directed to this provider
-    requests_list = ServiceRequest.objects.filter(
-        provider=user
-    ).select_related('user', 'provider', 'price_range').prefetch_related('photos')
+    # Show requests directed to this provider with priority ordering
+    try:
+        provider_profile = user.provider_profile
+        # Use the new prioritized request method
+        requests_list = ServiceRequest.get_requests_for_provider(
+            provider_profile, 
+            include_distance=True
+        )
+    except ProviderProfile.DoesNotExist:
+        # Fallback if provider profile not found
+        requests_list = ServiceRequest.objects.filter(
+            provider=user
+        ).select_related('user', 'provider', 'price_range').prefetch_related('photos')
     
     # Calculate distances for each request
     requests_with_distance = []
@@ -397,19 +548,18 @@ def request_list(request):
                 except (ValueError, AttributeError):
                     pass
         
-        # Calculate distance if both profiles have zip codes (simplified distance calculation)
-        # Note: For production, you'd want to use actual geocoding or stored lat/lon
-        if user_profile and provider_profile:
-            # Placeholder: In production, you'd geocode the addresses
-            # For demo purposes, we'll show a mock distance based on zip code difference
-            try:
-                user_zip = int(user_profile.zip_code) if user_profile.zip_code else 0
-                provider_zip = int(provider_profile.zip_code) if provider_profile.zip_code else 0
-                # Very rough approximation: ~0.01 miles per zip code unit difference
-                zip_diff = abs(user_zip - provider_zip)
-                request_data['distance'] = min(zip_diff * 0.5, 500)  # Cap at 500 miles
-            except (ValueError, AttributeError):
-                request_data['distance'] = None
+        # Use the calculated distance from the request (already calculated by get_requests_for_provider)
+        if hasattr(service_request, 'distance_km') and service_request.distance_km is not None:
+            request_data['distance'] = float(service_request.distance_km)
+            request_data['distance_display'] = service_request.get_distance_display()
+        else:
+            # Fallback calculation if distance not already calculated
+            if (service_request.latitude and service_request.longitude and 
+                provider_profile and provider_profile.latitude and provider_profile.longitude):
+                calculated_distance = service_request.calculate_distance_to_provider(provider_profile)
+                if calculated_distance is not None:
+                    request_data['distance'] = calculated_distance
+                    request_data['distance_display'] = service_request.get_distance_display()
         
         requests_with_distance.append(request_data)
     

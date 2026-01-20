@@ -1,0 +1,663 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Request Service - Local Pro Connect{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Professional Color Palette */
+    :root {
+        --primary-blue: #004C99;
+        --secondary-blue: #007bff;
+        --light-blue: #E3F2FD;
+        --dark-blue: #003366;
+        --primary-green: #00A65A;
+        --light-green: #E8F5E9;
+        --dark-green: #008a4a;
+        --accent-teal: #00BCD4;
+        --text-dark: #2C3E50;
+        --text-light: #6C757D;
+        --bg-light: #F8FAFB;
+        --urgent-orange: #FF9800;
+    }
+    
+    body {
+        background: linear-gradient(135deg, var(--light-blue) 0%, var(--bg-light) 100%);
+        min-height: 100vh;
+        font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    }
+    
+    .request-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+    }
+    
+    .request-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        animation: fadeInDown 0.6s ease;
+    }
+    
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .request-header h1 {
+        color: var(--primary-blue);
+        font-weight: 800;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .request-header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .request-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 76, 153, 0.1);
+        border: 1px solid rgba(0, 123, 255, 0.1);
+        position: relative;
+        animation: fadeInUp 0.6s ease;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .request-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--primary-green), var(--accent-teal));
+        border-radius: 20px 20px 0 0;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: var(--bg-light);
+        border-radius: 16px;
+        border: 2px solid var(--light-blue);
+        transition: all 0.3s ease;
+    }
+    
+    .form-section:hover {
+        border-color: var(--primary-blue);
+        box-shadow: 0 4px 20px rgba(0, 76, 153, 0.08);
+    }
+    
+    .section-title {
+        color: var(--primary-blue);
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .section-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--light-blue), var(--light-green));
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.2rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+        display: block;
+    }
+    
+    .form-label i {
+        color: var(--primary-blue);
+        margin-right: 0.5rem;
+    }
+    
+    .label-required {
+        color: #dc3545;
+        font-weight: 700;
+        margin-left: 0.25rem;
+    }
+    
+    .form-control-custom {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        font-family: 'Inter', sans-serif;
+    }
+    
+    .form-control-custom:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 76, 153, 0.1);
+        outline: none;
+    }
+    
+    .form-control-custom:hover {
+        border-color: var(--secondary-blue);
+    }
+    
+    textarea.form-control-custom {
+        min-height: 150px;
+        resize: vertical;
+    }
+    
+    .form-hint {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+    
+    /* Budget Slider */
+    .budget-slider-wrapper {
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid var(--light-blue);
+    }
+    
+    .budget-display {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .budget-currency {
+        font-size: 1.5rem;
+        color: var(--primary-green);
+        font-weight: 700;
+        margin-right: 0.5rem;
+    }
+    
+    .budget-value {
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--primary-blue);
+        text-shadow: 0 2px 4px rgba(0, 76, 153, 0.1);
+    }
+    
+    .budget-slider {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--light-green), var(--primary-green));
+        outline: none;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    
+    .budget-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .budget-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 6px 16px rgba(0, 166, 90, 0.6);
+    }
+    
+    .budget-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-blue), var(--primary-green));
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .budget-range-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    
+    /* Urgent Toggle */
+    .urgent-wrapper {
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        border: 2px solid var(--light-blue);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .urgent-wrapper:has(input:checked) {
+        border-color: var(--urgent-orange);
+        background: rgba(255, 152, 0, 0.05);
+    }
+    
+    .urgent-checkbox {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        accent-color: var(--urgent-orange);
+    }
+    
+    .urgent-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        margin: 0;
+        flex: 1;
+    }
+    
+    /* File Upload */
+    .file-upload-area {
+        padding: 3rem;
+        border: 3px dashed var(--light-blue);
+        border-radius: 16px;
+        text-align: center;
+        background: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .file-upload-area:hover {
+        border-color: var(--primary-blue);
+        background: var(--light-blue);
+    }
+    
+    .upload-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 1rem;
+        color: var(--primary-blue);
+    }
+    
+    .upload-text {
+        display: block;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary-blue);
+        margin-bottom: 0.5rem;
+    }
+    
+    .upload-hint {
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+    
+    .file-input {
+        display: none;
+    }
+    
+    /* Photo Preview */
+    .photo-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .photo-preview {
+        position: relative;
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 2px solid var(--light-blue);
+    }
+    
+    .photo-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .photo-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 0.8rem;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 3rem;
+    }
+    
+    .btn-submit {
+        flex: 2;
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        color: white;
+        border: none;
+        padding: 1.25rem 2.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 166, 90, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 166, 90, 0.4);
+    }
+    
+    .btn-cancel {
+        flex: 1;
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid #ddd;
+        padding: 1.25rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cancel:hover {
+        background: #f8f9fa;
+        border-color: var(--text-dark);
+    }
+    
+    /* Row Layout for Budget and Urgent */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .request-card {
+            padding: 2rem 1.5rem;
+        }
+        
+        .request-header h1 {
+            font-size: 2rem;
+        }
+    }
+    
+    /* Field Errors */
+    .field-error {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="request-container">
+    <div class="request-header">
+        <h1>📝 Request a Service</h1>
+        <p>Tell us what you need and we'll connect you with qualified professionals</p>
+    </div>
+    
+    <div class="request-card">
+        <form method="post" enctype="multipart/form-data" id="requestForm">
+            {% csrf_token %}
+            
+            <!-- Hidden fields for provider selection (removed from UI) -->
+            <div style="display: none;">
+                {{ form.provider_choice }}
+                {{ form.provider_name }}
+            </div>
+            
+            <!-- What do you need? -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <span>What do you need help with?</span>
+                </div>
+                
+                <label for="{{ form.description.id_for_label }}" class="form-label">
+                    <i class="fas fa-edit"></i>Describe your service request <span class="label-required">*</span>
+                </label>
+                <textarea 
+                    name="description" 
+                    id="{{ form.description.id_for_label }}" 
+                    class="form-control-custom" 
+                    required 
+                    placeholder="Describe in detail what you need done..."
+                >{{ form.description.value|default:'' }}</textarea>
+                <span class="form-hint">Be specific about the work required, location, and any special requirements</span>
+                {% if form.description.errors %}
+                    <span class="field-error">{{ form.description.errors }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- When do you need it? -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <span>When do you need it done?</span>
+                </div>
+                
+                <label for="{{ form.date_time.id_for_label }}" class="form-label">
+                    <i class="fas fa-clock"></i>Preferred Date & Time
+                </label>
+                <input 
+                    type="datetime-local" 
+                    name="date_time" 
+                    id="{{ form.date_time.id_for_label }}" 
+                    class="form-control-custom"
+                    value="{{ form.date_time.value|default:'' }}"
+                >
+                <span class="form-hint">Leave blank if timing is flexible</span>
+                {% if form.date_time.errors %}
+                    <span class="field-error">{{ form.date_time.errors }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Budget and Priority (Side by Side) -->
+            <div class="form-row">
+                <!-- Budget -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <span>Your Budget</span>
+                    </div>
+                    
+                    <div class="budget-slider-wrapper">
+                        <div class="budget-display">
+                            <span class="budget-currency">FCFA</span>
+                            <span class="budget-value" id="budget_value">50,000</span>
+                        </div>
+                        
+                        <input 
+                            type="range" 
+                            id="budget_slider" 
+                            class="budget-slider" 
+                            min="0" 
+                            max="1000000" 
+                            step="5000" 
+                            value="50000"
+                        >
+                        
+                        <div class="budget-range-labels">
+                            <span>FCFA 0</span>
+                            <span>FCFA 1,000,000+</span>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="budget_amount" id="budget_amount" value="50000">
+                    <div style="display: none;">{{ form.price_range }}</div>
+                    
+                    <span class="form-hint">Move the slider to set your budget range</span>
+                </div>
+                
+                <!-- Priority -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <span>Priority Level</span>
+                    </div>
+                    
+                    <div class="urgent-wrapper">
+                        <input 
+                            type="checkbox" 
+                            name="urgent" 
+                            id="{{ form.urgent.id_for_label }}" 
+                            class="urgent-checkbox"
+                            {% if form.urgent.value %}checked{% endif %}
+                        >
+                        <label for="{{ form.urgent.id_for_label }}" class="urgent-label">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--urgent-orange); margin-right: 0.5rem;"></i>
+                            Mark as Urgent
+                        </label>
+                    </div>
+                    <span class="form-hint">Urgent requests get priority attention from professionals</span>
+                </div>
+            </div>
+            
+            <!-- Add Photos -->
+            <div class="form-section">
+                <div class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
+                    <span>Add Photos (Optional)</span>
+                </div>
+                
+                <label for="id_photos" class="file-upload-area">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span class="upload-text">Click to upload photos</span>
+                    <span class="upload-hint">Supports JPG and PNG. Multiple files allowed</span>
+                </label>
+                <input type="file" id="id_photos" name="photos" multiple class="file-input" accept="image/*">
+                
+                <div class="photo-preview-container" id="photoPreview"></div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="window.history.back()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Submit Request
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Budget Slider
+const budgetSlider = document.getElementById('budget_slider');
+const budgetValue = document.getElementById('budget_value');
+const budgetAmount = document.getElementById('budget_amount');
+
+budgetSlider.addEventListener('input', function() {
+    const value = parseInt(this.value);
+    budgetValue.textContent = value.toLocaleString('fr-FR');
+    budgetAmount.value = value;
+});
+
+// Photo Preview
+const photoInput = document.getElementById('id_photos');
+const photoPreview = document.getElementById('photoPreview');
+
+photoInput.addEventListener('change', function(e) {
+    photoPreview.innerHTML = '';
+    const files = Array.from(e.target.files);
+    
+    files.forEach((file, index) => {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const div = document.createElement('div');
+                div.className = 'photo-preview';
+                div.innerHTML = `
+                    <img src="${event.target.result}" alt="Preview ${index + 1}">
+                    <button type="button" class="photo-remove" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                photoPreview.appendChild(div);
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+});
+</script>
+{% endblock %}

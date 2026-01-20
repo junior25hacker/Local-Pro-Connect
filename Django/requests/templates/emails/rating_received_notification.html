@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Rating Received - LocaPro</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #667eea; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .rating-box { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; text-align: center; }
+        .stars { font-size: 2em; color: #ffc107; margin: 10px 0; }
+        .details { background: white; padding: 15px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .review { background: #e8f4fd; padding: 15px; margin: 15px 0; border-radius: 5px; font-style: italic; }
+        .metrics { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+        .metric { background: #f8f9fa; padding: 8px 12px; border-radius: 4px; flex: 1; min-width: 120px; }
+        .positive { color: #28a745; }
+        .negative { color: #dc3545; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+        .excellent { background: #d4edda; border-color: #28a745; }
+        .good { background: #d1ecf1; border-color: #17a2b8; }
+        .average { background: #fff3cd; border-color: #ffc107; }
+        .poor { background: #f8d7da; border-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⭐ New Rating Received!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{ provider_name }},</p>
+            
+            <div class="rating-box {% if stars >= 4 %}excellent{% elif stars == 3 %}good{% elif stars == 2 %}average{% else %}poor{% endif %}">
+                <h2>{{ customer_name }} rated your service</h2>
+                <div class="stars">{{ star_display }}</div>
+                <p><strong>{{ stars }} out of 5 stars</strong></p>
+            </div>
+            
+            <div class="details">
+                <h3>Request Details</h3>
+                <ul>
+                    <li><strong>Request ID:</strong> #{{ request_id }}</li>
+                    <li><strong>Service:</strong> {{ description }}</li>
+                    <li><strong>Customer:</strong> {{ customer_name }}</li>
+                    <li><strong>Submitted:</strong> {{ submitted_at|date:"F j, Y \a\t g:i A" }}</li>
+                </ul>
+            </div>
+            
+            <div class="review">
+                <h3>Customer Review</h3>
+                <p>"{{ feedback }}"</p>
+            </div>
+            
+            {% if quality_rating or timeliness_rating or communication_rating or professionalism_rating %}
+            <div class="details">
+                <h3>Detailed Ratings</h3>
+                <div class="metrics">
+                    {% if quality_rating %}<div class="metric"><strong>Work Quality:</strong> {{ quality_rating }}/5</div>{% endif %}
+                    {% if timeliness_rating %}<div class="metric"><strong>Timeliness:</strong> {{ timeliness_rating }}/5</div>{% endif %}
+                    {% if communication_rating %}<div class="metric"><strong>Communication:</strong> {{ communication_rating }}/5</div>{% endif %}
+                    {% if professionalism_rating %}<div class="metric"><strong>Professionalism:</strong> {{ professionalism_rating }}/5</div>{% endif %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="details">
+                <h3>Customer Recommendations</h3>
+                <p>{% if would_recommend %}<span class="positive">✓ Would recommend you to others</span>{% else %}<span class="negative">✗ Would not recommend you</span>{% endif %}</p>
+                <p>{% if would_hire_again %}<span class="positive">✓ Would hire you again</span>{% else %}<span class="negative">✗ Would not hire you again</span>{% endif %}</p>
+            </div>
+            
+            {% if stars >= 4 %}
+            <p class="positive"><strong>Congratulations on the excellent rating! Keep up the great work.</strong></p>
+            {% elif stars == 3 %}
+            <p><strong>This is a good rating.</strong> Consider following up with the customer to see how you can improve.</p>
+            {% else %}
+            <p><strong>We recommend reaching out to understand how you can improve your service quality.</strong></p>
+            {% endif %}
+            
+            <p>Visit your <a href="{{ dashboard_link }}">dashboard</a> to view all your ratings and manage your profile.</p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from LocaPro.<br>
+            Visit <a href="{{ site_url }}">{{ site_url }}</a> to manage your services.</p>
+        </div>
+    </div>
+</body>
+</html>

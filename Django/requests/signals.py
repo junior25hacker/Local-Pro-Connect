@@ -17,6 +17,9 @@ from .email_service import (
     send_decline_email,
 )
 
+# Import completion signals to register them
+from . import completion_signals
+
 import logging
 
 logger = logging.getLogger(__name__)

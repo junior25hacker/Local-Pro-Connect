@@ -8,14 +8,15 @@ from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from .decorators import provider_required, owner_required, read_only_profile
 from urllib.parse import urlencode
 from django.core.mail import send_mail
 from django.conf import settings
 import json
 import logging
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from requests.models import ServiceRequest
 
 logger = logging.getLogger(__name__)
 
@@ -164,14 +165,38 @@ def register_provider(request):
     if request.method == 'POST':
         form = ProviderRegistrationForm(request.POST)
         if form.is_valid():
+            # Use email as username if no username provided
+            email = form.cleaned_data.get('email') or ''
+            username = form.cleaned_data.get('username')
+            
+            # If email is provided and username is not, generate username from email
+            if email and not username:
+                username = email.split('@')[0]
+                # Ensure username is unique
+                base_username = username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+            
             user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data.get('email') or '',
+                username=username,
+                email=email,
                 password=form.cleaned_data['password1'],
                 first_name=form.cleaned_data.get('first_name') or '',
                 last_name=form.cleaned_data.get('last_name') or '',
             )
-            ProviderProfile.objects.create(
+            
+            # Store service_type_other in service_description if provided
+            service_type_other = form.cleaned_data.get('service_type_other', '')
+            service_desc = ''
+            if service_type_other:
+                service_desc = f"Service Type: {service_type_other}"
+            
+            # Handle profile picture upload
+            profile_picture = request.FILES.get('profile_picture')
+            
+            provider_profile = ProviderProfile.objects.create(
                 user=user,
                 company_name=form.cleaned_data.get('company_name') or '',
                 service_type=form.cleaned_data.get('service_type') or 'other',
@@ -181,22 +206,44 @@ def register_provider(request):
                 state=form.cleaned_data.get('state') or '',
                 zip_code=form.cleaned_data.get('zip_code') or '',
                 bio=form.cleaned_data.get('bio') or '',
+                service_description=service_desc,
                 years_experience=form.cleaned_data.get('years_experience') or 0,
             )
+            
+            # Save profile picture if uploaded
+            if profile_picture:
+                provider_profile.profile_picture = profile_picture
+                provider_profile.save()
+            
             auth.login(request, user)
             messages.success(request, f'Welcome {user.first_name or user.username}!')
             return redirect('accounts:provider_profile')
     else:
         form = ProviderRegistrationForm()
-    return render(request, 'accounts/register_provider.html', {'form': form})
+    return render(request, 'accounts/register_provider_multistep.html', {'form': form})
 
 
 def user_profile(request):
-    """Serve user profile HTML page"""
+    """Serve user profile HTML page with dashboard data"""
     if not request.user.is_authenticated:
         return redirect('accounts:register_user')
-    user_profile = UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/user_profile.html', {'user_profile': user_profile})
+    
+    # Get or create user profile
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    # Get ongoing requests (accepted status) for the dashboard
+    ongoing_requests = ServiceRequest.objects.filter(
+        user=request.user,
+        status='accepted'
+    ).select_related('provider').order_by('-created_at')
+    
+    context = {
+        'user_profile': user_profile,
+        'ongoing_requests': ongoing_requests,
+        'ongoing_count': ongoing_requests.count(),
+    }
+    
+    return render(request, 'accounts/user_profile.html', context)
 
 
 def provider_profile(request):
@@ -204,7 +251,7 @@ def provider_profile(request):
     if not request.user.is_authenticated:
         return redirect('accounts:register_provider')
     provider_profile = ProviderProfile.objects.get(user=request.user) if ProviderProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/provider_profile.html', {'provider_profile': provider_profile})
+    return render(request, 'accounts/provider_profile_redesign.html', {'provider_profile': provider_profile})
 
 
 @read_only_profile
@@ -561,22 +608,42 @@ def api_contact(request):
     message = request.POST.get('message', '').strip()
 
     if not name or not email or not subject or not message:
-        return JsonResponse({'success': False, 'error': 'All fields are required.'}, status=400)
+        # If AJAX request, return JSON; otherwise simple HTML
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({'success': False, 'error': 'All fields are required.'}, status=400)
+        return render(request, 'base.html', {
+            'title': 'Contact Error',
+            'content': 'All fields are required.'
+        })
 
     try:
         full_subject = f"Contact form: {subject}"
-        full_message = f"From: {name} <{email}>\n\n{message}"
+        full_message = (
+            f"From: {name} <{email}>\n\n"
+            f"Message:\n{message}\n\n"
+            f"Source IP: {request.META.get('REMOTE_ADDR')}\n"
+        )
         send_mail(
-            full_subject,
-            full_message,
-            getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@example.com'),
-            [getattr(settings, 'CONTACT_RECEIVER_EMAIL', 'admin@example.com')],
+            subject=full_subject,
+            message=full_message,
+            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@example.com'),
+            recipient_list=[getattr(settings, 'CONTACT_RECEIVER_EMAIL', 'admin@example.com')],
             fail_silently=False,
         )
-        # Return simple HTML so normal form posts render nicely
-        return JsonResponse({'success': True, 'message': 'Message sent successfully.'})
+        # AJAX vs regular form POST response handling
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({'success': True, 'message': 'Message sent successfully.'})
+        # Render a minimal success page for non-AJAX form submissions
+        return render(request, 'accounts/registration_success.html', {
+            'title': 'Message Sent',
+        })
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+        return render(request, 'base.html', {
+            'title': 'Contact Error',
+            'content': f'Failed to send message: {str(e)}'
+        }, status=500)
 
 @require_http_methods(['GET'])
 def api_check_auth(request):
