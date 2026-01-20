@@ -71,6 +71,11 @@ class ProviderProfile(models.Model):
 		verbose_name = 'Provider Profile'
 		verbose_name_plural = 'Provider Profiles'
 		ordering = ['-created_at']
+		indexes = [
+			models.Index(fields=['latitude', 'longitude'], name='provider_location_idx'),
+			models.Index(fields=['service_type'], name='provider_service_idx'),
+			models.Index(fields=['is_verified'], name='provider_verified_idx'),
+		]
 
 	def __str__(self):
 		return f"Provider: {self.user.username} ({self.company_name})"

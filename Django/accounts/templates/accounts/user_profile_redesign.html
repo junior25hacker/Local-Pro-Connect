@@ -15,7 +15,6 @@
         --light-green: #E8F5E9;
         --dark-green: #008a4a;
         --accent-teal: #00BCD4;
-        --emergency-red: #DC3545;
         --warning-orange: #FFA500;
         --text-dark: #2C3E50;
         --text-light: #6C757D;
@@ -268,21 +267,6 @@
         box-shadow: 0 8px 25px rgba(0, 166, 90, 0.4);
     }
     
-    .btn-emergency {
-        background: linear-gradient(135deg, var(--emergency-red), #C82333);
-        color: white;
-        animation: emergencyPulse 2s infinite;
-    }
-    
-    @keyframes emergencyPulse {
-        0%, 100% { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
-        50% { box-shadow: 0 6px 25px rgba(220, 53, 69, 0.5); }
-    }
-    
-    .btn-emergency:hover {
-        animation: none;
-        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.5) !important;
-    }
     
     .btn-browse {
         background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
@@ -661,14 +645,10 @@
     </div>
     
     <!-- Action Buttons -->
-    <div class="action-buttons-grid">
+    <div class="action-buttons-grid" style="grid-template-columns: 1fr 1fr;">
         <a href="/requests/create/" class="action-btn-large btn-request-service">
             <i class="fas fa-paper-plane"></i>
             <span>Request Service</span>
-        </a>
-        <a href="/accounts/emergency/" class="action-btn-large btn-emergency">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span>Emergency Request</span>
         </a>
         <a href="/professionals/" class="action-btn-large btn-browse">
             <i class="fas fa-search"></i>
@@ -902,7 +882,7 @@
                         
                         <div class="mb-4">
                             <label for="editEmail" class="form-label-custom-user">
-                                <i class="fas fa-envelope me-2"></i>Email Address <span style="color: var(--emergency-red);">*</span>
+                                <i class="fas fa-envelope me-2"></i>Email Address <span style="color: #DC3545;">*</span>
                             </label>
                             <input type="email" class="form-control-custom-user" id="editEmail" name="email" 
                                    value="{{ user.email|default:'' }}" placeholder="your.email@example.com" required>

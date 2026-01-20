@@ -48,6 +48,37 @@ class ServiceRequestForm(forms.ModelForm):
         label="Offered Price (optional)",
     )
 
+    # Geolocation fields
+    address_string = forms.CharField(
+        max_length=500,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "placeholder": "Enter your full address...",
+                "class": "input-field",
+                "id": "address_string",
+            }
+        ),
+        help_text="Provide your full address for accurate service location",
+        label="Service Address",
+    )
+    
+    latitude = forms.DecimalField(
+        required=False,
+        max_digits=9,
+        decimal_places=6,
+        widget=forms.HiddenInput(attrs={"id": "latitude"}),
+        help_text="GPS latitude coordinate (auto-filled)",
+    )
+    
+    longitude = forms.DecimalField(
+        required=False,
+        max_digits=9,
+        decimal_places=6,
+        widget=forms.HiddenInput(attrs={"id": "longitude"}),
+        help_text="GPS longitude coordinate (auto-filled)",
+    )
+
     class Meta:
         model = ServiceRequest
         fields = [
@@ -58,6 +89,9 @@ class ServiceRequestForm(forms.ModelForm):
             "date_time",
             "price_range",
             "urgent",
+            "address_string",
+            "latitude",
+            "longitude",
         ]
 
         widgets = {
@@ -138,6 +172,28 @@ class ServiceRequestForm(forms.ModelForm):
         # Check for negative or zero budget
         if offered_price is not None and offered_price <= 0:
             raise ValidationError("Budget amount must be greater than zero.")
+        
+        # Validate geolocation coordinates
+        latitude = cleaned.get("latitude")
+        longitude = cleaned.get("longitude")
+        address_string = cleaned.get("address_string", "").strip()
+        
+        # If coordinates are provided, validate their ranges
+        if latitude is not None:
+            if not (-90 <= latitude <= 90):
+                raise ValidationError("Latitude must be between -90 and 90 degrees.")
+        
+        if longitude is not None:
+            if not (-180 <= longitude <= 180):
+                raise ValidationError("Longitude must be between -180 and 180 degrees.")
+        
+        # Both coordinates should be provided together if either is provided
+        if (latitude is not None) != (longitude is not None):
+            raise ValidationError("Both latitude and longitude must be provided together.")
+        
+        # If coordinates are provided, address string should also be provided
+        if latitude is not None and longitude is not None and not address_string:
+            raise ValidationError("Address string is required when GPS coordinates are provided.")
         
         return cleaned
 

@@ -1,0 +1,30 @@
+Hi {{ provider_name }},
+
+Great news! The job for Request #{{ request_id }} has been marked as completed by your customer.
+
+Job Details:
+- Request ID: #{{ request_id }}
+- Customer: {{ customer_name }}
+- Description: {{ description }}
+- Completed: {{ completed_at|date:"F j, Y \a\t g:i A" }}
+
+Customer Feedback:
+{% if completion_notes %}
+- Notes: {{ completion_notes }}
+{% endif %}
+{% if work_quality %}
+- Work Quality: {{ work_quality }}
+{% endif %}
+- Completed on Time: {% if completed_on_time %}Yes{% else %}No{% endif %}
+- Provider Showed Up: {% if provider_showed_up %}Yes{% else %}No{% endif %}
+
+The customer may submit a rating and review for this job. You'll receive another notification if they do.
+
+Thank you for providing excellent service through our platform!
+
+Best regards,
+The LocaPro Team
+
+---
+This is an automated message from LocaPro.
+Visit {{ site_url }} to manage your services.

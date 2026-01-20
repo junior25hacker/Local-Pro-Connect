@@ -1,5 +1,74 @@
 // Local Pro Connect JS - Inspired by Angi.com
 
+// ========================================
+// NEW NAVBAR FUNCTIONALITY (jQuery)
+// ========================================
+
+// Wait for jQuery to be loaded
+$(document).ready(function() {
+    // Mobile navigation toggle with improved functionality
+    $('.navTrigger').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        $(this).toggleClass('active');
+        console.log("Clicked menu");
+        
+        if ($(this).hasClass('active')) {
+            $("#mainListDiv").addClass("show_list");
+            $("#mainListDiv").css('display', 'block');
+            $("#mainListDiv").fadeIn(300);
+        } else {
+            $("#mainListDiv").removeClass("show_list");
+            $("#mainListDiv").fadeOut(300, function() {
+                $(this).css('display', 'none');
+            });
+        }
+    });
+    
+    // Navbar scroll effect
+    $(window).scroll(function() {
+        if ($(window).scrollTop() >= 100) {
+            $('.nav').addClass('affix');
+        } else {
+            $('.nav').removeClass('affix');
+        }
+    });
+    
+    // Close mobile menu when clicking on a link
+    $('.nav .main_list ul li a').click(function() {
+        if ($(window).width() <= 768) {
+            $('.navTrigger').removeClass('active');
+            $("#mainListDiv").removeClass("show_list");
+            $("#mainListDiv").fadeOut(300, function() {
+                $(this).css('display', 'none');
+            });
+        }
+    });
+    
+    // Close menu when clicking outside
+    $(document).click(function(e) {
+        if (!$(e.target).closest('.nav').length && $(window).width() <= 768) {
+            $('.navTrigger').removeClass('active');
+            $("#mainListDiv").removeClass("show_list");
+            $("#mainListDiv").fadeOut(300);
+        }
+    });
+    
+    // Handle window resize
+    $(window).resize(function() {
+        if ($(window).width() > 768) {
+            $('.navTrigger').removeClass('active');
+            $("#mainListDiv").removeClass("show_list");
+            $("#mainListDiv").css('display', 'block');
+        } else {
+            if (!$('.navTrigger').hasClass('active')) {
+                $("#mainListDiv").css('display', 'none');
+            }
+        }
+    });
+});
+
 // Search functionality
 async function handleSearch(event) {
     event.preventDefault();

@@ -1,87 +1,1048 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Create Request{% endblock %}
+{% block title %}Professional Service Request{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Professional Request Page - Enhanced Styling */
+    .professional-request-container {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+        position: relative;
+    }
+
+    .request-hero {
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        color: white;
+        text-align: center;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .request-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,106.7C1248,96,1344,96,1392,96L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        opacity: 0.3;
+    }
+
+    .request-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .request-hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .request-hero p {
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+    }
+
+    .request-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 15px 50px rgba(0, 76, 153, 0.15);
+        margin-bottom: 2rem;
+        border-top: 6px solid #00A65A;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .request-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 200px;
+        height: 200px;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.03) 0%, rgba(0, 166, 90, 0.03) 100%);
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+        pointer-events: none;
+    }
+
+    .form-section {
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+    .form-section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #004C99;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .form-section-title i {
+        font-size: 1.2rem;
+        color: #00A65A;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.75rem;
+        display: block;
+        font-size: 1rem;
+    }
+
+    .label-text {
+        color: #004C99;
+    }
+
+    .label-required {
+        color: #d32f2f;
+        margin-left: 0.25rem;
+    }
+
+    .label-optional {
+        color: #666;
+        font-weight: 400;
+        font-size: 0.9rem;
+        margin-left: 0.5rem;
+    }
+
+    .form-control,
+    .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fafbfc;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #004C99;
+        box-shadow: 0 0 0 0.2rem rgba(0, 76, 153, 0.1);
+        background: white;
+        outline: none;
+    }
+
+    .form-hint {
+        color: #666;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: block;
+        font-style: italic;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-section-half {
+        margin-bottom: 0;
+    }
+
+    .budget-slider-wrapper {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        margin-top: 0.5rem;
+    }
+
+    .urgent-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: #fafbfc;
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .urgent-wrapper:has(input:checked) {
+        background: rgba(255, 195, 0, 0.1);
+        border-color: #FFC300;
+    }
+
+    .urgent-label {
+        font-weight: 600;
+        color: #004C99;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        border: 2px dashed #004C99;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.02) 0%, rgba(0, 166, 90, 0.02) 100%);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-input-wrapper:hover {
+        border-color: #00A65A;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.05) 0%, rgba(0, 166, 90, 0.05) 100%);
+    }
+
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .upload-icon {
+        color: #004C99;
+        margin-bottom: 1rem;
+    }
+
+    .upload-text {
+        color: #004C99;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f8f9fa;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+        border: none;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #003366 0%, #004C99 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 76, 153, 0.3);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        padding: 1rem 3rem;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .form-footer-note {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+        border-radius: 12px;
+        color: #00A65A;
+        font-weight: 600;
+        border: 1px solid rgba(0, 166, 90, 0.2);
+    }
+
+    .progress-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .progress-step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        position: relative;
+    }
+
+    .progress-step.active {
+        background: linear-gradient(135deg, #004C99 0%, #00A65A 100%);
+        color: white;
+    }
+
+    .progress-step.completed {
+        background: #00A65A;
+        color: white;
+    }
+
+    .progress-line {
+        height: 2px;
+        width: 60px;
+        background: #e9ecef;
+    }
+
+    .progress-line.completed {
+        background: #00A65A;
+    }
+
+    /* Provider Selection Styling */
+    .provider-selection-section {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border: 3px solid rgba(59, 130, 246, 0.2);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .provider-dropdown {
+        border: 3px solid #e2e8f0;
+        border-radius: 15px;
+        padding: 1.25rem;
+        font-size: 1.1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: white;
+        width: 100%;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 1rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 3rem;
+    }
+
+    .provider-dropdown:focus {
+        border-color: #004C99;
+        box-shadow: 0 0 0 4px rgba(0, 76, 153, 0.1);
+        outline: none;
+        background-color: #fafbfc;
+    }
+
+    .provider-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 76, 153, 0.1);
+    }
+
+    .provider-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #004C99;
+        box-shadow: 0 6px 20px rgba(0, 76, 153, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    .provider-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(0, 76, 153, 0.3);
+        border-color: #00A65A;
+    }
+
+    .provider-details h5 {
+        margin: 0;
+        color: #004C99;
+        font-weight: 600;
+    }
+
+    .provider-details p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .professional-submit-btn {
+        background: linear-gradient(135deg, #004C99 0%, #0066cc 100%);
+        border: none;
+        padding: 1.5rem 4rem;
+        font-size: 1.3rem;
+        font-weight: 700;
+        border-radius: 20px;
+        color: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-transform: none;
+        letter-spacing: 0.5px;
+        box-shadow: 0 10px 30px rgba(0, 76, 153, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .professional-submit-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 76, 153, 0.4);
+        background: linear-gradient(135deg, #0066cc 0%, #004C99 100%);
+    }
+
+    @media (max-width: 768px) {
+        .request-hero h1 {
+            font-size: 2rem;
+        }
+
+        .request-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-primary, .btn-secondary {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .professional-submit-btn {
+            padding: 1.25rem 2rem;
+            font-size: 1.1rem;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .provider-selection-section {
+            padding: 1.5rem;
+        }
+    }
+
+    /* ===========================
+       PROFESSIONAL FILE UPLOAD STYLES
+       =========================== */
+    .professional-upload-zone {
+        border: 2px dashed #004C99;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.02) 0%, rgba(0, 166, 90, 0.02) 100%);
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .professional-upload-zone:hover {
+        border-color: #00A65A;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.05) 0%, rgba(0, 166, 90, 0.05) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.1);
+    }
+
+    .professional-upload-zone.dragover {
+        border-color: #00A65A;
+        background: linear-gradient(135deg, rgba(0, 166, 90, 0.08) 0%, rgba(0, 76, 153, 0.08) 100%);
+        transform: scale(1.02);
+    }
+
+    .file-input-hidden {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .upload-content {
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .upload-icon-container {
+        margin-bottom: 1rem;
+    }
+
+    .upload-icon {
+        color: #004C99;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+
+    .professional-upload-zone:hover .upload-icon {
+        color: #00A65A;
+        opacity: 1;
+        transform: translateY(-3px);
+    }
+
+    .upload-text h4 {
+        color: #004C99;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.25rem;
+    }
+
+    .upload-text p {
+        color: #666;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-upload-primary {
+        background: linear-gradient(135deg, #004C99 0%, #00A65A 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    .btn-upload-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.25);
+    }
+
+    /* File Preview Styles */
+    .file-preview-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .file-preview-item {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .file-preview-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.15);
+        border-color: #004C99;
+    }
+
+    .file-preview-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        background: #f8fafc;
+    }
+
+    .file-preview-info {
+        padding: 0.75rem;
+        background: white;
+    }
+
+    .file-preview-name {
+        font-size: 0.8rem;
+        color: #333;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+        word-wrap: break-word;
+        line-height: 1.3;
+    }
+
+    .file-preview-size {
+        font-size: 0.7rem;
+        color: #666;
+    }
+
+    .file-remove-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 28px;
+        height: 28px;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        z-index: 3;
+    }
+
+    .file-remove-btn:hover {
+        background: #dc3545;
+        transform: scale(1.1);
+    }
+
+    /* Upload Progress Styles */
+    .upload-progress-wrapper {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .progress-text {
+        color: #004C99;
+        font-weight: 600;
+    }
+
+    .progress-percentage {
+        color: #00A65A;
+        font-weight: bold;
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #004C99 0%, #00A65A 100%);
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.3s ease;
+    }
+
+    /* Budget Currency Positioning */
+    .budget-display {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .budget-currency {
+        color: #004C99;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .budget-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    /* Location Input Styles */
+    .location-input-group {
+        display: flex;
+        gap: 0.75rem;
+        align-items: stretch;
+        margin-bottom: 1rem;
+    }
+
+    .location-input {
+        flex: 1;
+        padding: 0.875rem 1.125rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .location-input:focus {
+        border-color: #004C99;
+        box-shadow: 0 0 0 3px rgba(0, 76, 153, 0.1);
+        outline: none;
+    }
+
+    .location-btn {
+        background: linear-gradient(135deg, #00A65A 0%, #17B890 100%);
+        color: white;
+        border: none;
+        padding: 0.875rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+        box-shadow: 0 4px 15px rgba(0, 166, 90, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .location-btn:hover {
+        background: linear-gradient(135deg, #17B890 0%, #00A65A 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 166, 90, 0.4);
+    }
+
+    .location-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .location-btn.loading {
+        pointer-events: none;
+    }
+
+    .location-btn.loading i {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .location-status {
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .location-status.success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .location-status.error {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .location-status.loading {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    @media (max-width: 768px) {
+        .location-input-group {
+            flex-direction: column;
+        }
+        
+        .location-btn {
+            justify-content: center;
+        }
+        
+        .location-btn .btn-text {
+            display: block;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .location-btn .btn-text {
+            display: none;
+        }
+    }
+
+    /* ===========================
+       URGENT LOCATION CAPTURE STYLES
+       =========================== */
+    .urgent-location-wrapper {
+        margin-top: 1.5rem;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(-10px);
+    }
+
+    .urgent-location-wrapper.show {
+        opacity: 1;
+        max-height: 300px;
+        transform: translateY(0);
+    }
+
+    .location-capture-container {
+        background: linear-gradient(135deg, #fff7e6 0%, #ffefd5 100%);
+        border: 2px solid #FFC300;
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .location-capture-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(255, 195, 0, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+        pointer-events: none;
+    }
+
+    .location-capture-title {
+        color: #B8860B;
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .location-capture-title i {
+        color: #FFC300;
+    }
+
+    .location-capture-description {
+        color: #8B6914;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+    }
+
+    .btn-capture-location {
+        background: linear-gradient(135deg, #FFC300 0%, #FFB347 100%);
+        color: #8B4513;
+        border: none;
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(255, 195, 0, 0.3);
+        position: relative;
+        overflow: hidden;
+        font-size: 0.95rem;
+    }
+
+    .btn-capture-location:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 195, 0, 0.4);
+        background: linear-gradient(135deg, #FFB347 0%, #FFC300 100%);
+    }
+
+    .btn-capture-location:disabled {
+        background: #d3d3d3;
+        color: #666;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-capture-location.loading i {
+        animation: spin 1s linear infinite;
+    }
+
+    .location-capture-status {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: none;
+    }
+
+    .location-capture-status.show {
+        display: block;
+        animation: slideInUp 0.3s ease-out;
+    }
+
+    .location-capture-status.success {
+        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .location-capture-status.error {
+        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .location-capture-status.loading {
+        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Provider Distance Display */
+    .provider-distance-badge {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, #e8f5e8 0%, #d4f4dd 100%);
+        color: #2d5a2d;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        border: 1px solid #a8d5a8;
+        box-shadow: 0 2px 8px rgba(0, 166, 90, 0.15);
+    }
+
+    .provider-distance-badge i {
+        color: #00A65A;
+        margin-right: 0.5rem;
+    }
+
+    .distance-value {
+        font-weight: 700;
+        color: #1a4d1a;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="request-container">
-    <div class="request-card">
-        <div class="request-header">
-            <h1 class="request-title">🏠 Submit a Service Request</h1>
-            <p class="request-subtitle">Tell us what you need help with and connect with qualified professionals</p>
-            <div style="margin-top: 16px; padding: 12px; background: rgba(255, 195, 0, 0.2); border-radius: 8px; border: 2px solid rgba(255, 195, 0, 0.4);">
-                <strong>✨ New Professional Design Active!</strong>
+<div class="request-page-container">
+    <!-- Hero Section -->
+    <div class="request-hero">
+        <div class="container">
+            <div class="request-hero-content">
+                <h1><i class="fas fa-tools me-3"></i>Submit a Service Request</h1>
+                <p>Connect with qualified professionals in your area</p>
+                
+                <!-- Progress Indicator -->
+                <div class="progress-indicator">
+                    <div class="progress-step active">1</div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">2</div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step">3</div>
+                </div>
             </div>
         </div>
+    </div>
+
+    <div class="container">
+        <div class="request-card">
 
         <form method="post" enctype="multipart/form-data" class="request-form">
             {% csrf_token %}
             
-            <!-- Provider Selection -->
-            <div class="form-section">
-                {% if form.non_field_errors %}
-                    <div class="form-errors">{{ form.non_field_errors }}</div>
-                {% endif %}
-                <div class="form-group">
-                    <label for="{{ form.provider_choice.id_for_label }}" class="form-label">
-                        <span class="label-text">Select a Provider</span>
-                        <span class="label-optional">(choose from list)</span>
-                    </label>
-                    {{ form.provider_choice }}
-                    {% if form.provider_choice.errors %}
-                        <div class="field-error">{{ form.provider_choice.errors }}</div>
-                    {% endif %}
-                    <span class="form-hint">Can't find the provider? Enter a name below.</span>
-                </div>
-                <div class="form-group" style="margin-top: 12px;">
-                    <label for="{{ form.provider_name.id_for_label }}" class="form-label">
-                        <span class="label-text">Provider Name (fallback)</span>
-                        <span class="label-optional">(optional)</span>
-                    </label>
-                    {{ form.provider_name }}
-                    {% if form.provider_name.errors %}
-                        <div class="field-error">{{ form.provider_name.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
             
             <!-- Description -->
             <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    Project Details
+                </h3>
+                
                 <div class="form-group">
                     <label for="{{ form.description.id_for_label }}" class="form-label">
                         <span class="label-text">What do you need help with?</span>
                         <span class="label-required">*</span>
                     </label>
                     {{ form.description }}
-                    <span class="form-hint">Describe your project or problem in detail</span>
+                    {% if form.description.errors %}
+                        <div class="alert alert-danger mt-2">{{ form.description.errors }}</div>
+                    {% endif %}
+                    <span class="form-hint"><i class="fas fa-lightbulb me-1"></i>Be as detailed as possible to help professionals understand your needs</span>
                 </div>
             </div>
             
             <!-- Date/Time -->
             <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Scheduling
+                </h3>
+                
                 <div class="form-group">
                     <label for="{{ form.date_time.id_for_label }}" class="form-label">
                         <span class="label-text">When do you need it done?</span>
                         <span class="label-optional">(optional)</span>
                     </label>
                     {{ form.date_time }}
-                    <span class="form-hint">Leave blank if timing is flexible</span>
+                    {% if form.date_time.errors %}
+                        <div class="alert alert-danger mt-2">{{ form.date_time.errors }}</div>
+                    {% endif %}
+                    <span class="form-hint"><i class="fas fa-clock me-1"></i>Leave blank if timing is flexible - professionals appreciate flexibility</span>
                 </div>
             </div>
             
             <!-- Budget Slider & Urgent Toggle (Side by side) -->
             <div class="form-row">
                 <div class="form-section form-section-half">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-money-bill-wave"></i>
+                        Budget Range
+                    </h3>
+                    
                     <div class="form-group">
                         <label for="budget_slider" class="form-label">
                             <span class="label-text">Your Budget</span>
-                            <span class="label-optional">(optional)</span>
+                            <span class="label-optional">(helps professionals prepare quotes)</span>
                         </label>
                         
                         <!-- Budget Slider Component -->
                         <div class="budget-slider-wrapper">
                             <div class="budget-display">
-                                <span class="budget-currency">$</span>
-                                <span class="budget-value" id="budget_value">500</span>
+                                <span class="budget-value" id="budget_value">25,000</span>
+                                <span class="budget-currency">XAF</span>
                             </div>
                             
                             <input 
@@ -89,26 +1050,30 @@
                                 id="budget_slider" 
                                 class="budget-slider" 
                                 min="0" 
-                                max="10000" 
-                                step="50" 
-                                value="500"
+                                max="500000" 
+                                step="2500" 
+                                value="25000"
                                 data-provider-min="0"
                             >
                             
                             <div class="budget-range-labels">
-                                <span class="range-min" id="range_min_label">$0</span>
-                                <span class="range-max">$10,000+</span>
+                                <span class="range-min" id="range_min_label">0 XAF</span>
+                                <span class="range-max">500,000+ XAF</span>
                             </div>
                             
                             <div class="budget-hint-wrapper">
                                 <span class="form-hint" id="provider_min_hint" style="display: none;">
-                                    Minimum for selected provider: <strong id="provider_min_value">$0</strong>
+                                    Minimum for selected provider: <strong id="provider_min_value">0 XAF</strong>
                                 </span>
                             </div>
                         </div>
                         
                         <!-- Hidden field to store budget value for form submission -->
-                        <input type="hidden" name="budget_amount" id="budget_amount" value="500">
+                        <input type="hidden" name="budget_amount" id="budget_amount" value="25000">
+                        
+                        <!-- Hidden fields for urgent location coordinates -->
+                        <input type="hidden" name="urgent_latitude" id="urgent_latitude" value="">
+                        <input type="hidden" name="urgent_longitude" id="urgent_longitude" value="">
                         
                         <!-- Keep the original price_range field hidden for backward compatibility -->
                         <div style="display: none;">
@@ -118,58 +1083,570 @@
                 </div>
                 
                 <div class="form-section form-section-half">
+                    <h3 class="form-section-title">
+                        <i class="fas fa-exclamation-circle"></i>
+                        Priority Level
+                    </h3>
+                    
                     <div class="form-group urgent-group">
                         <label class="form-label">
-                            <span class="label-text">Priority</span>
+                            <span class="label-text">Request Priority</span>
                         </label>
                         <div class="urgent-wrapper">
                             {{ form.urgent }}
-                            <label for="{{ form.urgent.id_for_label }}" class="urgent-label">Mark as urgent</label>
+                            <label for="{{ form.urgent.id_for_label }}" class="urgent-label">
+                                <i class="fas fa-bolt me-2"></i>Mark as urgent request
+                            </label>
                         </div>
-                        <span class="form-hint">Professionals see urgent requests first</span>
+                        <span class="form-hint"><i class="fas fa-info-circle me-1"></i>Urgent requests get priority visibility to professionals</span>
+                        
+                        <!-- Location Capture for Urgent Requests -->
+                        <div id="urgent-location-section" class="urgent-location-wrapper">
+                            <div class="location-capture-container">
+                                <h4 class="location-capture-title">
+                                    <i class="fas fa-crosshairs me-2"></i>Precise Location Required
+                                </h4>
+                                <p class="location-capture-description">
+                                    For urgent requests, we need your precise location to help providers reach you quickly.
+                                </p>
+                                <div class="location-actions">
+                                    <button 
+                                        type="button" 
+                                        id="capture-location-btn" 
+                                        class="btn-capture-location"
+                                        title="Capture my precise location"
+                                    >
+                                        <i class="fas fa-location-arrow me-2"></i>
+                                        Find My Location
+                                    </button>
+                                </div>
+                                <div id="location-capture-status" class="location-capture-status"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <!-- Provider Selection Section -->
+            <div class="provider-selection-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-users"></i>
+                    Select Your Provider
+                </h3>
+                
+                <div class="form-group">
+                    <label for="provider_select" class="form-label">
+                        <span class="label-text">Choose a Professional <span class="required-indicator">*</span></span>
+                        <span class="label-optional">(select from available providers in your area)</span>
+                    </label>
+                    <select id="provider_select" name="provider" class="provider-dropdown" required>
+                        <option value="">Select a provider...</option>
+                        {% for provider in providers %}
+                        <option value="{{ provider.user.id }}" 
+                                data-email="{{ provider.user.email }}"
+                                data-name="{{ provider.user.get_full_name|default:provider.user.username }}"
+                                data-bio="{{ provider.bio|default:'Professional service provider' }}"
+                                data-avatar="{% if provider.profile_picture %}{{ provider.profile_picture.url }}{% else %}{% static 'assets/image/default-avatar.png' %}{% endif %}">
+                            {{ provider.user.get_full_name|default:provider.user.username }} - {{ provider.specialty|default:'General Services' }}
+                        </option>
+                        {% empty %}
+                        <option value="" disabled>No providers available in your area</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- Provider Info Display -->
+                    <div id="provider_info" class="provider-info" style="display: none;">
+                        <img id="provider_avatar" src="{% static 'assets/image/default-avatar.png' %}" alt="Provider" class="provider-avatar">
+                        <div class="provider-details">
+                            <h5 id="provider_name">Provider Name</h5>
+                            <p id="provider_bio">Provider bio will appear here</p>
+                            <p><i class="fas fa-envelope text-primary"></i> <span id="provider_email">email@example.com</span></p>
+                            <div id="provider_distance" class="provider-distance-badge" style="display: none;">
+                                <i class="fas fa-route"></i>
+                                <span>Distance from you: <span class="distance-value" id="distance_value">-- km</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i> 
+                        Your request will be sent directly to the selected provider's email address. 
+                        They will receive all the details you provide in this form.
                     </div>
                 </div>
             </div>
             
             <!-- Photos -->
             <div class="form-section">
+                <h3 class="form-section-title">
+                    <i class="fas fa-camera"></i>
+                    Visual References
+                </h3>
+                
                 <div class="form-group">
                     <label for="id_photos" class="form-label">
                         <span class="label-text">Add Photos</span>
-                        <span class="label-optional">(optional)</span>
+                        <span class="label-optional">(helps professionals understand the scope)</span>
                     </label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="id_photos" name="photos" multiple class="file-input">
-                        <div class="file-input-placeholder">
-                            <svg class="upload-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
-                            <span class="upload-text">Click to upload photos or drag and drop</span>
+                    
+                    <!-- Professional File Upload Zone -->
+                    <div class="professional-upload-zone" id="uploadZone">
+                        <input type="file" id="id_photos" name="photos" multiple class="file-input-hidden" accept="image/*">
+                        <div class="upload-content">
+                            <div class="upload-icon-container">
+                                <svg class="upload-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <div class="upload-text">
+                                <h4>Drop files here or click to upload</h4>
+                                <p>Support for JPG, PNG, WEBP formats • Max 10MB per file</p>
+                                <button type="button" class="btn-upload-primary">Choose Files</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="photo-preview-container"></div>
-                    <span class="form-hint">Supports JPG and PNG formats. Multiple files accepted</span>
+                    
+                    <!-- File Preview Container -->
+                    <div class="file-preview-container" id="filePreviewContainer"></div>
+                    
+                    <!-- Upload Progress Indicator -->
+                    <div class="upload-progress-wrapper" id="uploadProgressWrapper" style="display: none;">
+                        <div class="progress-header">
+                            <span class="progress-text">Uploading files...</span>
+                            <span class="progress-percentage" id="progressPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                    </div>
+                    
+                    <span class="form-hint"><i class="fas fa-info-circle me-1"></i>Visual context helps professionals provide accurate estimates and understand project scope</span>
                 </div>
             </div>
             
             <!-- Form Actions -->
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <span>Submit Request</span>
+                <button type="submit" class="professional-submit-btn">
+                    <i class="fas fa-paper-plane me-2"></i>
+                    Send Professional Request
                 </button>
                 <button type="button" class="btn btn-secondary btn-lg" onclick="history.back()">
-                    <span>Cancel</span>
+                    <i class="fas fa-arrow-left me-2"></i>
+                    Go Back
                 </button>
             </div>
             
-            <p class="form-footer-note">
-                ✅ <strong>Professional Design v2.0</strong> — We'll help connect you with qualified professionals who match your needs.
-            </p>
         </form>
+        </div>
     </div>
 </div>
 
 <script src="{% static 'js/request.js' %}"></script>
+<script>
+// Enhanced form interactions for better UX
+document.addEventListener('DOMContentLoaded', function() {
+    // Urgent Toggle and Location Capture Logic
+    const urgentCheckbox = document.getElementById('id_urgent');
+    const urgentLocationSection = document.getElementById('urgent-location-section');
+    const captureLocationBtn = document.getElementById('capture-location-btn');
+    const locationCaptureStatus = document.getElementById('location-capture-status');
+    const urgentLatitudeInput = document.getElementById('urgent_latitude');
+    const urgentLongitudeInput = document.getElementById('urgent_longitude');
+
+    // Initially hide the urgent location section
+    if (urgentLocationSection) {
+        urgentLocationSection.classList.remove('show');
+    }
+
+    // Handle urgent checkbox toggle
+    if (urgentCheckbox && urgentLocationSection) {
+        urgentCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                // Show location capture section with animation
+                urgentLocationSection.classList.add('show');
+            } else {
+                // Hide location capture section
+                urgentLocationSection.classList.remove('show');
+                // Clear captured coordinates
+                if (urgentLatitudeInput) urgentLatitudeInput.value = '';
+                if (urgentLongitudeInput) urgentLongitudeInput.value = '';
+                // Clear status
+                if (locationCaptureStatus) {
+                    locationCaptureStatus.className = 'location-capture-status';
+                    locationCaptureStatus.textContent = '';
+                }
+            }
+        });
+    }
+
+    // Handle location capture button
+    if (captureLocationBtn) {
+        captureLocationBtn.addEventListener('click', function() {
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                showLocationCaptureStatus('error', 'Geolocation is not supported by this browser.');
+                return;
+            }
+
+            // Show loading state
+            showLocationCaptureLoading();
+
+            // Get current position with high accuracy
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Success callback
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+                    
+                    // Store coordinates in hidden fields
+                    if (urgentLatitudeInput) urgentLatitudeInput.value = latitude.toString();
+                    if (urgentLongitudeInput) urgentLongitudeInput.value = longitude.toString();
+                    
+                    // Show success message with accuracy
+                    const accuracyText = accuracy < 50 ? 'High accuracy' : accuracy < 100 ? 'Medium accuracy' : 'Low accuracy';
+                    showLocationCaptureStatus('success', 
+                        `Location captured successfully! ${accuracyText} (±${Math.round(accuracy)}m)`
+                    );
+
+                    // Update provider distance if provider is selected
+                    updateProviderDistanceAfterCapture(latitude, longitude);
+                },
+                function(error) {
+                    // Error callback
+                    let errorMessage = 'Unable to retrieve your location.';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied. Please enable location permissions and try again.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable. Please check your GPS settings.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out. Please try again.';
+                            break;
+                        default:
+                            errorMessage = 'An unknown error occurred while retrieving location.';
+                            break;
+                    }
+                    
+                    showLocationCaptureStatus('error', errorMessage);
+                },
+                {
+                    enableHighAccuracy: true,  // Request high accuracy GPS
+                    timeout: 15000,            // 15 seconds timeout
+                    maximumAge: 60000          // Accept cached location up to 1 minute
+                }
+            );
+        });
+    }
+
+    function showLocationCaptureLoading() {
+        if (captureLocationBtn) {
+            captureLocationBtn.disabled = true;
+            captureLocationBtn.classList.add('loading');
+            captureLocationBtn.innerHTML = '<i class="fas fa-spinner me-2"></i>Capturing Location...';
+        }
+        showLocationCaptureStatus('loading', 'Getting your precise location...');
+    }
+
+    function showLocationCaptureStatus(type, message) {
+        if (locationCaptureStatus) {
+            locationCaptureStatus.className = `location-capture-status ${type} show`;
+            locationCaptureStatus.innerHTML = `<i class="fas fa-${getStatusIcon(type)} me-2"></i>${message}`;
+        }
+        
+        // Reset button state if not loading
+        if (type !== 'loading' && captureLocationBtn) {
+            captureLocationBtn.disabled = false;
+            captureLocationBtn.classList.remove('loading');
+            captureLocationBtn.innerHTML = '<i class="fas fa-location-arrow me-2"></i>Find My Location';
+        }
+    }
+
+    function getStatusIcon(type) {
+        switch(type) {
+            case 'success': return 'check-circle';
+            case 'error': return 'exclamation-triangle';
+            case 'loading': return 'location-arrow';
+            default: return 'info-circle';
+        }
+    }
+
+    function updateProviderDistanceAfterCapture(userLat, userLon) {
+        const providerSelect = document.getElementById('provider_select');
+        if (providerSelect && providerSelect.value) {
+            updateSingleProviderDistanceFromCapture(providerSelect.value, userLat, userLon);
+        }
+    }
+
+    function updateSingleProviderDistanceFromCapture(providerId, userLat, userLon) {
+        // Mock provider coordinates - in production, fetch from API
+        const mockCoords = {
+            1: { lat: 3.8480, lon: 11.5021 }, // Yaoundé area
+            2: { lat: 4.0511, lon: 9.7679 },  // Douala area  
+            3: { lat: 3.8667, lon: 11.5167 }, // Yaoundé center
+        };
+        const providerCoords = mockCoords[providerId] || { lat: 3.8480, lon: 11.5021 };
+        
+        const distance = calculateHaversineDistance(userLat, userLon, providerCoords.lat, providerCoords.lon);
+        displayProviderDistanceFromCapture(distance);
+    }
+
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    function displayProviderDistanceFromCapture(distance) {
+        const distanceBadge = document.getElementById('provider_distance');
+        const distanceValue = document.getElementById('distance_value');
+        
+        if (distanceBadge && distanceValue) {
+            distanceValue.textContent = `${distance.toFixed(1)} km`;
+            distanceBadge.style.display = 'inline-flex';
+            
+            // Add animation
+            distanceBadge.style.opacity = '0';
+            distanceBadge.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                distanceBadge.style.opacity = '1';
+                distanceBadge.style.transform = 'translateY(0)';
+                distanceBadge.style.transition = 'all 0.3s ease';
+            }, 50);
+        }
+    }
+
+    // Progress indicator animation
+    const progressSteps = document.querySelectorAll('.progress-step');
+    const progressLines = document.querySelectorAll('.progress-line');
+    
+    // Simulate form progress (can be enhanced based on actual form validation)
+    let currentStep = 1;
+    
+    // Professional File Upload Enhancement
+    let selectedFiles = [];
+    const fileInput = document.getElementById('id_photos');
+    const uploadZone = document.getElementById('uploadZone');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const uploadProgressWrapper = document.getElementById('uploadProgressWrapper');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercentage = document.getElementById('progressPercentage');
+    
+    if (fileInput && fileWrapper) {
+        fileWrapper.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#00A65A';
+            this.style.background = 'linear-gradient(135deg, rgba(0, 76, 153, 0.08) 0%, rgba(0, 166, 90, 0.08) 100%)';
+        });
+        
+        fileWrapper.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#004C99';
+            this.style.background = 'linear-gradient(135deg, rgba(0, 76, 153, 0.02) 0%, rgba(0, 166, 90, 0.02) 100%)';
+        });
+        
+        fileWrapper.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#004C99';
+            this.style.background = 'linear-gradient(135deg, rgba(0, 76, 153, 0.02) 0%, rgba(0, 166, 90, 0.02) 100%)';
+            
+            const files = e.dataTransfer.files;
+            fileInput.files = files;
+            updateFilePreview(files);
+        });
+        
+        fileInput.addEventListener('change', function(e) {
+            updateFilePreview(e.target.files);
+        });
+    }
+    
+    function updateFilePreview(files) {
+        if (!previewContainer) return;
+        
+        previewContainer.innerHTML = '';
+        
+        if (files.length > 0) {
+            const previewGrid = document.createElement('div');
+            previewGrid.style.display = 'grid';
+            previewGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
+            previewGrid.style.gap = '1rem';
+            previewGrid.style.marginTop = '1rem';
+            
+            Array.from(files).forEach((file, index) => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.createElement('div');
+                        preview.innerHTML = `
+                            <img src="${e.target.result}" 
+                                 style="width: 100%; height: 80px; object-fit: cover; border-radius: 8px; border: 2px solid #e9ecef;">
+                            <p style="font-size: 0.8rem; margin: 0.5rem 0 0 0; text-align: center; color: #666;">${file.name}</p>
+                        `;
+                        previewGrid.appendChild(preview);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            previewContainer.appendChild(previewGrid);
+        }
+    }
+    
+    // Provider selection functionality
+    const providerSelect = document.getElementById('provider_select');
+    const providerInfo = document.getElementById('provider_info');
+    const providerAvatar = document.getElementById('provider_avatar');
+    const providerName = document.getElementById('provider_name');
+    const providerBio = document.getElementById('provider_bio');
+    const providerEmail = document.getElementById('provider_email');
+    
+    if (providerSelect) {
+        providerSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (selectedOption.value) {
+                const email = selectedOption.getAttribute('data-email');
+                const name = selectedOption.getAttribute('data-name');
+                const bio = selectedOption.getAttribute('data-bio');
+                const avatar = selectedOption.getAttribute('data-avatar');
+                
+                // Update provider info display
+                providerAvatar.src = avatar || '{% static "assets/image/default-avatar.png" %}';
+                providerName.textContent = name;
+                providerBio.textContent = bio;
+                providerEmail.textContent = email;
+                
+                // Show provider info
+                providerInfo.style.display = 'flex';
+                providerInfo.style.animation = 'fadeIn 0.3s ease-in-out';
+                
+                // Add validation styling
+                this.style.borderColor = '#00A65A';
+                this.style.background = '#f0fff4';
+                
+                // Update provider distance if urgent location is captured
+                updateProviderDistanceOnSelection(selectedOption.value);
+                
+            } else {
+                // Hide provider info
+                providerInfo.style.display = 'none';
+                this.style.borderColor = '#e2e8f0';
+                this.style.background = 'white';
+                
+                // Hide distance badge
+                const distanceBadge = document.getElementById('provider_distance');
+                if (distanceBadge) {
+                    distanceBadge.style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    // Function to update distance when provider is selected
+    function updateProviderDistanceOnSelection(providerId) {
+        const urgentCheckbox = document.getElementById('id_urgent');
+        const urgentLatitude = document.getElementById('urgent_latitude');
+        const urgentLongitude = document.getElementById('urgent_longitude');
+        
+        if (urgentCheckbox && urgentCheckbox.checked && 
+            urgentLatitude && urgentLongitude && 
+            urgentLatitude.value && urgentLongitude.value) {
+            
+            const userLat = parseFloat(urgentLatitude.value);
+            const userLon = parseFloat(urgentLongitude.value);
+            
+            // Calculate and display distance
+            updateSingleProviderDistanceFromSelection(providerId, userLat, userLon);
+        }
+    }
+    
+    function updateSingleProviderDistanceFromSelection(providerId, userLat, userLon) {
+        // Mock provider coordinates - in production, fetch from API
+        const mockCoords = {
+            1: { lat: 3.8480, lon: 11.5021 }, // Yaoundé area
+            2: { lat: 4.0511, lon: 9.7679 },  // Douala area  
+            3: { lat: 3.8667, lon: 11.5167 }, // Yaoundé center
+        };
+        const providerCoords = mockCoords[providerId] || { lat: 3.8480, lon: 11.5021 };
+        
+        const distance = calculateDistanceFromSelection(userLat, userLon, providerCoords.lat, providerCoords.lon);
+        displayProviderDistanceFromSelection(distance);
+    }
+    
+    function calculateDistanceFromSelection(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+    
+    function displayProviderDistanceFromSelection(distance) {
+        const distanceBadge = document.getElementById('provider_distance');
+        const distanceValue = document.getElementById('distance_value');
+        
+        if (distanceBadge && distanceValue) {
+            distanceValue.textContent = `${distance.toFixed(1)} km`;
+            distanceBadge.style.display = 'inline-flex';
+            
+            // Add animation
+            distanceBadge.style.opacity = '0';
+            distanceBadge.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                distanceBadge.style.opacity = '1';
+                distanceBadge.style.transform = 'translateY(0)';
+                distanceBadge.style.transition = 'all 0.3s ease';
+            }, 50);
+        }
+    }
+
+    // Form validation feedback
+    const form = document.querySelector('.request-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting Request...';
+                
+                // Re-enable after 5 seconds in case of error
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Request';
+                }, 5000);
+            }
+        });
+    }
+    
+    // Smooth animations for form interactions
+    const formControls = document.querySelectorAll('.form-control, .form-select');
+    formControls.forEach(control => {
+        control.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+            this.parentElement.style.transition = 'transform 0.3s ease';
+        });
+        
+        control.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+});
+</script>
 {% endblock %}

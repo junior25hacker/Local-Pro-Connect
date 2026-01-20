@@ -209,72 +209,6 @@
         transform: scale(1.2);
     }
     
-    .emergency-btn-large {
-        width: 100%;
-        padding: 1.25rem;
-        background: linear-gradient(135deg, #DC3545 0%, #C82333 100%);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 1.15rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        text-decoration: none;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        position: relative;
-        overflow: hidden;
-        animation: emergency-pulse 2s infinite;
-    }
-    
-    .emergency-btn-large::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-    
-    .emergency-btn-large:hover::before {
-        width: 300px;
-        height: 300px;
-    }
-    
-    .emergency-btn-large:hover {
-        background: linear-gradient(135deg, #C82333 0%, #DC3545 100%);
-        transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-        color: white;
-        animation: none;
-    }
-    
-    .emergency-btn-large i {
-        font-size: 1.3rem;
-        transition: transform 0.3s ease;
-    }
-    
-    .emergency-btn-large:hover i {
-        transform: scale(1.2);
-    }
-    
-    @keyframes emergency-pulse {
-        0%, 100% {
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        }
-        50% {
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5), 0 0 20px rgba(220, 53, 69, 0.3);
-        }
-    }
     
     .action-btn-large {
         width: 100%;
@@ -562,6 +496,384 @@
         margin-right: 0.75rem;
         font-size: 1.1rem;
     }
+
+    /* Dashboard Styles */
+    .jobs-grid {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .job-card {
+        background: white;
+        border: 1px solid rgba(0, 76, 153, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 76, 153, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .job-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #004C99 0%, #00A65A 100%);
+    }
+
+    .job-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 76, 153, 0.15);
+        border-color: rgba(0, 76, 153, 0.2);
+    }
+
+    .job-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .job-title {
+        color: #004C99;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .job-description {
+        color: #666;
+        margin: 0;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-in-progress {
+        background: linear-gradient(135deg, #FFC300 0%, #FFD54F 100%);
+        color: #F57F17;
+        border: 1px solid rgba(255, 195, 0, 0.3);
+    }
+
+    .job-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem 0;
+        border-top: 1px solid rgba(0, 76, 153, 0.1);
+        border-bottom: 1px solid rgba(0, 76, 153, 0.1);
+    }
+
+    .job-detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .job-detail-item i {
+        color: #004C99;
+        width: 16px;
+    }
+
+    .urgent-indicator {
+        color: #d32f2f !important;
+    }
+
+    .urgent-indicator i {
+        color: #d32f2f !important;
+    }
+
+    .job-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .mark-completed-btn {
+        background: linear-gradient(135deg, #00A65A 0%, #17B890 100%);
+        border: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .mark-completed-btn:hover {
+        background: linear-gradient(135deg, #17B890 0%, #00A65A 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #666;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: rgba(0, 76, 153, 0.3);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h5 {
+        color: #004C99;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .job-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .job-details {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .job-actions {
+            flex-direction: column;
+        }
+        
+        .dashboard-tabs {
+            flex-direction: column;
+        }
+        
+        .tab-btn {
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+    }
+
+    /* ===========================
+       DASHBOARD TABS STYLES
+       =========================== */
+    .dashboard-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 3px solid #e2e8f0;
+        padding-bottom: 0;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1rem 1.5rem;
+        color: #666;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+        color: #004C99;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.05) 0%, rgba(0, 166, 90, 0.05) 100%);
+    }
+
+    .tab-btn.active {
+        color: #004C99;
+        border-bottom-color: #00A65A;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.08) 0%, rgba(0, 166, 90, 0.08) 100%);
+    }
+
+    .tab-count {
+        background: #004C99;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    .tab-btn.active .tab-count {
+        background: #00A65A;
+    }
+
+    /* Tab Content */
+    .tab-content {
+        min-height: 400px;
+    }
+
+    .tab-panel {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-panel.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Request Grid */
+    .request-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .request-card {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .request-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.15);
+        border-color: #004C99;
+    }
+
+    .request-card.in-progress {
+        border-left: 5px solid #00A65A;
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .request-header h4 {
+        color: #004C99;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .status-badge.accepted {
+        background: linear-gradient(135deg, #00A65A, #28a745);
+        color: white;
+    }
+
+    .status-badge.declined {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .status-badge.in-progress {
+        background: linear-gradient(135deg, #ffc107, #e0a800);
+        color: #333;
+    }
+
+    .request-description {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .request-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .request-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .request-meta i {
+        color: #004C99;
+        width: 16px;
+    }
+
+    /* Progress Bar */
+    .progress-bar-wrapper {
+        margin: 1rem 0;
+    }
+
+    .progress-bar-label {
+        color: #004C99;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-align: right;
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #004C99 0%, #00A65A 100%);
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+
+    /* Request Actions */
+    .request-actions {
+        margin-top: 1rem;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-confirm-completion {
+        background: linear-gradient(135deg, #00A65A 0%, #28a745 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-confirm-completion:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 166, 90, 0.3);
+    }
 </style>
 {% endblock %}
 
@@ -603,17 +915,12 @@
 
     <!-- CTA Section -->
     <div class="row mb-4 g-3 align-items-stretch">
-        <div class="col-md-4 d-flex">
+        <div class="col-md-6 d-flex">
             <a href="/requests/create/" class="call-btn-large flex-fill text-center" title="Request a new service">
                 <i class="fas fa-paper-plane me-2"></i> Request Service
             </a>
         </div>
-        <div class="col-md-4 d-flex">
-            <a href="/accounts/emergency/" class="emergency-btn-large flex-fill text-center" title="Emergency Request">
-                <i class="fas fa-exclamation-triangle me-2"></i> Emergency Request
-            </a>
-        </div>
-        <div class="col-md-4 d-flex">
+        <div class="col-md-6 d-flex">
             <a href="{% url 'accounts:search_page' %}" class="call-btn-large flex-fill text-center" style="background: linear-gradient(135deg, #004C99 0%, #003366 100%);" title="Browse all services">
                 <i class="fas fa-search me-2"></i> Browse Services
             </a>
@@ -631,6 +938,188 @@
                 <p class="description-text">
                     Your account is all set up and ready to go. Start browsing and booking local service professionals today.
                 </p>
+            </div>
+
+            <!-- Enhanced Dashboard Section with Tabs -->
+            <div class="section-card">
+                <h3 class="section-title">
+                    <i class="fas fa-tachometer-alt"></i> Request Dashboard
+                </h3>
+                
+                <!-- Dashboard Tabs -->
+                <div class="dashboard-tabs">
+                    <button class="tab-btn active" data-tab="accepted"><i class="fas fa-check-circle me-2"></i>Accepted <span class="tab-count">3</span></button>
+                    <button class="tab-btn" data-tab="declined"><i class="fas fa-times-circle me-2"></i>Declined <span class="tab-count">1</span></button>
+                    <button class="tab-btn" data-tab="in-progress"><i class="fas fa-clock me-2"></i>In Progress <span class="tab-count">2</span></button>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Accepted Requests -->
+                    <div class="tab-panel active" id="accepted-panel">
+                        <div class="request-grid">
+                            <div class="request-card">
+                                <div class="request-header">
+                                    <h4>Plumbing Repair</h4>
+                                    <span class="status-badge accepted">Accepted</span>
+                                </div>
+                                <p class="request-description">Kitchen sink leak repair needed urgently</p>
+                                <div class="request-meta">
+                                    <span><i class="fas fa-user"></i> John Professional</span>
+                                    <span><i class="fas fa-calendar"></i> Dec 20, 2024</span>
+                                    <span><i class="fas fa-money-bill"></i> 45,000 XAF</span>
+                                </div>
+                            </div>
+                            
+                            <div class="request-card">
+                                <div class="request-header">
+                                    <h4>Electrical Installation</h4>
+                                    <span class="status-badge accepted">Accepted</span>
+                                </div>
+                                <p class="request-description">Install new power outlets in home office</p>
+                                <div class="request-meta">
+                                    <span><i class="fas fa-user"></i> Mike Electrician</span>
+                                    <span><i class="fas fa-calendar"></i> Dec 22, 2024</span>
+                                    <span><i class="fas fa-money-bill"></i> 75,000 XAF</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Declined Requests -->
+                    <div class="tab-panel" id="declined-panel">
+                        <div class="request-grid">
+                            <div class="request-card">
+                                <div class="request-header">
+                                    <h4>Roof Repair</h4>
+                                    <span class="status-badge declined">Declined</span>
+                                </div>
+                                <p class="request-description">Fix roof leaks after heavy rainfall</p>
+                                <div class="request-meta">
+                                    <span><i class="fas fa-user"></i> No Provider Selected</span>
+                                    <span><i class="fas fa-calendar"></i> Dec 15, 2024</span>
+                                    <span><i class="fas fa-comment"></i> "Project too large for current schedule"</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- In Progress Requests -->
+                    <div class="tab-panel" id="in-progress-panel">
+                        <div class="request-grid">
+                            <div class="request-card in-progress">
+                                <div class="request-header">
+                                    <h4>Garden Landscaping</h4>
+                                    <span class="status-badge in-progress">In Progress</span>
+                                </div>
+                                <p class="request-description">Complete backyard landscape design and installation</p>
+                                <div class="request-meta">
+                                    <span><i class="fas fa-user"></i> Sarah Landscaper</span>
+                                    <span><i class="fas fa-calendar"></i> Started Dec 18, 2024</span>
+                                    <span><i class="fas fa-money-bill"></i> 125,000 XAF</span>
+                                </div>
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-label">Progress: 65%</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 65%;"></div>
+                                    </div>
+                                </div>
+                                <div class="request-actions">
+                                    <button class="btn-confirm-completion" onclick="openCompletionModal('garden-landscaping')">
+                                        <i class="fas fa-check me-2"></i>Confirm Completion
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="request-card in-progress">
+                                <div class="request-header">
+                                    <h4>House Painting</h4>
+                                    <span class="status-badge in-progress">In Progress</span>
+                                </div>
+                                <p class="request-description">Interior painting of living room and bedrooms</p>
+                                <div class="request-meta">
+                                    <span><i class="fas fa-user"></i> David Painter</span>
+                                    <span><i class="fas fa-calendar"></i> Started Dec 19, 2024</span>
+                                    <span><i class="fas fa-money-bill"></i> 89,000 XAF</span>
+                                </div>
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar-label">Progress: 40%</div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                                <div class="request-actions">
+                                    <button class="btn-confirm-completion" onclick="openCompletionModal('house-painting')">
+                                        <i class="fas fa-check me-2"></i>Confirm Completion
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="ongoing-jobs-container" style="display: none;">
+                    {% if ongoing_requests %}
+                        <div class="jobs-grid">
+                            {% for request in ongoing_requests %}
+                            <div class="job-card" data-job-id="{{ request.id }}">
+                                <div class="job-header">
+                                    <div class="job-info">
+                                        <h5 class="job-title">{{ request.provider_name }}</h5>
+                                        <p class="job-description">{{ request.description|truncatechars:100 }}</p>
+                                    </div>
+                                    <div class="job-status">
+                                        <span class="status-badge status-in-progress">
+                                            <i class="fas fa-clock"></i> In Progress
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="job-details">
+                                    <div class="job-detail-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>Requested: {{ request.created_at|date:"M d, Y" }}</span>
+                                    </div>
+                                    {% if request.offered_price %}
+                                    <div class="job-detail-item">
+                                        <i class="fas fa-dollar-sign"></i>
+                                        <span>Budget: ${{ request.offered_price }}</span>
+                                    </div>
+                                    {% endif %}
+                                    {% if request.urgent %}
+                                    <div class="job-detail-item urgent-indicator">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <span>Urgent Request</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="job-actions">
+                                    <button type="button" class="btn btn-success btn-sm mark-completed-btn" 
+                                            onclick="markJobCompleted({{ request.id }}, '{{ request.provider_name|escapejs }}')">
+                                        <i class="fas fa-check-circle me-2"></i>Mark as Completed
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" 
+                                            onclick="viewJobDetails({{ request.id }})">
+                                        <i class="fas fa-eye me-2"></i>View Details
+                                    </button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h5>No Active Jobs</h5>
+                            <p class="text-muted">You don't have any ongoing service requests at the moment.</p>
+                            <a href="/requests/create/" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create Your First Request
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
             <!-- Personal Information Section -->
@@ -855,7 +1344,275 @@
     </div>
 </div>
 
+<!-- Rating/Review Modal -->
+<div class="modal fade" id="ratingReviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-star me-2"></i>Rate & Review Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="service-info mb-4">
+                    <h6 id="serviceTitle">Garden Landscaping</h6>
+                    <p class="text-muted" id="serviceProvider">Completed by Sarah Landscaper</p>
+                </div>
+                
+                <form id="ratingReviewForm">
+                    <!-- Star Rating -->
+                    <div class="mb-4">
+                        <label class="form-label">Overall Rating *</label>
+                        <div class="star-rating">
+                            <input type="radio" name="rating" value="5" id="star5">
+                            <label for="star5" class="star"><i class="fas fa-star"></i></label>
+                            <input type="radio" name="rating" value="4" id="star4">
+                            <label for="star4" class="star"><i class="fas fa-star"></i></label>
+                            <input type="radio" name="rating" value="3" id="star3">
+                            <label for="star3" class="star"><i class="fas fa-star"></i></label>
+                            <input type="radio" name="rating" value="2" id="star2">
+                            <label for="star2" class="star"><i class="fas fa-star"></i></label>
+                            <input type="radio" name="rating" value="1" id="star1">
+                            <label for="star1" class="star"><i class="fas fa-star"></i></label>
+                        </div>
+                        <div class="rating-text mt-2">
+                            <span id="ratingDescription">Click stars to rate</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Review Text -->
+                    <div class="mb-4">
+                        <label for="reviewText" class="form-label">Your Review</label>
+                        <textarea class="form-control" id="reviewText" rows="4" 
+                                  placeholder="Share your experience with this service provider..."></textarea>
+                    </div>
+                    
+                    <!-- Quick Rating Categories -->
+                    <div class="mb-4">
+                        <label class="form-label">Rate Specific Aspects</label>
+                        <div class="rating-categories">
+                            <div class="category-item">
+                                <span>Quality of Work</span>
+                                <div class="mini-stars" data-category="quality">
+                                    <i class="fas fa-star" data-value="1"></i>
+                                    <i class="fas fa-star" data-value="2"></i>
+                                    <i class="fas fa-star" data-value="3"></i>
+                                    <i class="fas fa-star" data-value="4"></i>
+                                    <i class="fas fa-star" data-value="5"></i>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <span>Timeliness</span>
+                                <div class="mini-stars" data-category="timeliness">
+                                    <i class="fas fa-star" data-value="1"></i>
+                                    <i class="fas fa-star" data-value="2"></i>
+                                    <i class="fas fa-star" data-value="3"></i>
+                                    <i class="fas fa-star" data-value="4"></i>
+                                    <i class="fas fa-star" data-value="5"></i>
+                                </div>
+                            </div>
+                            <div class="category-item">
+                                <span>Communication</span>
+                                <div class="mini-stars" data-category="communication">
+                                    <i class="fas fa-star" data-value="1"></i>
+                                    <i class="fas fa-star" data-value="2"></i>
+                                    <i class="fas fa-star" data-value="3"></i>
+                                    <i class="fas fa-star" data-value="4"></i>
+                                    <i class="fas fa-star" data-value="5"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recommend Checkbox -->
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="recommendProvider">
+                            <label class="form-check-label" for="recommendProvider">
+                                <i class="fas fa-thumbs-up me-2"></i>Would you recommend this provider to others?
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitReview">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Review
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Rating/Review Modal Styles */
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    color: #ddd;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #ffc107;
+    transform: scale(1.1);
+}
+
+.rating-text {
+    font-weight: 600;
+    color: #004C99;
+}
+
+.rating-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.mini-stars {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.mini-stars i {
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mini-stars i:hover,
+.mini-stars i.active {
+    color: #ffc107;
+}
+</style>
+
 <script>
+// Dashboard Tab Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.getAttribute('data-tab');
+            
+            // Remove active class from all tabs and panels
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanels.forEach(p => p.classList.remove('active'));
+            
+            // Add active class to clicked tab and corresponding panel
+            this.classList.add('active');
+            document.getElementById(tabId + '-panel').classList.add('active');
+        });
+    });
+    
+    // Star rating functionality
+    const starLabels = document.querySelectorAll('.star-rating label');
+    const ratingDescriptions = [
+        'Click stars to rate',
+        '⭐ Poor',
+        '⭐⭐ Fair', 
+        '⭐⭐⭐ Good',
+        '⭐⭐⭐⭐ Very Good',
+        '⭐⭐⭐⭐⭐ Excellent'
+    ];
+    
+    starLabels.forEach((label, index) => {
+        label.addEventListener('click', function() {
+            const rating = 5 - index;
+            document.getElementById('ratingDescription').textContent = ratingDescriptions[rating];
+        });
+    });
+    
+    // Mini stars rating
+    const miniStars = document.querySelectorAll('.mini-stars');
+    miniStars.forEach(starGroup => {
+        const stars = starGroup.querySelectorAll('i');
+        stars.forEach((star, index) => {
+            star.addEventListener('click', function() {
+                stars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+    });
+    
+    // Submit review with immediate feedback
+    const submitReviewBtn = document.getElementById('submitReview');
+    if (submitReviewBtn) {
+        submitReviewBtn.addEventListener('click', function() {
+            const rating = document.querySelector('input[name="rating"]:checked');
+            if (!rating) {
+                alert('Please select a rating');
+                return;
+            }
+            
+            // Show loading state
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+            this.disabled = true;
+            
+            // Simulate submission
+            setTimeout(() => {
+                alert('Thank you for your review!');
+                bootstrap.Modal.getInstance(document.getElementById('ratingReviewModal')).hide();
+                this.innerHTML = '<i class="fas fa-paper-plane me-2"></i>Submit Review';
+                this.disabled = false;
+            }, 1500);
+        });
+    }
+});
+
+// Global functions for modal triggers
+window.openCompletionModal = function(serviceId) {
+    const modal = new bootstrap.Modal(document.getElementById('ratingReviewModal'));
+    
+    // Set service info based on serviceId
+    const serviceInfo = {
+        'garden-landscaping': {
+            title: 'Garden Landscaping',
+            provider: 'Sarah Landscaper'
+        },
+        'house-painting': {
+            title: 'House Painting', 
+            provider: 'David Painter'
+        }
+    };
+    
+    if (serviceInfo[serviceId]) {
+        document.getElementById('serviceTitle').textContent = serviceInfo[serviceId].title;
+        document.getElementById('serviceProvider').textContent = `Completed by ${serviceInfo[serviceId].provider}`;
+    }
+    
+    modal.show();
+};
+
 // CSRF helper
 // Note: settings.py sets CSRF_COOKIE_HTTPONLY=True, so JS cannot read csrftoken from cookies.
 // Read the CSRF token from Django's hidden form input instead.
@@ -958,6 +1715,70 @@ if (uploadUserPhotoForm) {
             }
         });
     });
+}
+
+// Dashboard functionality
+function markJobCompleted(requestId, providerName) {
+    if (confirm(`Are you sure you want to mark the job with ${providerName} as completed?`)) {
+        // In a real implementation, this would make an API call
+        // For now, we'll just remove the job card and show a success message
+        const jobCard = document.querySelector(`[data-job-id="${requestId}"]`);
+        if (jobCard) {
+            jobCard.style.transition = 'all 0.5s ease';
+            jobCard.style.transform = 'scale(0.95)';
+            jobCard.style.opacity = '0.5';
+            
+            setTimeout(() => {
+                jobCard.remove();
+                
+                // Check if any jobs remain
+                const remainingJobs = document.querySelectorAll('.job-card').length;
+                if (remainingJobs === 0) {
+                    document.getElementById('ongoing-jobs-container').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <h5>No Active Jobs</h5>
+                            <p class="text-muted">All your jobs have been completed! Great work.</p>
+                            <a href="/requests/create/" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i>Create New Request
+                            </a>
+                        </div>
+                    `;
+                }
+            }, 300);
+            
+            // Show success message
+            showNotification('Job marked as completed successfully!', 'success');
+        }
+    }
+}
+
+function viewJobDetails(requestId) {
+    // In a real implementation, this would navigate to a job details page
+    // or open a modal with detailed information
+    showNotification('Job details feature coming soon!', 'info');
+}
+
+function showNotification(message, type = 'success') {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-info';
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 1060; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        if (notification && notification.parentNode) {
+            notification.remove();
+        }
+    }, 3000);
 }
 </script>
 

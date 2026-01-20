@@ -16,6 +16,24 @@ from .views import (
     api_request_accept,
     api_request_edit,
 )
+from .api_views import (
+    api_user_accepted_requests,
+    api_mark_job_completed,
+    api_submit_rating,
+    api_submit_feedback,
+    api_job_completion_history,
+)
+from .enhanced_api_views import (
+    api_upload_request_photo,
+    api_update_request_status,
+    api_filtered_requests,
+    api_accept_completion,
+)
+from .priority_queue_api import (
+    api_provider_pending_requests,
+    api_request_priority_details,
+    api_providers_within_radius,
+)
 
 app_name = "requests"
 
@@ -39,4 +57,22 @@ urlpatterns = [
     path("api/<int:request_id>/decline/", api_request_decline, name="api_request_decline"),
     path("api/<int:request_id>/accept/", api_request_accept, name="api_request_accept"),
     path("api/<int:request_id>/edit/", api_request_edit, name="api_request_edit"),
+    
+    # Job Completion and Rating API Endpoints
+    path("api/user/accepted-requests/", api_user_accepted_requests, name="api_user_accepted_requests"),
+    path("api/<int:request_id>/complete/", api_mark_job_completed, name="api_mark_job_completed"),
+    path("api/<int:request_id>/rating/", api_submit_rating, name="api_submit_rating"),
+    path("api/<int:request_id>/feedback/", api_submit_feedback, name="api_submit_feedback"),
+    path("api/user/completion-history/", api_job_completion_history, name="api_job_completion_history"),
+    
+    # Enhanced API Endpoints
+    path("api/<int:request_id>/upload-photo/", api_upload_request_photo, name="api_upload_request_photo"),
+    path("api/<int:request_id>/update-status/", api_update_request_status, name="api_update_request_status"),
+    path("api/filtered/", api_filtered_requests, name="api_filtered_requests"),
+    path("api/<int:request_id>/accept-completion/", api_accept_completion, name="api_accept_completion"),
+    
+    # Priority Queue API Endpoints
+    path("api/provider/pending/", api_provider_pending_requests, name="api_provider_pending_requests"),
+    path("api/<int:request_id>/priority-details/", api_request_priority_details, name="api_request_priority_details"),
+    path("api/providers-nearby/", api_providers_within_radius, name="api_providers_within_radius"),
 ]

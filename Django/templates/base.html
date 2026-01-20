@@ -82,16 +82,25 @@
         .profile-avatar {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            max-width: 40px;
+            max-height: 40px;
             border-radius: 50%;
             object-fit: cover;
             border: 2px solid #FFC300;
             box-shadow: 0 2px 8px rgba(255, 195, 0, 0.3);
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
         
         .profile-avatar-fallback {
             width: 40px;
             height: 40px;
+            min-width: 40px;
+            min-height: 40px;
+            max-width: 40px;
+            max-height: 40px;
             border-radius: 50%;
             background: linear-gradient(135deg, #FFC300 0%, #FFD54F 100%);
             color: #003366;
@@ -104,6 +113,7 @@
             box-shadow: 0 2px 8px rgba(255, 195, 0, 0.3);
             transition: all 0.3s ease;
             text-transform: uppercase;
+            flex-shrink: 0;
         }
         
         .profile-dropdown-toggle {
@@ -115,6 +125,9 @@
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            white-space: nowrap;
+            overflow: hidden;
+            max-height: 48px;
         }
         
         .profile-dropdown-toggle:hover {
