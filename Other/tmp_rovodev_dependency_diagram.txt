@@ -1,0 +1,343 @@
+================================================================================
+EMERGENCY FEATURE DEPENDENCY DIAGRAM
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          USER NAVIGATION LAYER                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  User Profile Page (user_profile.html)  ──────┐                            │
+│         ↓                                       │                           │
+│  User Profile Redesign (user_profile_redesign.html)                         │
+│         ↓                                       │                           │
+│  Emergency Button Link (/accounts/emergency/) │                           │
+│         └───────────────────────────────────┬─┘                            │
+│                                             ↓                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                              │
+                                              ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          ROUTING LAYER                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Django/accounts/urls.py                                                    │
+│  ├── path('emergency/', views.emergency_request, name='emergency_request')  │
+│  │                                                                           │
+│  └─ Routes to: accounts.views.emergency_request()                          │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                              │
+                                              ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          VIEW LAYER                                          │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Django/accounts/views.py                                                   │
+│  ├── @login_required decorator                                             │
+│  ├── GET: Render emergency_request.html                                    │
+│  ├── POST: Process form submission                                         │
+│  │                                                                           │
+│  ├─ Dependencies:                                                           │
+│  │  ├─ User authentication (Django built-in)                              │
+│  │  ├─ ServiceRequest model (from requests.models)                        │
+│  │  ├─ ProviderProfile model (from accounts.models)                       │
+│  │  ├─ UserProfile model (from accounts.models)                           │
+│  │  ├─ send_mail() (Django email)                                         │
+│  │  ├─ JsonResponse (for AJAX)                                            │
+│  │  └─ Logging                                                             │
+│  │                                                                           │
+│  └─ Creates: ServiceRequest with urgent=True                              │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+          │                              │                              │
+          ↓                              ↓                              ↓
+    ┌──────────────┐          ┌──────────────┐          ┌──────────────────┐
+    │              │          │              │          │                  │
+    │  TEMPLATE    │          │  MODELS      │          │  EMAIL SYSTEM    │
+    │              │          │              │          │                  │
+    └──────────────┘          └──────────────┘          └──────────────────┘
+          │                              │                              │
+          └──────────┬───────────────────┴──────────────┬────────────────┘
+                     ↓
+    ┌────────────────────────────────────────────────────────────────────┐
+    │                                                                     │
+    │  TEMPLATE LAYER (emergency_request.html)                           │
+    │  ├─ Location Sharing Section                                       │
+    │  │  ├─ Geolocation Button                                         │
+    │  │  ├─ Location Display (read-only)                               │
+    │  │  └─ Manual Address Fallback (hidden, shown on error)           │
+    │  │                                                                 │
+    │  ├─ Emergency Type Selection (6 options)                          │
+    │  │  └─ Radio buttons for type selection                           │
+    │  │                                                                 │
+    │  ├─ Description Textarea                                          │
+    │  │  └─ Required field                                             │
+    │  │                                                                 │
+    │  ├─ Contact Phone Input                                           │
+    │  │  └─ Required field                                             │
+    │  │                                                                 │
+    │  ├─ Provider Selection (cards)                                    │
+    │  │  └─ Radio buttons for provider selection                       │
+    │  │                                                                 │
+    │  └─ Submit Button (disabled until all fields valid)               │
+    │     └─ Form submission via AJAX                                   │
+    │                                                                     │
+    └────────────────────────────────────────────────────────────────────┘
+                     │
+                     ↓
+    ┌────────────────────────────────────────────────────────────────────┐
+    │                                                                     │
+    │  JAVASCRIPT LAYER (embedded in template)                           │
+    │  ├─ Geolocation API Handler                                        │
+    │  │  ├─ navigator.geolocation.getCurrentPosition()                 │
+    │  │  ├─ Success: Store coordinates, update UI                      │
+    │  │  └─ Error: Show manual address entry fallback                  │
+    │  │                                                                 │
+    │  ├─ Form Validation                                               │
+    │  │  ├─ Check emergency type selected                              │
+    │  │  ├─ Check description entered                                  │
+    │  │  ├─ Check phone entered                                        │
+    │  │  ├─ Check location (geolocation OR manual address)             │
+    │  │  ├─ Check provider selected                                    │
+    │  │  └─ Enable/disable submit button                               │
+    │  │                                                                 │
+    │  ├─ AJAX Form Submission                                          │
+    │  │  ├─ Fetch API to POST form                                     │
+    │  │  ├─ CSRF token included                                        │
+    │  │  └─ Response: JSON with success/error                          │
+    │  │                                                                 │
+    │  └─ Event Listeners                                               │
+    │     ├─ Emergency type selection                                    │
+    │     ├─ Provider card selection                                     │
+    │     ├─ Location sharing button click                               │
+    │     ├─ Manual address input change                                 │
+    │     └─ Form submission                                             │
+    │                                                                     │
+    └────────────────────────────────────────────────────────────────────┘
+                     │
+                     ↓
+    ┌────────────────────────────────────────────────────────────────────┐
+    │                                                                     │
+    │  DATABASE LAYER                                                    │
+    │  ├─ ServiceRequest Model (requests.models)                         │
+    │  │  ├─ user (ForeignKey → User)                                   │
+    │  │  ├─ provider (ForeignKey → User)                               │
+    │  │  ├─ description (TextField)                                     │
+    │  │  │  └─ Includes location info + phone                          │
+    │  │  ├─ urgent (BooleanField) ◄─ SET TO TRUE FOR EMERGENCY         │
+    │  │  ├─ status (CharField) ◄─ SET TO 'pending'                     │
+    │  │  ├─ created_at (DateTimeField)                                 │
+    │  │  └─ email_sent_to_provider (BooleanField)                      │
+    │  │                                                                 │
+    │  ├─ ProviderProfile Model (accounts.models)                        │
+    │  │  ├─ user (OneToOneField)                                       │
+    │  │  ├─ company_name                                               │
+    │  │  ├─ service_type                                               │
+    │  │  └─ Other profile fields                                       │
+    │  │                                                                 │
+    │  ├─ UserProfile Model (accounts.models)                            │
+    │  │  ├─ user (OneToOneField)                                       │
+    │  │  ├─ phone ◄─ Updated if empty                                  │
+    │  │  └─ Other profile fields                                       │
+    │  │                                                                 │
+    │  └─ User Model (Django auth)                                       │
+    │     ├─ email ◄─ Used for notifications                            │
+    │     └─ is_active                                                   │
+    │                                                                     │
+    └────────────────────────────────────────────────────────────────────┘
+                     │
+                     ↓
+    ┌────────────────────────────────────────────────────────────────────┐
+    │                                                                     │
+    │  EMAIL NOTIFICATION LAYER                                          │
+    │  ├─ Django send_mail()                                             │
+    │  ├─ Recipient: Provider email                                      │
+    │  ├─ Subject: "EMERGENCY SERVICE REQUEST - [TYPE]"                  │
+    │  └─ Body Includes:                                                 │
+    │     ├─ Emergency type                                              │
+    │     ├─ Description                                                 │
+    │     ├─ Customer info                                               │
+    │     ├─ Phone number                                                │
+    │     ├─ Location (geolocation or manual)                            │
+    │     └─ Request detail link                                         │
+    │                                                                     │
+    └────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+DATA FLOW DIAGRAM
+================================================================================
+
+USER INPUT (Frontend)
+    │
+    ├─ Emergency Type (radio selection)
+    ├─ Description (textarea)
+    ├─ Phone (text input)
+    ├─ Location (geolocation API or manual text input)
+    └─ Provider Selection (radio selection)
+         │
+         ↓
+VALIDATION (Frontend JavaScript)
+    │
+    ├─ All required fields filled?
+    ├─ Valid emergency type?
+    ├─ Valid phone format?
+    ├─ Location available (geolocation OR manual address)?
+    ├─ Provider selected?
+    └─ Submit button enabled?
+         │
+         ↓
+FORM SUBMISSION (AJAX)
+    │
+    ├─ POST /accounts/emergency/
+    ├─ Include CSRF token
+    └─ Form data: emergency_type, description, phone, location_lat, 
+               location_lng, address, manual_address, selected_provider
+         │
+         ↓
+BACKEND PROCESSING (Django View)
+    │
+    ├─ Validate authentication (@login_required)
+    ├─ Validate all required fields
+    ├─ Validate location (geolocation OR manual)
+    ├─ Fetch provider from database
+    ├─ Fetch provider profile
+    ├─ Create ServiceRequest with:
+    │  ├─ urgent = True
+    │  ├─ status = 'pending'
+    │  ├─ description = description + location info
+    │  └─ user = current user
+    ├─ Update UserProfile phone if empty
+    ├─ Send email to provider
+    └─ Mark email as sent
+         │
+         ↓
+DATABASE STORAGE
+    │
+    ├─ ServiceRequest record created
+    ├─ Set urgent = True
+    ├─ All location info in description
+    └─ Email tracking fields updated
+         │
+         ↓
+PROVIDER NOTIFICATION
+    │
+    ├─ Email sent to provider
+    ├─ Email includes:
+    │  ├─ Customer contact info
+    │  ├─ Emergency type
+    │  ├─ Location (if geolocation: coordinates; if manual: address text)
+    │  └─ Request detail link
+    └─ Provider can view in dashboard
+         │
+         ↓
+USER CONFIRMATION
+    │
+    ├─ Success message shown
+    ├─ Request ID returned
+    └─ Redirect to user profile
+
+================================================================================
+DEPENDENCY IMPACT MATRIX
+================================================================================
+
+COMPONENT                    REMOVAL IMPACT    KEEP IMPACT      NOTES
+─────────────────────────────────────────────────────────────────────────────
+URL Route                    HIGH              NONE             Easy to remove
+View Function                HIGH              NONE             Easy to remove
+Template                     HIGH              NONE             Easy to remove
+Navigation Links (2x)        MEDIUM            NONE             Easy to remove
+JavaScript (embedded)        HIGH              NONE             Easy to remove
+CSS (embedded)              MEDIUM            NONE             Easy to remove
+
+urgent Field                 NONE              HIGH             Keep for exports,
+                                                                filters, admin
+
+ServiceRequest Model         NONE              HIGH             Core model,
+                                                                used elsewhere
+
+ProviderProfile Model        NONE              HIGH             Core model,
+                                                                used elsewhere
+
+UserProfile Model            NONE              HIGH             Core model,
+                                                                used elsewhere
+
+Email System                 NONE              HIGH             Used for all
+                                                                notifications
+
+Admin Interface              LOW               HIGH             Still useful for
+                                                                urgent filtering
+
+Export System                LOW               HIGH             Still uses urgent
+                                                                field
+
+API Endpoints                NONE              MEDIUM           Returns urgent
+                                                                status
+
+================================================================================
+REMOVAL CHECKLIST
+================================================================================
+
+REMOVAL STEPS:
+─────────────────────────────────────────────────────────────────────────────
+☐ Step 1: Remove URL route from accounts/urls.py (line 15)
+☐ Step 2: Remove/comment emergency_request view (lines 256-356 in views.py)
+☐ Step 3: Delete emergency_request.html template
+☐ Step 4: Remove emergency button from user_profile.html
+☐ Step 5: Remove emergency button from user_profile_redesign.html
+☐ Step 6: Search codebase for any remaining 'emergency' references
+☐ Step 7: Test URL returns 404
+☐ Step 8: Verify user profile loads
+☐ Step 9: Verify admin still works
+☐ Step 10: Test export functionality
+
+WHAT NOT TO REMOVE:
+─────────────────────────────────────────────────────────────────────────────
+✓ Keep: ServiceRequest model
+✓ Keep: urgent field (BooleanField)
+✓ Keep: Existing emergency requests in database
+✓ Keep: Admin urgent filter
+✓ Keep: Export functionality
+✓ Keep: API urgent parameter
+✓ Keep: Email system
+✓ Keep: All other models
+
+================================================================================
+GEOLOCATION FALLBACK IMPLEMENTATION CHECKLIST
+================================================================================
+
+FRONTEND CHANGES:
+─────────────────────────────────────────────────────────────────────────────
+☐ Add manual address input field to HTML form
+☐ Add error message differentiation in JavaScript error handler
+☐ Show manual address field only on permission denied
+☐ Update form validation to accept geolocation OR manual address
+☐ Add real-time validation for manual address input
+☐ Update form submission to handle both methods
+☐ Add CSS styling for manual address section
+☐ Test in multiple browsers
+☐ Test on mobile devices
+
+BACKEND CHANGES:
+─────────────────────────────────────────────────────────────────────────────
+☐ Update view to validate both geolocation and manual address
+☐ Accept manual_address POST parameter
+☐ Require at least one location method
+☐ Store address appropriately based on method
+☐ Update email notification to show correct location
+☐ Add logging for manual address entries
+☐ Test error handling
+☐ Test email notifications
+
+TESTING:
+─────────────────────────────────────────────────────────────────────────────
+☐ Test with geolocation enabled
+☐ Test with geolocation disabled (permission denied)
+☐ Test with timeout
+☐ Test with manual address entry
+☐ Test form validation
+☐ Test email notifications
+☐ Test on desktop browser
+☐ Test on mobile browser
+☐ Test edge cases (empty input, special characters)
+
+================================================================================

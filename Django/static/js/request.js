@@ -271,13 +271,218 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function enhanceUrgentToggle() {
         const urgentCheckbox = document.getElementById("id_urgent");
-        const urgentLabel = document.querySelector("label[for='id_urgent']");
+        const urgentLocationSection = document.getElementById("urgent-location-section");
+        const captureLocationBtn = document.getElementById("capture-location-btn");
+        const locationCaptureStatus = document.getElementById("location-capture-status");
+        const urgentLatitudeInput = document.getElementById("urgent_latitude");
+        const urgentLongitudeInput = document.getElementById("urgent_longitude");
 
-        if (urgentCheckbox && urgentLabel) {
-            // Make label clickable (it already is in CSS, but add feedback)
-            urgentLabel.addEventListener("change", function () {
-                // Add any additional behavior here
+        if (urgentCheckbox && urgentLocationSection) {
+            // Initialize urgent toggle state management
+            let isUrgent = urgentCheckbox.checked;
+            
+            // Handle urgent toggle change
+            urgentCheckbox.addEventListener("change", function () {
+                isUrgent = this.checked;
+                handleUrgentToggle(isUrgent);
             });
+
+            // Handle location capture button click
+            if (captureLocationBtn) {
+                captureLocationBtn.addEventListener("click", function () {
+                    captureUserLocation();
+                });
+            }
+
+            // Initialize state on page load
+            if (isUrgent) {
+                handleUrgentToggle(true);
+            }
+        }
+
+        function handleUrgentToggle(isUrgent) {
+            if (isUrgent) {
+                // Show location section with fade in and slide down animation
+                urgentLocationSection.style.display = 'block';
+                setTimeout(() => {
+                    urgentLocationSection.classList.add('show');
+                }, 10);
+            } else {
+                // Hide location section with fade out and slide up animation
+                urgentLocationSection.classList.remove('show');
+                setTimeout(() => {
+                    urgentLocationSection.style.display = 'none';
+                    // Clear location data when urgent is disabled
+                    clearLocationData();
+                }, 400);
+            }
+            
+            // Update provider distance display if location is captured
+            updateProviderDistances();
+        }
+
+        function captureUserLocation() {
+            // Check if geolocation is supported
+            if (!navigator.geolocation) {
+                showLocationStatus('error', 'Geolocation is not supported by this browser.');
+                return;
+            }
+
+            // Show loading state
+            showLocationLoading();
+
+            // Get current position with high accuracy
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    // Success callback
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    const accuracy = position.coords.accuracy;
+                    
+                    // Store coordinates in hidden inputs
+                    urgentLatitudeInput.value = latitude;
+                    urgentLongitudeInput.value = longitude;
+                    
+                    // Show success status with coordinates
+                    showLocationStatus('success', `Location Captured! (Accuracy: ±${Math.round(accuracy)}m)`);
+                    
+                    // Update provider distances
+                    updateProviderDistances();
+                    
+                    // Disable button after successful capture
+                    captureLocationBtn.disabled = true;
+                    captureLocationBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i>Location Captured';
+                },
+                function(error) {
+                    // Error callback
+                    let errorMessage = 'Unable to retrieve your location.';
+                    
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied. Please enable location permissions and try again.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information is unavailable. Please check your GPS settings.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timed out. Please try again.';
+                            break;
+                        default:
+                            errorMessage = 'An unknown error occurred while retrieving location.';
+                            break;
+                    }
+                    
+                    showLocationStatus('error', errorMessage);
+                    resetLocationButton();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000, // 15 seconds timeout
+                    maximumAge: 300000 // 5 minutes cache
+                }
+            );
+        }
+
+        function showLocationLoading() {
+            captureLocationBtn.disabled = true;
+            captureLocationBtn.classList.add('loading');
+            captureLocationBtn.innerHTML = '<i class="fas fa-spinner me-2"></i>Locating...';
+            showLocationStatus('loading', 'Getting your precise location...');
+        }
+
+        function resetLocationButton() {
+            captureLocationBtn.disabled = false;
+            captureLocationBtn.classList.remove('loading');
+            captureLocationBtn.innerHTML = '<i class="fas fa-location-arrow me-2"></i>Find My Location';
+        }
+
+        function showLocationStatus(type, message) {
+            locationCaptureStatus.className = `location-capture-status show ${type}`;
+            locationCaptureStatus.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-triangle' : 'fa-spinner fa-spin'} me-2"></i>
+                ${message}
+            `;
+        }
+
+        function clearLocationData() {
+            urgentLatitudeInput.value = '';
+            urgentLongitudeInput.value = '';
+            locationCaptureStatus.classList.remove('show');
+            resetLocationButton();
+            
+            // Hide distance badges
+            const distanceBadges = document.querySelectorAll('.provider-distance-badge');
+            distanceBadges.forEach(badge => badge.style.display = 'none');
+        }
+
+        function updateProviderDistances() {
+            const userLat = parseFloat(urgentLatitudeInput.value);
+            const userLon = parseFloat(urgentLongitudeInput.value);
+            
+            if (!userLat || !userLon || !isUrgent) {
+                // Hide all distance badges if no location or not urgent
+                const distanceBadges = document.querySelectorAll('.provider-distance-badge');
+                distanceBadges.forEach(badge => badge.style.display = 'none');
+                return;
+            }
+
+            // Update distance for currently selected provider
+            const providerSelect = document.getElementById('provider_select');
+            if (providerSelect && providerSelect.value) {
+                updateSingleProviderDistance(providerSelect.value, userLat, userLon);
+            }
+        }
+
+        function updateSingleProviderDistance(providerId, userLat, userLon) {
+            // For now, simulate provider coordinates (in production, fetch from API)
+            // This would typically be fetched from your backend API
+            const providerCoords = getProviderCoordinates(providerId);
+            
+            if (providerCoords) {
+                const distance = calculateDistance(userLat, userLon, providerCoords.lat, providerCoords.lon);
+                displayProviderDistance(distance);
+            }
+        }
+
+        function getProviderCoordinates(providerId) {
+            // Mock provider coordinates - in production, fetch from API
+            const mockCoords = {
+                1: { lat: 3.8480, lon: 11.5021 }, // Yaoundé area
+                2: { lat: 4.0511, lon: 9.7679 },  // Douala area  
+                3: { lat: 3.8667, lon: 11.5167 }, // Yaoundé center
+            };
+            return mockCoords[providerId] || { lat: 3.8480, lon: 11.5021 };
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Earth's radius in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function displayProviderDistance(distance) {
+            const distanceBadge = document.getElementById('provider_distance');
+            const distanceValue = document.getElementById('distance_value');
+            
+            if (distanceBadge && distanceValue) {
+                distanceValue.textContent = `${distance.toFixed(1)} km`;
+                distanceBadge.style.display = 'inline-flex';
+                
+                // Add animation
+                distanceBadge.style.opacity = '0';
+                distanceBadge.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    distanceBadge.style.opacity = '1';
+                    distanceBadge.style.transform = 'translateY(0)';
+                    distanceBadge.style.transition = 'all 0.3s ease';
+                }, 50);
+            }
         }
     }
 

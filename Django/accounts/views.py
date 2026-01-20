@@ -224,11 +224,26 @@ def register_provider(request):
 
 
 def user_profile(request):
-    """Serve user profile HTML page"""
+    """Serve user profile HTML page with dashboard data"""
     if not request.user.is_authenticated:
         return redirect('accounts:register_user')
-    user_profile = UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
-    return render(request, 'accounts/user_profile_redesign.html', {'user_profile': user_profile})
+    
+    # Get or create user profile
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    # Get ongoing requests (accepted status) for the dashboard
+    ongoing_requests = ServiceRequest.objects.filter(
+        user=request.user,
+        status='accepted'
+    ).select_related('provider').order_by('-created_at')
+    
+    context = {
+        'user_profile': user_profile,
+        'ongoing_requests': ongoing_requests,
+        'ongoing_count': ongoing_requests.count(),
+    }
+    
+    return render(request, 'accounts/user_profile.html', context)
 
 
 def provider_profile(request):
@@ -239,107 +254,6 @@ def provider_profile(request):
     return render(request, 'accounts/provider_profile_redesign.html', {'provider_profile': provider_profile})
 
 
-@login_required
-def emergency_request(request):
-    """
-    Handle emergency service requests with location sharing and provider selection
-    """
-    if request.method == 'POST':
-        # Handle emergency request submission
-        emergency_type = request.POST.get('emergency_type', '')
-        description = request.POST.get('description', '')
-        location_lat = request.POST.get('location_lat', '')
-        location_lng = request.POST.get('location_lng', '')
-        address = request.POST.get('address', '')
-        selected_provider_id = request.POST.get('selected_provider', '')
-        contact_phone = request.POST.get('contact_phone', '')
-
-        # Validate required fields
-        if not all([emergency_type, description, contact_phone, selected_provider_id]):
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': False, 'error': 'Please fill in all required fields.'})
-            messages.error(request, 'Please fill in all required fields.')
-            return redirect('emergency_request')
-
-        try:
-            # Get the selected provider
-            selected_provider = User.objects.get(id=selected_provider_id)
-            provider_profile = ProviderProfile.objects.get(user=selected_provider)
-
-            # Create emergency service request
-            emergency_request = ServiceRequest.objects.create(
-                user=request.user,
-                provider=selected_provider,
-                provider_name=provider_profile.company_name or selected_provider.get_full_name(),
-                description=f"EMERGENCY {emergency_type.upper()}: {description}\n\nLocation: {address}\nCoordinates: {location_lat}, {location_lng}\nContact Phone: {contact_phone}",
-                urgent=True,
-                status='pending'
-            )
-
-            # Update user profile with phone if not set
-            user_profile, created = UserProfile.objects.get_or_create(user=request.user)
-            if not user_profile.phone:
-                user_profile.phone = contact_phone
-                user_profile.save()
-
-            # Send email notification to provider
-            try:
-                send_mail(
-                    subject=f'EMERGENCY SERVICE REQUEST - {emergency_type.upper()}',
-                    message=f"""EMERGENCY SERVICE REQUEST
-
-Type: {emergency_type.upper()}
-Description: {description}
-
-Customer: {request.user.get_full_name()} ({request.user.email})
-Phone: {contact_phone}
-Location: {address}
-Coordinates: {location_lat}, {location_lng}
-
-This is an EMERGENCY request. Please respond immediately!
-
-View request: {request.build_absolute_uri(f'/requests/detail/{emergency_request.id}/')}""",
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[selected_provider.email],
-                    fail_silently=True
-                )
-            except Exception as e:
-                logger.error(f"Failed to send emergency email: {e}")
-
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Emergency request sent successfully! Help is on the way.',
-                    'request_id': emergency_request.id
-                })
-
-            messages.success(request, 'Emergency request sent successfully! Help is on the way.')
-            return redirect('user_profile')
-
-        except User.DoesNotExist:
-            error_msg = 'Selected provider not found.'
-        except ProviderProfile.DoesNotExist:
-            error_msg = 'Provider profile not found.'
-        except Exception as e:
-            logger.error(f"Error creating emergency request: {e}")
-            error_msg = 'An error occurred while processing your request.'
-
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'success': False, 'error': error_msg})
-
-        messages.error(request, error_msg)
-        return redirect('emergency_request')
-
-    # Get nearby providers for the emergency request
-    # In a real implementation, you'd filter by location and service type
-    nearby_providers = ProviderProfile.objects.all()[:10]  # Get first 10 providers
-
-    context = {
-        'nearby_providers': nearby_providers,
-        'user_profile': UserProfile.objects.get(user=request.user) if UserProfile.objects.filter(user=request.user).exists() else None
-    }
-
-    return render(request, 'accounts/emergency_request.html', context)
 @read_only_profile
 def provider_profile_detail(request, provider_id):
     """

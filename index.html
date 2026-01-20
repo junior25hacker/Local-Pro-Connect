@@ -8,6 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Pro Connect - Your Trusted Neighborhood Services</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/image/newlogo.png">
+    <link rel="shortcut icon" type="image/png" href="assets/image/newlogo.png">
+    <link rel="apple-touch-icon" href="assets/image/newlogo.png">
+    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
@@ -17,38 +22,26 @@
 </head>
 <body>
     <!-- ==================== NAVIGATION BAR ==================== -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="http://127.0.0.1:5500/">
-                <span class="navbar-brand-logo">
-                    <img src="assets/image/newlogo.png" alt="Local Pro Connect Logo" style="height: 40px; width: auto;">
-                </span>
-                <span>Local Pro<span style="color: #17B890;">Connect</span></span>
+    <div class="nav">
+        <div class="logo">
+            <a href="http://127.0.0.1:5500/">
+                <img src="assets/image/newlogo.png" alt="Local Pro Connect Logo" style="height: 40px; width: auto; margin-right: 10px; vertical-align: middle;">
+                Local Pro<span style="color: #17B890;">Connect</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">x
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="pages/about.html">
-                            <i class="fas fa-info-circle me-2"></i>About Us
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://127.0.0.1:8000/login/">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://127.0.0.1:8000/accounts/register/user/">
-                            <i class="fas fa-user-plus me-2"></i>Sign Up
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </div>
-    </nav>
+        <div class="main_list" id="mainListDiv">
+            <ul>
+                <li><a href="pages/about.html">About Us</a></li>
+                <li><a href="http://127.0.0.1:8000/login/">Login</a></li>
+                <li><a href="http://127.0.0.1:8000/accounts/register/user/">Sign Up</a></li>
+            </ul>
+        </div>
+        <span class="navTrigger" id="navTrigger">
+            <i></i>
+            <i></i>
+            <i></i>
+        </span>
+    </div>
 
     <!-- ==================== HERO SECTION ==================== -->
     <section class="hero-section">
@@ -352,6 +345,9 @@
         </div>
     </footer>
 
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     

@@ -166,15 +166,17 @@ def send_request_to_provider(service_request, provider_profile=None, async_send=
         if provider_profile:
             provider_address = get_address_string(provider_profile)
         
-        # Calculate distance (mock for now, based on zip codes)
-        if customer_profile and provider_profile:
-            try:
-                customer_zip = int(customer_profile.zip_code) if customer_profile.zip_code else 0
-                provider_zip = int(provider_profile.zip_code) if provider_profile.zip_code else 0
-                zip_diff = abs(customer_zip - provider_zip)
-                distance = min(zip_diff * 0.5, 500)  # Cap at 500 miles
-            except (ValueError, AttributeError, TypeError):
-                distance = None
+        # Calculate distance using Haversine formula
+        distance = None
+        distance_display = None
+        if provider_profile:
+            # Calculate and store distance in the request
+            calculated_distance = service_request.calculate_distance_to_provider(provider_profile)
+            if calculated_distance is not None:
+                distance = calculated_distance
+                distance_display = service_request.get_distance_display()
+                # Save the distance for future use
+                service_request.save(update_fields=['distance_km'])
         
         # Get provider display name
         provider_display_name = (
@@ -197,6 +199,7 @@ def send_request_to_provider(service_request, provider_profile=None, async_send=
             'status': service_request.status,
             'created_at': service_request.created_at,
             'distance': distance,
+            'distance_display': distance_display or 'Distance not available',
             'customer_address': customer_address,
             'provider_address': provider_address,
             'company_name': provider_profile.company_name if provider_profile else None,
@@ -579,6 +582,166 @@ LocaPro Email System
             'success': False,
             'message': f'Email configuration test failed: {str(e)}',
             'config': config_info,
+        }
+
+
+def send_job_completion_notification(job_completion, async_send=True):
+    """
+    Send notification email to provider when user marks job as completed.
+    
+    Args:
+        job_completion: JobCompletion instance
+        async_send: Whether to send asynchronously
+    
+    Returns:
+        dict: {'success': bool, 'message': str}
+    """
+    try:
+        service_request = job_completion.service_request
+        provider = service_request.provider
+        
+        if not provider or not provider.email:
+            logger.warning(f"No provider email for job completion #{job_completion.id}")
+            return {
+                'success': False,
+                'message': 'Provider email not available',
+            }
+        
+        # Get provider profile
+        provider_profile = None
+        try:
+            provider_profile = provider.provider_profile
+        except Exception:
+            pass
+        
+        context = {
+            'provider_name': provider.get_full_name() or provider.username,
+            'provider_company': provider_profile.company_name if provider_profile else None,
+            'customer_name': service_request.user.get_full_name() or service_request.user.username,
+            'customer_email': service_request.user.email,
+            'request_id': service_request.id,
+            'description': service_request.description,
+            'completed_at': job_completion.completed_at,
+            'completion_notes': job_completion.completion_notes,
+            'work_quality': job_completion.get_work_quality_display() if job_completion.work_quality else None,
+            'completed_on_time': job_completion.completed_on_time,
+            'provider_showed_up': job_completion.provider_showed_up,
+            'site_url': settings.SITE_URL,
+        }
+        
+        subject = f"Job Completed - Request #{service_request.id}"
+        text_message = render_to_string('emails/job_completion_notification.txt', context)
+        html_message = render_to_string('emails/job_completion_notification.html', context)
+        
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[provider.email],
+        )
+        email.attach_alternative(html_message, "text/html")
+        
+        if async_send:
+            send_email_async(email)
+        else:
+            email.send(fail_silently=False)
+        
+        logger.info(f"Job completion notification sent for completion #{job_completion.id}")
+        
+        return {
+            'success': True,
+            'message': 'Job completion notification sent to provider',
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to send job completion notification #{job_completion.id}: {str(e)}", exc_info=True)
+        return {
+            'success': False,
+            'message': f'Failed to send job completion notification: {str(e)}',
+        }
+
+
+def send_rating_received_notification(service_rating, async_send=True):
+    """
+    Send notification email to provider when they receive a rating.
+    
+    Args:
+        service_rating: ServiceRating instance
+        async_send: Whether to send asynchronously
+    
+    Returns:
+        dict: {'success': bool, 'message': str}
+    """
+    try:
+        provider = service_rating.provider
+        service_request = service_rating.job_completion.service_request
+        
+        if not provider or not provider.email:
+            logger.warning(f"No provider email for rating #{service_rating.id}")
+            return {
+                'success': False,
+                'message': 'Provider email not available',
+            }
+        
+        # Get provider profile
+        provider_profile = None
+        try:
+            provider_profile = provider.provider_profile
+        except Exception:
+            pass
+        
+        # Generate star display
+        star_display = "★" * service_rating.stars + "☆" * (5 - service_rating.stars)
+        
+        context = {
+            'provider_name': provider.get_full_name() or provider.username,
+            'provider_company': provider_profile.company_name if provider_profile else None,
+            'customer_name': service_request.user.get_full_name() or service_request.user.username,
+            'request_id': service_request.id,
+            'description': service_request.description,
+            'stars': service_rating.stars,
+            'star_display': star_display,
+            'feedback': service_rating.feedback,
+            'quality_rating': service_rating.quality_rating,
+            'timeliness_rating': service_rating.timeliness_rating,
+            'communication_rating': service_rating.communication_rating,
+            'professionalism_rating': service_rating.professionalism_rating,
+            'would_recommend': service_rating.would_recommend,
+            'would_hire_again': service_rating.would_hire_again,
+            'submitted_at': service_rating.submitted_at,
+            'dashboard_link': f"{settings.SITE_URL}/requests/list/",
+            'site_url': settings.SITE_URL,
+        }
+        
+        subject = f"New {service_rating.stars}-Star Rating Received"
+        text_message = render_to_string('emails/rating_received_notification.txt', context)
+        html_message = render_to_string('emails/rating_received_notification.html', context)
+        
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[provider.email],
+        )
+        email.attach_alternative(html_message, "text/html")
+        
+        if async_send:
+            send_email_async(email)
+        else:
+            email.send(fail_silently=False)
+        
+        logger.info(f"Rating notification sent for rating #{service_rating.id}")
+        
+        return {
+            'success': True,
+            'message': 'Rating notification sent to provider',
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to send rating notification #{service_rating.id}: {str(e)}", exc_info=True)
+        return {
+            'success': False,
+            'message': f'Failed to send rating notification: {str(e)}',
         }
 
 

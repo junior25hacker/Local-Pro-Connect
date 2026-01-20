@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Completed - LocaPro</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #667eea; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .details { background: white; padding: 15px; margin: 15px 0; border-left: 4px solid #667eea; }
+        .highlight { background: #e8f4fd; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+        .success { color: #28a745; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Job Completed!</h1>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{ provider_name }},</p>
+            
+            <p class="success">Great news! The job for Request #{{ request_id }} has been marked as completed by your customer.</p>
+            
+            <div class="details">
+                <h3>Job Details</h3>
+                <ul>
+                    <li><strong>Request ID:</strong> #{{ request_id }}</li>
+                    <li><strong>Customer:</strong> {{ customer_name }}</li>
+                    <li><strong>Description:</strong> {{ description }}</li>
+                    <li><strong>Completed:</strong> {{ completed_at|date:"F j, Y \a\t g:i A" }}</li>
+                </ul>
+            </div>
+            
+            <div class="highlight">
+                <h3>Customer Feedback</h3>
+                {% if completion_notes %}
+                <p><strong>Notes:</strong> {{ completion_notes }}</p>
+                {% endif %}
+                {% if work_quality %}
+                <p><strong>Work Quality:</strong> {{ work_quality }}</p>
+                {% endif %}
+                <p><strong>Completed on Time:</strong> {% if completed_on_time %}<span class="success">Yes</span>{% else %}No{% endif %}</p>
+                <p><strong>Provider Showed Up:</strong> {% if provider_showed_up %}<span class="success">Yes</span>{% else %}No{% endif %}</p>
+            </div>
+            
+            <p>The customer may submit a rating and review for this job. You'll receive another notification if they do.</p>
+            
+            <p>Thank you for providing excellent service through our platform!</p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message from LocaPro.<br>
+            Visit <a href="{{ site_url }}">{{ site_url }}</a> to manage your services.</p>
+        </div>
+    </div>
+</body>
+</html>
