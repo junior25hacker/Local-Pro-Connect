@@ -1,6 +1,7 @@
-import os
+"""import os
 from pathlib import Path
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 # Load .env from project root (with override=True to ensure .env values are used)
 load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'), override=True)
@@ -22,6 +23,18 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 # Example: DJANGO_ALLOWED_HOSTS=example.com,www.example.com
 _allowed_hosts_env = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1')
 ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(',') if h.strip()]
+
+# If deployed on Render (or similar PaaS), include the automatically-provided
+# external URL in ALLOWED_HOSTS so the app accepts requests to that host.
+_render_url = os.environ.get('RENDER_EXTERNAL_URL') or os.environ.get('RENDER_SERVICE_URL')
+if _render_url:
+    try:
+        _p = urlparse(_render_url if '://' in _render_url else f'https://{_render_url}')
+        if _p.hostname and _p.hostname not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(_p.hostname)
+    except Exception:
+        # Ignore parse errors; ALLOWED_HOSTS will fall back to env config
+        pass
 
 if not SECRET_KEY:
     if DEBUG:
@@ -124,6 +137,17 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 _csrf_trusted = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '')
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_trusted.split(',') if o.strip()]
 
+# If Render provides an external URL in the environment, ensure the origin is trusted
+_render_url = os.environ.get('RENDER_EXTERNAL_URL') or os.environ.get('RENDER_SERVICE_URL')
+if _render_url:
+    try:
+        _p = urlparse(_render_url if '://' in _render_url else f'https://{_render_url}')
+        origin = f"{_p.scheme}://{_p.hostname}"
+        if origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(origin)
+    except Exception:
+        pass
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -149,7 +173,7 @@ PAGES_ROOT = BASE_DIR.parent / 'pages'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# -----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------- 
 # Production security headers (enable when DEBUG is False)
 # -----------------------------------------------------------------------------
 # If you are behind a reverse proxy / load balancer that terminates SSL, set:
@@ -196,10 +220,10 @@ else:
 #   SMTP_PROVIDER=gmail
 #   EMAIL_HOST_USER=your-email@gmail.com
 #   EMAIL_HOST_PASSWORD=your-app-specific-password
-#
+# 
 # For development, if no SMTP user is configured, console backend will be used
 # which prints emails to console instead of sending them.
-#
+# 
 SMTP_PROVIDER = os.environ.get('SMTP_PROVIDER', '').lower()
 
 # Defaults for providers (SSL by default for security)
@@ -242,3 +266,4 @@ SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
 
 # Contact form receiver email
 CONTACT_RECEIVER_EMAIL = os.environ.get('CONTACT_RECEIVER_EMAIL', 'sandracollehkayeh@gmail.com')
+"""
