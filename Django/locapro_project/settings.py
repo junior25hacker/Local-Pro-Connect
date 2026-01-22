@@ -215,22 +215,28 @@ else:
 #
 SMTP_PROVIDER = os.environ.get('SMTP_PROVIDER', '').lower()
 
-# Defaults for providers (SSL by default for security)
+# Defaults for providers
 if SMTP_PROVIDER == 'gmail':
     default_host = 'smtp.gmail.com'
-    default_port = 465
-    default_use_ssl = True
-    default_use_tls = False
+    default_port = 587
+    default_use_ssl = False
+    default_use_tls = True
 elif SMTP_PROVIDER in ('outlook', 'office365', 'microsoft'):
     default_host = 'smtp-mail.outlook.com'
-    default_port = 465
-    default_use_ssl = True
-    default_use_tls = False
+    default_port = 587
+    default_use_ssl = False
+    default_use_tls = True
+elif SMTP_PROVIDER == 'sendgrid':
+    default_host = 'smtp.sendgrid.net'
+    default_port = 587
+    default_use_ssl = False
+    default_use_tls = True
 else:
-    default_host = ''
-    default_port = 465
-    default_use_ssl = True
-    default_use_tls = False
+    # Default to TLS on port 587 (most common for modern SMTP)
+    default_host = os.environ.get('EMAIL_HOST', '')
+    default_port = 587
+    default_use_ssl = False
+    default_use_tls = True
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', default_host)
@@ -248,6 +254,14 @@ EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 # In development, default to console backend if no SMTP user provided
 if DEBUG and (not EMAIL_HOST_USER) and os.environ.get('EMAIL_BACKEND') is None:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Debug email configuration
+if EMAIL_HOST_USER:
+    print(f"[DEBUG] Email configured: {EMAIL_HOST} on port {EMAIL_PORT}")
+    print(f"[DEBUG] Email user: {EMAIL_HOST_USER[:10]}***")
+    print(f"[DEBUG] Using TLS: {EMAIL_USE_TLS}, Using SSL: {EMAIL_USE_SSL}")
+else:
+    print("[DEBUG] Email not configured - no EMAIL_HOST_USER set")
 
 # Site Configuration
 # SITE_URL used for building absolute links when request object is not available
