@@ -33,16 +33,21 @@ urlpatterns = [
     path('', serve_static_homepage, name='home'),
 ]
 
-# Serve pages directory and root index.html
+# Serve pages directory and static assets (both development and production)
+ROOT_DIR = settings.BASE_DIR.parent
+urlpatterns += [
+    re_path(r'^index\\.html$', serve, {'document_root': ROOT_DIR, 'path': 'index.html'}),
+    # Redirect search.html to the protected Django view
+    path('pages/search.html', RedirectView.as_view(url='/accounts/search/', permanent=False)),
+    path('search.html', RedirectView.as_view(url='/accounts/search/', permanent=False)),
+    re_path(r'^pages/(?P<path>.*)$', serve, {'document_root': settings.PAGES_ROOT}),
+]
+
+# Serve static and media files
 if settings.DEBUG:
-    ROOT_DIR = settings.BASE_DIR.parent
-    urlpatterns += [
-        re_path(r'^index\.html$', serve, {'document_root': ROOT_DIR, 'path': 'index.html'}),
-        # Redirect search.html to the protected Django view
-        path('pages/search.html', RedirectView.as_view(url='/accounts/search/', permanent=False)),
-        path('search.html', RedirectView.as_view(url='/accounts/search/', permanent=False)),
-        re_path(r'^pages/(?P<path>.*)$', serve, {'document_root': settings.PAGES_ROOT}),
-    ]
-    # Serve static files (CSS, JS, images)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'static')
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # In production, also serve static files through Django for the static homepage assets
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
