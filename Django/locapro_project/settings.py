@@ -81,9 +81,10 @@ import dj_database_url
 # Print database info for debugging (remove in final production)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
-    print(f"[DEBUG] Using DATABASE_URL: {DATABASE_URL[:50]}...")
+    print(f"[DEBUG] DATABASE_URL configured: postgresql connection detected")
+    print(f"[DEBUG] Database host: {DATABASE_URL.split('@')[1].split(':')[0] if '@' in DATABASE_URL else 'unknown'}")
 else:
-    print("[DEBUG] No DATABASE_URL found, using SQLite")
+    print("[DEBUG] No DATABASE_URL found, falling back to SQLite")
 
 DATABASES = {
     'default': dj_database_url.config(
