@@ -213,30 +213,12 @@ else:
 # For development, if no SMTP user is configured, console backend will be used
 # which prints emails to console instead of sending them.
 #
-SMTP_PROVIDER = os.environ.get('SMTP_PROVIDER', '').lower()
-
-# Defaults for providers
-if SMTP_PROVIDER == 'gmail':
-    default_host = 'smtp.gmail.com'
-    default_port = 587
-    default_use_ssl = False
-    default_use_tls = True
-elif SMTP_PROVIDER in ('outlook', 'office365', 'microsoft'):
-    default_host = 'smtp-mail.outlook.com'
-    default_port = 587
-    default_use_ssl = False
-    default_use_tls = True
-elif SMTP_PROVIDER == 'sendgrid':
-    default_host = 'smtp.sendgrid.net'
-    default_port = 587
-    default_use_ssl = False
-    default_use_tls = True
-else:
-    # Default to TLS on port 587 (most common for modern SMTP)
-    default_host = os.environ.get('EMAIL_HOST', '')
-    default_port = 587
-    default_use_ssl = False
-    default_use_tls = True
+# Gmail SMTP Configuration (Default)
+# Gmail requires TLS on port 587
+default_host = 'smtp.gmail.com'
+default_port = 587
+default_use_ssl = False
+default_use_tls = True
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', default_host)
