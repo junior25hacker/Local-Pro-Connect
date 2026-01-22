@@ -213,24 +213,12 @@ else:
 # For development, if no SMTP user is configured, console backend will be used
 # which prints emails to console instead of sending them.
 #
-SMTP_PROVIDER = os.environ.get('SMTP_PROVIDER', '').lower()
-
-# Defaults for providers (SSL by default for security)
-if SMTP_PROVIDER == 'gmail':
-    default_host = 'smtp.gmail.com'
-    default_port = 465
-    default_use_ssl = True
-    default_use_tls = False
-elif SMTP_PROVIDER in ('outlook', 'office365', 'microsoft'):
-    default_host = 'smtp-mail.outlook.com'
-    default_port = 465
-    default_use_ssl = True
-    default_use_tls = False
-else:
-    default_host = ''
-    default_port = 465
-    default_use_ssl = True
-    default_use_tls = False
+# Gmail SMTP Configuration (Default)
+# Gmail requires TLS on port 587
+default_host = 'smtp.gmail.com'
+default_port = 587
+default_use_ssl = False
+default_use_tls = True
 
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get('EMAIL_HOST', default_host)
@@ -245,9 +233,24 @@ SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
 # Email timeout (seconds) to avoid hanging requests
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 
-# In development, default to console backend if no SMTP user provided
-if DEBUG and (not EMAIL_HOST_USER) and os.environ.get('EMAIL_BACKEND') is None:
+# Force SMTP backend when credentials are provided (production)
+# Only use console backend in development when no credentials are set
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    # Credentials provided - always use SMTP backend
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    print(f"[DEBUG] Email configured with SMTP backend")
+    print(f"[DEBUG] Email host: {EMAIL_HOST} on port {EMAIL_PORT}")
+    print(f"[DEBUG] Email user: {EMAIL_HOST_USER[:10]}***")
+    print(f"[DEBUG] Using TLS: {EMAIL_USE_TLS}, Using SSL: {EMAIL_USE_SSL}")
+    print(f"[DEBUG] From email: {DEFAULT_FROM_EMAIL}")
+elif DEBUG:
+    # Development mode without credentials - use console backend
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("[DEBUG] Email using console backend (dev mode, no credentials)")
+else:
+    # Production without credentials - still use SMTP but will fail on send
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    print("[WARNING] Email credentials not configured - emails will fail to send!")
 
 # Site Configuration
 # SITE_URL used for building absolute links when request object is not available
