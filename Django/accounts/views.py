@@ -33,42 +33,82 @@ def signup_provider_page(request):
     """Redirect to the Django form-based provider registration page"""
     return redirect('accounts:register_provider')
 
-@require_http_methods(['GET', 'POST']) 
-def auth_view(request):
-    # Debug CSRF token
-    if request.method == 'POST':
-        csrf_token = request.META.get('HTTP_X_CSRFTOKEN', '')
-        print(f"[DEBUG] Received CSRF token length: {len(csrf_token)}")
-        print(f"[DEBUG] Expected CSRF token length should be 64")
-        if len(csrf_token) != 64:
-            print(f"[DEBUG] Invalid CSRF token received: '{csrf_token[:20]}...'")
-
 @require_http_methods(['GET', 'POST'])
 def auth_view(request):
     """
-    Professional authentication view handling both signup and signin.
-    Supports both users and providers.
+    Authentication view - handles both GET (show login form) and POST (login attempt).
+    Works with both standard form submission and AJAX requests.
     """
-    if request.method == 'POST':
-        action = request.POST.get('action', '').strip()
-        username = request.POST.get('username', '').strip()
-        email = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '')
-
-        if action == 'signup':
-            if User.objects.filter(email=email).exists():
-                return JsonResponse({'error': 'Account already exists. Please sign in.'}, status=400)
-            else:
-                username = email.split('@')[0]
-                user = User.objects.create_user(username=username, email=email, password=password)
-                user.save()
-                return JsonResponse({'success': 'Account has been created successfully. Please sign in.'})
-
-        elif action == 'signin':
-            # Professional authentication flow
-            return handle_user_login(request, username, email, password)
-
-    return render(request, 'auth_choice.html')
+    # For GET requests, show the login form
+    if request.method == 'GET':
+        return render(request, 'login_fixed.html')
+    
+    # Handle POST requests (login attempt)
+    username = request.POST.get('username', '').strip()
+    email = request.POST.get('email', '').strip()
+    password = request.POST.get('password', '')
+    action = request.POST.get('action', 'signin').strip()
+    
+    # Handle signup action
+    if action == 'signup':
+        if User.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'Account already exists. Please sign in.'}, status=400)
+        else:
+            username = email.split('@')[0]
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.save()
+            return JsonResponse({'success': 'Account has been created successfully. Please sign in.'})
+    
+    # Handle signin action (default)
+    if not username:
+        if request.headers.get('Accept') == 'application/json' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Username is required.'}, status=400)
+        messages.error(request, 'Username is required.')
+        return render(request, 'login_fixed.html')
+    
+    if not password:
+        if request.headers.get('Accept') == 'application/json' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Password is required.'}, status=400)
+        messages.error(request, 'Password is required.')
+        return render(request, 'login_fixed.html')
+    
+    # Authenticate user
+    authenticated_user = auth.authenticate(username=username, password=password)
+    
+    if authenticated_user is None:
+        logger.warning(f'Login attempt failed for user: {username}')
+        if request.headers.get('Accept') == 'application/json' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'error': 'Invalid username or password.'}, status=401)
+        messages.error(request, 'Invalid username or password.')
+        return render(request, 'login_fixed.html')
+    
+    # Login successful
+    auth.login(request, authenticated_user)
+    logger.info(f'User successfully logged in: {username}')
+    
+    # Determine redirect URL based on user type
+    if authenticated_user.is_superuser and authenticated_user.is_staff:
+        redirect_url = '/admin/'
+        user_type = 'superuser'
+    elif ProviderProfile.objects.filter(user=authenticated_user).exists():
+        redirect_url = '/accounts/profile/provider/'
+        user_type = 'provider'
+    else:
+        redirect_url = '/accounts/profile/user/'
+        user_type = 'user'
+    
+    # Return appropriate response
+    if request.headers.get('Accept') == 'application/json' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': 'Login successful! Redirecting...',
+            'user_type': user_type,
+            'redirect': redirect_url,
+            'redirect_url': redirect_url,
+            'username': authenticated_user.username,
+        }, status=200)
+    
+    # Standard form submission - redirect directly
+    return redirect(redirect_url)
 
 
 def handle_user_login(request, username, email, password):
