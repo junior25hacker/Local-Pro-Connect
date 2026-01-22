@@ -4,8 +4,20 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 from django.views.generic import TemplateView, RedirectView
+from django.http import FileResponse
 from accounts import views as accounts_views
 import os
+
+
+def serve_static_homepage(request):
+    """Serve the static index.html as homepage"""
+    static_index_path = os.path.join(settings.BASE_DIR.parent, 'index.html')
+    try:
+        return FileResponse(open(static_index_path, 'rb'), content_type='text/html')
+    except FileNotFoundError:
+        # Fallback to Django template if static file not found
+        from django.shortcuts import render
+        return render(request, 'index.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,7 +30,7 @@ urlpatterns = [
     path('requests/', include('requests.urls')),
     path('api/requests/', include('requests.api_urls')),
     path('healthz/', accounts_views.healthz, name='healthz'),
-    path('', TemplateView.as_view(template_name='index.html'), name='home'),
+    path('', serve_static_homepage, name='home'),
 ]
 
 # Serve pages directory and root index.html
