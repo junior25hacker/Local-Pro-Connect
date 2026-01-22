@@ -501,6 +501,31 @@
             alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
+        function getCSRFToken() {
+            // Try multiple methods to get CSRF token
+            
+            // Method 1: From meta tag (most reliable)
+            const metaToken = document.querySelector('meta[name="csrf-token"]');
+            if (metaToken && metaToken.getAttribute('content')) {
+                return metaToken.getAttribute('content');
+            }
+            
+            // Method 2: From cookie
+            const cookieValue = getCookie('csrftoken');
+            if (cookieValue) {
+                return cookieValue;
+            }
+            
+            // Method 3: From hidden form field
+            const hiddenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (hiddenInput && hiddenInput.value) {
+                return hiddenInput.value;
+            }
+            
+            console.error('CSRF token not found');
+            return null;
+        }
+
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
