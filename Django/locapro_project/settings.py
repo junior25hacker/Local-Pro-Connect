@@ -251,17 +251,24 @@ SERVER_EMAIL = os.environ.get('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
 # Email timeout (seconds) to avoid hanging requests
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', '10'))
 
-# In development, default to console backend if no SMTP user provided
-if DEBUG and (not EMAIL_HOST_USER) and os.environ.get('EMAIL_BACKEND') is None:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Debug email configuration
-if EMAIL_HOST_USER:
-    print(f"[DEBUG] Email configured: {EMAIL_HOST} on port {EMAIL_PORT}")
+# Force SMTP backend when credentials are provided (production)
+# Only use console backend in development when no credentials are set
+if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    # Credentials provided - always use SMTP backend
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    print(f"[DEBUG] Email configured with SMTP backend")
+    print(f"[DEBUG] Email host: {EMAIL_HOST} on port {EMAIL_PORT}")
     print(f"[DEBUG] Email user: {EMAIL_HOST_USER[:10]}***")
     print(f"[DEBUG] Using TLS: {EMAIL_USE_TLS}, Using SSL: {EMAIL_USE_SSL}")
+    print(f"[DEBUG] From email: {DEFAULT_FROM_EMAIL}")
+elif DEBUG:
+    # Development mode without credentials - use console backend
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("[DEBUG] Email using console backend (dev mode, no credentials)")
 else:
-    print("[DEBUG] Email not configured - no EMAIL_HOST_USER set")
+    # Production without credentials - still use SMTP but will fail on send
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    print("[WARNING] Email credentials not configured - emails will fail to send!")
 
 # Site Configuration
 # SITE_URL used for building absolute links when request object is not available
