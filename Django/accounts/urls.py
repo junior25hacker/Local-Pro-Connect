@@ -15,6 +15,7 @@ urlpatterns = [
     path('profile/provider/<int:provider_id>/edit/', views.edit_provider_profile, name='edit_provider_profile'),
     path('dashboard/provider/', views.provider_dashboard, name='provider_dashboard'),
     path('logout/', views.logout_view, name='logout'),
+    path('simple-login/', views.simple_login_view, name='simple_login'),
 
     # Professionals List
     path('professionals/', views.professionals_list, name='professionals_list'),
