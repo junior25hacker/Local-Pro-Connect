@@ -339,12 +339,8 @@
 
         // Get the Django API endpoint dynamically
         function getDjangoEndpoint() {
-            // If running from Live Server on 5500, use localhost:8000
-            // If running from Django dev server, use current origin
-            if (window.location.port === '5500') {
-                return 'http://localhost:8000/accounts/auth/';
-            }
-            return window.location.origin + '/accounts/auth/';
+            // Always use relative URL for production compatibility
+            return '/accounts/auth/';
         }
 
         // Fetch CSRF token when page loads
