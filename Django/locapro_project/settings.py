@@ -83,6 +83,7 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     print(f"[DEBUG] DATABASE_URL configured: postgresql connection detected")
     print(f"[DEBUG] Database host: {DATABASE_URL.split('@')[1].split(':')[0] if '@' in DATABASE_URL else 'unknown'}")
+    print("[DEBUG] Will run migrations to create PostgreSQL tables")
 else:
     print("[DEBUG] No DATABASE_URL found, falling back to SQLite")
 
