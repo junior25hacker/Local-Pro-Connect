@@ -78,12 +78,11 @@ WSGI_APPLICATION = 'locapro_project.wsgi.application'
 import dj_database_url
 
 # Database configuration - uses PostgreSQL in production, SQLite in development
-# Print database info for debugging (remove in final production)
+# Print database info for debugging
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     print(f"[DEBUG] DATABASE_URL configured: postgresql connection detected")
-    print(f"[DEBUG] Database host: {DATABASE_URL.split('@')[1].split(':')[0] if '@' in DATABASE_URL else 'unknown'}")
-    print("[DEBUG] Will run migrations to create PostgreSQL tables")
+    print("[DEBUG] Using PostgreSQL database - migrations will create all necessary tables")
 else:
     print("[DEBUG] No DATABASE_URL found, falling back to SQLite")
 
