@@ -1,798 +1,442 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Local Pro Connect</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- External CSS -->
     <link rel="stylesheet" href="../assets/css/style.css">
-    
+
     <style>
-        /* Modern Hero Section with Animations */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-blue: #0052CC;
+            --primary-dark: #003D99;
+            --accent-green: #17B890;
+            --accent-yellow: #FFC300;
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --bg-light: #F8FAFC;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+            line-height: 1.6;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Modern Hero Section */
         .about-hero {
-            background: linear-gradient(135deg, rgba(0, 82, 204, 0.95) 0%, rgba(23, 184, 144, 0.9) 100%), url('../assets/image/Gemini_Generated_Image_10go4k10go4k10go.png') center/cover no-repeat;
+            background: linear-gradient(135deg, rgba(0, 82, 204, 0.92) 0%, rgba(0, 61, 153, 0.95) 100%),
+                url('../assets/image/maze.png') center/cover repeat;
+            padding: 8rem 0 6rem;
             color: white;
-            padding: 8rem 0;
             text-align: center;
             position: relative;
             overflow: hidden;
             background-attachment: fixed;
         }
 
-        /* Animated Floating Elements */
         .about-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 195, 0, 0.3), transparent);
-            border-radius: 50%;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .about-hero::after {
-            content: '';
-            position: absolute;
-            bottom: -20%;
-            left: -5%;
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(23, 184, 144, 0.25), transparent);
-            border-radius: 50%;
-            animation: float 10s ease-in-out infinite reverse;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-30px) scale(1.1); }
-        }
-
-        .about-hero-content {
-            position: relative;
-            z-index: 1;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .about-hero h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            letter-spacing: -0.5px;
-            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .about-hero h1 i {
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .about-hero p {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            max-width: 700px;
-            margin: 0 auto;
-            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.15);
-        }
-
-        .about-section {
-            padding: 5rem 0;
-            position: relative;
-        }
-
-        .about-section.bg-light {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-
-        .about-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2C3E50;
-            margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .about-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: linear-gradient(90deg, #17B890, #FFC300);
-            border-radius: 2px;
-            animation: expand 0.8s ease-out;
-        }
-
-        @keyframes expand {
-            from { width: 0; }
-            to { width: 60px; }
-        }
-
-        .about-title span {
-            background: linear-gradient(135deg, #17B890, #129370);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .about-text {
-            font-size: 1.1rem;
-            line-height: 1.9;
-            color: #555;
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            animation: fadeIn 1s ease-out forwards;
-            animation-delay: 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .mission-values {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
-        }
-
-        .value-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(23, 184, 144, 0.1);
-        }
-
-        .value-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(23, 184, 144, 0.05), transparent);
-            transition: left 0.6s ease;
-        }
-
-        .value-card:hover::before {
-            left: 100%;
-        }
-
-        .value-card:hover {
-            box-shadow: 0 15px 40px rgba(23, 184, 144, 0.2);
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(23, 184, 144, 0.3);
-        }
-
-        .value-icon {
-            font-size: 3.5rem;
-            background: linear-gradient(135deg, #17B890, #0052CC);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1.5rem;
-            transition: transform 0.4s ease;
-        }
-
-        .value-card:hover .value-icon {
-            transform: scale(1.2) rotate(5deg);
-        }
-
-        .value-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #2C3E50;
-            margin-bottom: 1rem;
-            transition: color 0.3s ease;
-        }
-
-        .value-card:hover .value-title {
-            color: #17B890;
-        }
-
-        .value-description {
-            color: #666;
-            line-height: 1.8;
-            font-size: 1rem;
-        }
-
-        .team-section {
-            padding: 5rem 0;
-            background: white;
-            position: relative;
-        }
-
-        .team-section::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 300px;
-            background: linear-gradient(180deg, rgba(23, 184, 144, 0.03) 0%, transparent 100%);
-            pointer-events: none;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(23, 184, 144, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 195, 0, 0.15) 0%, transparent 50%);
         }
 
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
+        /* Branding Navbar Style for About Page */
+        .brand-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 0;
+            z-index: 100;
+        }
+
+        .brand-logo-white {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .logo-box {
+            background: white;
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-box img {
+            height: 30px;
+            width: auto;
+        }
+
+        .brand-text-white {
+            color: white;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .brand-text-white span {
+            color: var(--accent-yellow);
+        }
+
+        /* Content Sections */
+        .section-padding {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
             position: relative;
-            z-index: 1;
+            padding-bottom: 15px;
         }
 
-        .team-member {
-            background: linear-gradient(145deg, #ffffff, #f8f9fa);
-            border-radius: 20px;
-            padding: 2.5rem;
-            text-align: center;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .team-member::before {
+        .section-title::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(23, 184, 144, 0.05), transparent);
-            transform: rotate(45deg);
-            transition: all 0.6s ease;
+            bottom: 0;
+            left: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-green));
+            border-radius: 2px;
         }
 
-        .team-member:hover::before {
-            transform: rotate(45deg) translate(50%, 50%);
+        .section-title.text-center::after {
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        .team-member:hover {
-            background: white;
-            box-shadow: 0 20px 50px rgba(23, 184, 144, 0.15);
-            transform: translateY(-15px) scale(1.03);
-        }
-
-        .member-avatar {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            margin: 0 auto 1.5rem;
-            overflow: hidden;
-            border: 5px solid transparent;
-            background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, #17B890, #0052CC) border-box;
-            box-shadow: 0 8px 20px rgba(23, 184, 144, 0.2);
-            transition: all 0.4s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .team-member:hover .member-avatar {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 12px 30px rgba(23, 184, 144, 0.3);
-        }
-
-        .member-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .team-member:hover .member-avatar img {
-            transform: scale(1.1);
-        }
-
-        .member-name {
-            font-size: 1.3rem;
+        .highlight-text {
+            color: var(--accent-green);
             font-weight: 700;
-            color: #2C3E50;
-            margin-bottom: 0.5rem;
+        }
+
+        /* Story Section */
+        .story-image {
             position: relative;
-            z-index: 1;
-            transition: color 0.3s ease;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
         }
 
-        .team-member:hover .member-name {
-            color: #17B890;
+        .story-image img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            transition: transform 0.6s ease;
         }
 
-        .member-role {
-            color: #17B890;
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s ease;
-        }
-
-        .team-member:hover .member-role {
-            color: #0052CC;
+        .story-image:hover img {
             transform: scale(1.05);
         }
 
-        .member-bio {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.7;
-            position: relative;
-            z-index: 1;
+        /* Value Cards */
+        .value-card {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.4s ease;
+            height: 100%;
         }
 
-        .stats-section {
-            background: linear-gradient(135deg, #0052CC 0%, #17B890 50%, #003D99 100%);
+        .value-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 82, 204, 0.08);
+            border-color: rgba(0, 82, 204, 0.1);
+        }
+
+        .value-icon-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 82, 204, 0.08);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            color: var(--primary-blue);
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .value-card:hover .value-icon-box {
+            background: var(--primary-blue);
             color: white;
-            padding: 5rem 0;
+            transform: rotate(10deg);
+        }
+
+        /* Team Cards */
+        .team-card {
+            background: white;
+            border-radius: 30px;
+            padding: 40px 30px;
             text-align: center;
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            height: 100%;
         }
 
-        .stats-section::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: moveBackground 20s linear infinite;
+        .team-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
         }
 
-        @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(50px, 50px); }
-        }
-
-        .stat-box {
-            padding: 2.5rem;
+        .avatar-wrapper {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 25px;
+            border-radius: 50%;
+            padding: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--accent-green));
             position: relative;
-            z-index: 1;
-            transition: transform 0.3s ease;
         }
 
-        .stat-box:hover {
-            transform: scale(1.1);
+        .avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: white;
+            padding: 4px;
         }
 
-        .stat-number {
+        /* Stats Section */
+        .stats-banner {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
+            padding: 80px 0;
+            color: white;
+        }
+
+        .stat-item h3 {
             font-size: 3.5rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFC300, #FFD700);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 30px rgba(255, 195, 0, 0.5);
-            animation: countUp 2s ease-out;
+            font-weight: 800;
+            color: var(--accent-yellow);
+            margin-bottom: 5px;
         }
 
-        @keyframes countUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stat-label {
-            font-size: 1.2rem;
-            opacity: 0.95;
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
             font-weight: 500;
+            text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .cta-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
-            padding: 5rem 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
+        /* Footer */
+        footer {
+            background: #0F172A;
+            color: white;
+            padding: 80px 0 40px;
         }
 
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(23, 184, 144, 0.1), transparent);
-            animation: float 6s ease-in-out infinite;
+        .footer-logo-text {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: block;
         }
 
-        .cta-section::after {
-            content: '';
-            position: absolute;
-            bottom: -100px;
-            left: -100px;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(0, 82, 204, 0.1), transparent);
-            animation: float 8s ease-in-out infinite reverse;
+        .footer-logo-text span {
+            color: var(--accent-green);
         }
 
-        .cta-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2C3E50;
-            margin-bottom: 1.5rem;
-            position: relative;
-            z-index: 1;
-            animation: fadeInUp 1s ease-out;
+        .footer-links h5 {
+            margin-bottom: 25px;
+            color: var(--accent-yellow);
         }
 
-        .cta-buttons {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
         }
 
-        .cta-btn {
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #94A3B8;
             text-decoration: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: color 0.3s ease;
         }
 
-        .cta-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        .cta-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .cta-btn i {
-            transition: transform 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .cta-btn:hover i {
-            transform: scale(1.2) rotate(10deg);
-        }
-
-        .cta-btn span {
-            position: relative;
-            z-index: 1;
-        }
-
-        .cta-btn-primary {
-            background: linear-gradient(135deg, #17B890, #0fc88f);
+        .footer-links a:hover {
             color: white;
         }
 
-        .cta-btn-primary:hover {
-            background: linear-gradient(135deg, #129370, #0fc88f);
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(23, 184, 144, 0.4);
-            color: white;
-        }
-
-        .cta-btn-secondary {
-            background: linear-gradient(135deg, #0052CC, #0066FF);
-            color: white;
-        }
-
-        .cta-btn-secondary:hover {
-            background: linear-gradient(135deg, #003D99, #0052CC);
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 30px rgba(0, 82, 204, 0.4);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .about-hero h1 {
-                font-size: 2rem;
-            }
-
-            .about-title {
-                font-size: 1.7rem;
-            }
-
-            .stat-number {
-                font-size: 2rem;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
+        .footer-bottom {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #64748B;
+            font-size: 14px;
         }
     </style>
 </head>
+
 <body>
-    <!-- Navbar removed on About page -->
-    <!-- <nav class="navbar navbar-expand-lg navbar-dark sticky-top"> -->
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="about.html">
-                <span>Local Pro</span>
+    <!-- ==================== BRANDING NAVBAR ==================== -->
+    <div class="brand-nav">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/" class="brand-logo-white">
+                <div class="logo-box">
+                    <img src="../assets/image/newlogo.png" alt="Local Pro Connect">
+                </div>
+                <span class="brand-text-white">Local Pro <span>Connect</span></span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                </ul>
+            <div class="nav-actions">
+                <a href="../index.html" class="btn btn-outline-light rounded-pill px-4 fw-bold">Back to Home</a>
             </div>
         </div>
-    </nav> <!-- navbar intentionally closed (kept structure minimal) -->
+    </div>
 
     <!-- ==================== HERO SECTION ==================== -->
     <section class="about-hero">
         <div class="container">
             <div class="about-hero-content">
-                <h1 style="font-size: 4rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem;">
-                    <i class="fas fa-home me-3"></i>Home
-                </h1>
-                <h2 style="font-size: 2.2rem; font-weight: 700; color: #FFC300; margin-bottom: 1.5rem;">Find Trusted Local Professionals-Fast.</h2>
-                <p style="font-size: 1.15rem; opacity: 0.95; line-height: 1.8; max-width: 800px; margin: 0 auto;">
-                    Local Pro Connect helps you discover verified plumbers, electricians, mechanics, tutors and more near you. 
-                    <br>
-                    <span style="font-weight: 700; color: #17B890;">Rated. Reviewed. Reliable.</span>
+                <h1 class="display-3 mb-3">Empowering Local <span class="highlight-text">Connections</span></h1>
+                <p class="lead mb-0 mx-auto" style="max-width: 800px; font-size: 1.4rem; opacity: 0.9;">
+                    We're on a mission to bridge the gap between skilled professionals and neighborhood needs,
+                    creating a more reliable and vibrant local economy.
                 </p>
             </div>
         </div>
     </section>
 
     <!-- ==================== OUR STORY ==================== -->
-    <section class="about-section">
+    <!-- ==================== OUR STORY ==================== -->
+    <section class="section-padding">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-6 mb-4 mb-lg-0">
-                    <h2 class="about-title">Our <span>Story</span></h2>
-                    <p class="about-text">
-                        Local Pro Connect was founded with a simple but powerful vision: to bridge the gap between customers who need quality services and local professionals who provide them. We recognized that finding trustworthy, qualified service providers in your neighborhood shouldn't be complicated or time-consuming.
+                <div class="col-lg-6 mb-5 mb-lg-0 pe-lg-5">
+                    <h2 class="section-title">Our <span class="highlight-text">Journey</span></h2>
+                    <p class="lead mb-4">
+                        Local Pro Connect was born from a simple observation: finding a reliable professional shouldn't
+                        be a gamble.
                     </p>
-                    <p class="about-text">
-                        What started as a small initiative has grown into a thriving community platform used by thousands of customers and professionals across the region. We're committed to making neighborhood services more accessible, transparent, and reliable for everyone.
+                    <p class="text-secondary mb-4" style="font-size: 1.1rem;">
+                        We realized that while there are countless talented professionals in our neighborhoods, they
+                        often struggle to find the right clients. Similarly, residents spend hours searching for someone
+                        they can trust.
                     </p>
+                    <div class="p-4 rounded-4 bg-white shadow-sm border-start border-4 border-success">
+                        <p class="fst-italic mb-0" style="color: var(--text-dark);">
+                            "Our goal is to create an ecosystem where quality service is just a click away, and local
+                            businesses can thrive through verified trust."
+                        </p>
+                    </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="row g-4">
-                        <!-- First WhatsApp Image 2025 - Modern Card Style -->
-                        <div class="col-md-6">
-                            <div class="story-image-card">
-                                <img src="../assets/image/WhatsApp Image 2025-12-15 at 01.14.42_6659ea0a.jpg" alt="Local Pro Connect Team">
-                                <div class="image-overlay">
-                                    <div class="overlay-content">
-                                        <i class="fas fa-users"></i>
-                                        <p>Our Team</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Second WhatsApp Image 2025 - Modern Card Style -->
-                        <div class="col-md-6">
-                            <div class="story-image-card">
-                                <img src="../assets/image/WhatsApp Image 2025-12-15 at 01.14.42_d40af63d.jpg" alt="Building stronger communities">
-                                <div class="image-overlay">
-                                    <div class="overlay-content">
-                                        <i class="fas fa-handshake"></i>
-                                        <p>Community</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
+                    <div class="story-image">
+                        <img src="../assets/image/Gemini_Generated_Image_10go4k10go4k10go.png"
+                            alt="Local Pro Connection">
                     </div>
-                    
-                    <style>
-                        .story-image-card {
-                            position: relative;
-                            border-radius: 25px;
-                            overflow: hidden;
-                            box-shadow: 0 10px 40px rgba(23, 184, 144, 0.15);
-                            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                            height: 320px;
-                            border: 3px solid transparent;
-                            background: linear-gradient(white, white) padding-box,
-                                        linear-gradient(135deg, #17B890, #0052CC) border-box;
-                        }
-
-                        .story-image-card:hover {
-                            transform: translateY(-10px) scale(1.03);
-                            box-shadow: 0 20px 60px rgba(23, 184, 144, 0.25);
-                        }
-
-                        .story-image-card img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
-                            display: block;
-                            transition: transform 0.5s ease;
-                        }
-
-                        .story-image-card:hover img {
-                            transform: scale(1.15) rotate(2deg);
-                        }
-
-                        .image-overlay {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            right: 0;
-                            bottom: 0;
-                            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(23, 184, 144, 0.8) 100%);
-                            opacity: 0;
-                            transition: opacity 0.4s ease;
-                            display: flex;
-                            align-items: flex-end;
-                            justify-content: center;
-                            padding: 2rem;
-                        }
-
-                        .story-image-card:hover .image-overlay {
-                            opacity: 1;
-                        }
-
-                        .overlay-content {
-                            text-align: center;
-                            color: white;
-                            transform: translateY(20px);
-                            transition: transform 0.4s ease;
-                        }
-
-                        .story-image-card:hover .overlay-content {
-                            transform: translateY(0);
-                        }
-
-                        .overlay-content i {
-                            font-size: 2.5rem;
-                            margin-bottom: 0.5rem;
-                            display: block;
-                        }
-
-                        .overlay-content p {
-                            font-size: 1.2rem;
-                            font-weight: 700;
-                            margin: 0;
-                            letter-spacing: 1px;
-                        }
-                    </style>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ==================== MISSION & VALUES ==================== -->
-    <section class="about-section bg-light">
+    <!-- ==================== MISSION & VALUES ==================== -->
+    <section class="section-padding bg-light">
         <div class="container">
-            <h2 class="about-title text-center">Our Mission & <span>Values</span></h2>
-            <div class="mission-values">
-                <div class="value-card">
-                    <div class="value-icon">
-                        <i class="fas fa-check-circle"></i>
+            <div class="text-center mb-5">
+                <h2 class="section-title text-center d-inline-block">Core <span class="highlight-text">Values</span>
+                </h2>
+                <p class="text-secondary mx-auto" style="max-width: 600px;">
+                    Our principles guide everything we do, from verifying professionals to supporting our local
+                    communities.
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="value-card">
+                        <div class="value-icon-box"><i class="fas fa-shield-alt"></i></div>
+                        <h3 class="h4 mb-3">Verified Trust</h3>
+                        <p class="text-secondary mb-0">Every professional is rigorously vetted to ensure safety and
+                            quality for our community.</p>
                     </div>
-                    <h3 class="value-title">Trust & Integrity</h3>
-                    <p class="value-description">We believe in transparency and honesty. Every professional on our platform is verified to ensure you're working with legitimate, qualified service providers.</p>
                 </div>
-                <div class="value-card">
-                    <div class="value-icon">
-                        <i class="fas fa-community"></i>
+                <div class="col-md-4">
+                    <div class="value-card">
+                        <div class="value-icon-box"><i class="fas fa-users"></i></div>
+                        <h3 class="h4 mb-3">Community Growth</h3>
+                        <p class="text-secondary mb-0">We empower local businesses by connecting them with neighbors who
+                            need their expertise.</p>
                     </div>
-                    <h3 class="value-title">Community First</h3>
-                    <p class="value-description">Local Pro Connect is built for local communities. We support neighborhood businesses and help build lasting relationships between customers and professionals.</p>
                 </div>
-                <div class="value-card">
-                    <div class="value-icon">
-                        <i class="fas fa-star"></i>
+                <div class="col-md-4">
+                    <div class="value-card">
+                        <div class="value-icon-box"><i class="fas fa-gem"></i></div>
+                        <h3 class="h4 mb-3">Service Excellence</h3>
+                        <p class="text-secondary mb-0">We set high standards for service delivery, ensuring every
+                            connection is professional and reliable.</p>
                     </div>
-                    <h3 class="value-title">Quality Excellence</h3>
-                    <p class="value-description">We only feature the best. Real customer ratings and reviews ensure you're choosing from among the highest quality service providers available.</p>
-                </div>
-                <div class="value-card">
-                    <div class="value-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3 class="value-title">Safe & Secure</h3>
-                    <p class="value-description">Your safety and privacy matter. We use secure connections and transparent interactions to protect you throughout your service experience.</p>
-                </div>
-                <div class="value-card">
-                    <div class="value-icon">
-                        <i class="fas fa-handshake"></i>
-                    </div>
-                    <h3 class="value-title">Easy Connection</h3>
-                    <p class="value-description">Simplicity is key. Direct contact, quick responses, and straightforward communication make it easy to connect with the right professional for your needs.</p>
-                </div>
-                <div class="value-card">
-                    <div class="value-icon">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <h3 class="value-title">Innovation</h3>
-                    <p class="value-description">We continuously improve our platform to make finding and connecting with local professionals easier, faster, and more reliable.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ==================== STATS SECTION ==================== -->
-    <section class="stats-section">
+    <!-- ==================== STATS SECTION ==================== -->
+    <section class="stats-banner">
         <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-box">
-                        <div class="stat-number">5000+</div>
-                        <div class="stat-label">Active Professionals</div>
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <h3>5,000+</h3>
+                        <p>Pros Verified</p>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-box">
-                        <div class="stat-number">50K+</div>
-                        <div class="stat-label">Happy Customers</div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <h3>50,000+</h3>
+                        <p>Happy Clients</p>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-box">
-                        <div class="stat-number">25+</div>
-                        <div class="stat-label">Service Categories</div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <h3>25+</h3>
+                        <p>Categories</p>
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="stat-box">
-                        <div class="stat-number">4.8★</div>
-                        <div class="stat-label">Average Rating</div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-item">
+                        <h3>4.9★</h3>
+                        <p>Rating</p>
                     </div>
                 </div>
             </div>
@@ -800,57 +444,82 @@
     </section>
 
     <!-- ==================== TEAM SECTION ==================== -->
-    <section class="team-section">
+    <!-- ==================== TEAM SECTION ==================== -->
+    <section class="section-padding">
         <div class="container">
-            <h2 class="about-title text-center">Meet Our <span>Team</span></h2>
-            <div class="team-grid">
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <img src="../assets/image/scrummaster.jpg" alt="Tantoh Perez">
+            <div class="text-center mb-5">
+                <h2 class="section-title text-center d-inline-block">Meet Our <span class="highlight-text">Team</span>
+                </h2>
+                <p class="text-secondary mx-auto" style="max-width: 600px;">
+                    The passionate individuals working behind the scenes to make Local Pro Connect the best neighborhood
+                    service platform.
+                </p>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <div class="avatar-wrapper">
+                            <img src="../assets/image/scrummaster.jpg" alt="Tantoh Perez">
+                        </div>
+                        <h3 class="h4 mb-1">Tantoh Perez</h3>
+                        <p class="text-success fw-bold small text-uppercase mb-3">Scrum Master</p>
+                        <p class="text-secondary small">Visionary leader with 15+ years in community services and
+                            technology integration.</p>
                     </div>
-                    <h3 class="member-name">Tantoh Perez</h3>
-                    <p class="member-role">Scrum Master</p>
-                    <p class="member-bio">Visionary leader with 15+ years in community services and technology integration.</p>
                 </div>
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <img src="../assets/image/productowner.jpg" alt="Ngoh Huela">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <div class="avatar-wrapper">
+                            <img src="../assets/image/productowner.jpg" alt="Ngoh Huela">
+                        </div>
+                        <h3 class="h4 mb-1">Ngoh Huela</h3>
+                        <p class="text-success fw-bold small text-uppercase mb-3">Product Owner</p>
+                        <p class="text-secondary small">Expert in platform management and customer satisfaction with a
+                            passion for excellence.</p>
                     </div>
-                    <h3 class="member-name">Ngoh Huela</h3>
-                    <p class="member-role">Product Owner</p>
-                    <p class="member-bio">Expert in platform management and customer satisfaction with a passion for excellence.</p>
                 </div>
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <img src="../assets/image/devopuidesigner2.jpg" alt="Melaine Atarh">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <div class="avatar-wrapper">
+                            <img src="../assets/image/devopuidesigner2.jpg" alt="Melaine Atarh">
+                        </div>
+                        <h3 class="h4 mb-1">Melaine Atarh</h3>
+                        <p class="text-success fw-bold small text-uppercase mb-3">UI Designer</p>
+                        <p class="text-secondary small">Innovation-driven technologist focused on building secure,
+                            reliable platforms.</p>
                     </div>
-                    <h3 class="member-name">Melaine Atarh</h3>
-                    <p class="member-role">UI Designer</p>
-                    <p class="member-bio">Innovation-driven technologist focused on building secure, reliable platforms.</p>
                 </div>
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <img src="../assets/image/devopuidesigner1.jpg" alt="Sandra Colleh">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <div class="avatar-wrapper">
+                            <img src="../assets/image/devopuidesigner1.jpg" alt="Sandra Colleh">
+                        </div>
+                        <h3 class="h4 mb-1">Sandra Colleh</h3>
+                        <p class="text-success fw-bold small text-uppercase mb-3">UI Designer</p>
+                        <p class="text-secondary small">Passionate creator of visually appealing and user-friendly
+                            interfaces.</p>
                     </div>
-                    <h3 class="member-name">Sandra Colleh</h3>
-                    <p class="member-role">UI Designer</p>
-                    <p class="member-bio">Passionate and responsible for creating visually appealing and user friendly interfaces for the project. I collaborate closely with developers to ensure seamless integration and optimal user experience.</p>
                 </div>
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <img src="../assets/image/WhatsApp Image 2026-01-07 at 5.02.37 PM.jpeg" alt="MC-Olivier">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <div class="avatar-wrapper">
+                            <img src="../assets/image/WhatsApp Image 2026-01-07 at 5.02.37 PM.jpeg" alt="MC-Olivier">
+                        </div>
+                        <h3 class="h4 mb-1">MC-Olivier</h3>
+                        <p class="text-success fw-bold small text-uppercase mb-3">Backend Developer</p>
+                        <p class="text-secondary small">Creative strategist dedicated to building secure and efficient
+                            community engagement.</p>
                     </div>
-                    <h3 class="member-name">MC-Olivier</h3>
-                    <p class="member-role">Backend Developer</p>
-                    <p class="member-bio">Creative strategist dedicated to building brand awareness and community engagement across platforms.</p>
                 </div>
-                <div class="team-member">
-                    <div class="member-avatar">
-                        <img src="../assets/image/Snapchat-2090096880.jpg" alt="Michelle">
+                <div class="col-lg-4 col-md-6">
+                    <div class="team-card">
+                        <div class="avatar-wrapper">
+                            <img src="../assets/image/Snapchat-2090096880.jpg" alt="Michelle">
+                        </div>
+                        <h3 class="h4 mb-1">Michelle</h3>
+                        <p class="text-success fw-bold small text-uppercase mb-3">UI Designer</p>
+                        <p class="text-secondary small">Expert in vendor partnerships and professional development.</p>
                     </div>
-                    <h3 class="member-name">Michelle</h3>
-                    <p class="member-role">UI Designer</p>
-                    <p class="member-bio">Expert in vendor partnerships and professional development with a focus on quality and growth.</p>
                 </div>
             </div>
         </div>
@@ -858,42 +527,58 @@
 
 
     <!-- ==================== FOOTER ==================== -->
+    <!-- ==================== FOOTER ==================== -->
     <footer>
-        <div class="container-fluid">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h4>About Local Pro Connect</h4>
-                    <a href="about.html"><i class="fas fa-angle-right me-2"></i>About Us</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Contact Us</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Blog</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Careers</a>
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-4 col-md-6">
+                    <span class="footer-logo-text">Local Pro <span>Connect</span></span>
+                    <p class="text-secondary mb-4">
+                        Your trusted neighborhood services platform, connecting you with verified professionals for all
+                        your needs.
+                    </p>
+                    <div class="social-links d-flex gap-3">
+                        <a href="#" class="text-secondary"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-secondary"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
                 </div>
-                <div class="footer-column">
-                    <h4>For Customers</h4>
-                    
-                    <a href="http://127.0.0.1:8000/accounts/register/user/"><i class="fas fa-angle-right me-2"></i>Sign Up</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>How It Works</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Safety Tips</a>
+                <div class="col-lg-2 col-md-3 col-6 footer-links">
+                    <h5>Company</h5>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
                 </div>
-                <div class="footer-column">
-                    <h4>For Professionals</h4>
-                    <a href="http://127.0.0.1:8000/accounts/register/provider/"><i class="fas fa-angle-right me-2"></i>Get Listed</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Grow Your Business</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Pro Resources</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Pricing</a>
+                <div class="col-lg-2 col-md-3 col-6 footer-links">
+                    <h5>For Pros</h5>
+                    <ul>
+                        <li><a href="http://127.0.0.1:8000/accounts/signup/provider/">Become a Pro</a></li>
+                        <li><a href="#">Grow Business</a></li>
+                        <li><a href="#">Pro Resources</a></li>
+                        <li><a href="#">Safety</a></li>
+                    </ul>
                 </div>
-                <div class="footer-column">
-                    <h4>Legal</h4>
-                    <a href="terms.html"><i class="fas fa-angle-right me-2"></i>Terms of Service</a>
-                    <a href="privacy.html"><i class="fas fa-angle-right me-2"></i>Privacy Policy</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Cookie Policy</a>
-                    <a href="#"><i class="fas fa-angle-right me-2"></i>Trust & Safety</a>
+                <div class="col-lg-4 col-md-12 footer-links">
+                    <h5>Newsletter</h5>
+                    <p class="text-secondary small mb-4">Stay updated with our latest local services and pro tips.</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control bg-dark border-0 text-white"
+                            placeholder="Email Address">
+                        <button class="btn btn-success" type="button">Subscribe</button>
+                    </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p class="mb-0">
-                    &copy; 2025 Local Pro Connect. All rights reserved. Your Trusted Neighborhood Services Platform.
-                </p>
+            <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                <p class="mb-0">&copy; 2026 Local Pro Connect. All rights reserved.</p>
+                <div class="d-flex gap-4">
+                    <a href="terms.html" class="text-secondary text-decoration-none small">Terms</a>
+                    <a href="privacy.html" class="text-secondary text-decoration-none small">Privacy</a>
+                    <a href="#" class="text-secondary text-decoration-none small">Cookies</a>
+                </div>
             </div>
         </div>
     </footer>
@@ -901,4 +586,5 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
