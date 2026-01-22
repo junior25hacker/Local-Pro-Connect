@@ -7,9 +7,29 @@ load_dotenv(os.path.join(Path(__file__).resolve().parent.parent, '..', '.env'), 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-please-change-this-key'
-DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+# -----------------------------------------------------------------------------
+# Core security settings (environment-driven)
+# -----------------------------------------------------------------------------
+# IMPORTANT: Never hardcode SECRET_KEY in production.
+# Set DJANGO_SECRET_KEY in the environment.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+
+# DEBUG must be False in production. Set DJANGO_DEBUG=false in production.
+# Default to True for local/dev to avoid surprising breakage when env vars are missing.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
+
+# Allowed hosts should be explicitly configured (comma-separated)
+# Example: DJANGO_ALLOWED_HOSTS=example.com,www.example.com
+_allowed_hosts_env = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1')
+ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_env.split(',') if h.strip()]
+
+if not SECRET_KEY:
+    if DEBUG:
+        # Dev fallback only; production must set DJANGO_SECRET_KEY
+        SECRET_KEY = 'django-insecure-dev-only-change-me'
+    else:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY environment variable is required when DEBUG is False')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,22 +102,43 @@ USE_I18N = True
 USE_TZ = True
 
 # ============================================================================
-# SESSION CONFIGURATION - For Persistent Login
+# SESSION / CSRF CONFIGURATION
 # ============================================================================
 # Django uses session cookies to maintain user authentication across page reloads
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store sessions in database
 SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds (14 * 24 * 60 * 60)
-SESSION_COOKIE_SECURE = False  # Set to True in production (requires HTTPS)
 SESSION_COOKIE_HTTPONLY = True  # Prevent JavaScript from accessing the cookie
-SESSION_COOKIE_SAMESITE = 'Lax'  # CSRF protection: only send cookie with safe cross-site requests
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Session persists even after browser close
-SESSION_SAVE_EVERY_REQUEST = False  # Only update session when data changes (more efficient)
-CSRF_COOKIE_SECURE = False  # Set to True in production
-CSRF_COOKIE_HTTPONLY = True  # Prevent JavaScript access to CSRF token
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_SAVE_EVERY_REQUEST = False
+
+# Secure cookies in production (assumes HTTPS at the edge / load balancer)
+SESSION_COOKIE_SECURE = (not DEBUG) and (os.environ.get('DJANGO_SESSION_COOKIE_SECURE', 'true').lower() == 'true')
+CSRF_COOKIE_SECURE = (not DEBUG) and (os.environ.get('DJANGO_CSRF_COOKIE_SECURE', 'true').lower() == 'true')
+
+CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Trust origins for CSRF (comma-separated). Example:
+# DJANGO_CSRF_TRUSTED_ORIGINS=https://example.com,https://www.example.com
+_csrf_trusted = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_trusted.split(',') if o.strip()]
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Use WhiteNoise compressed manifest storage in production (if installed)
+if not DEBUG:
+    try:
+        import whitenoise  # noqa: F401
+        STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        # Insert middleware right after SecurityMiddleware if available
+        if 'whitenoise.middleware.WhiteNoiseMiddleware' not in MIDDLEWARE:
+            MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+    except Exception:
+        # WhiteNoise not installed; staticfiles must be served by the platform/CDN.
+        pass
 
 # Media files (uploads)
 MEDIA_URL = '/media/'
@@ -107,6 +148,38 @@ MEDIA_ROOT = BASE_DIR / 'media'
 PAGES_ROOT = BASE_DIR.parent / 'pages'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -----------------------------------------------------------------------------
+# Production security headers (enable when DEBUG is False)
+# -----------------------------------------------------------------------------
+# If you are behind a reverse proxy / load balancer that terminates SSL, set:
+#   DJANGO_SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
+_proxy_ssl_header = os.environ.get('DJANGO_SECURE_PROXY_SSL_HEADER', '')
+if _proxy_ssl_header:
+    try:
+        _hdr, _val = [p.strip() for p in _proxy_ssl_header.split(',', 1)]
+        SECURE_PROXY_SSL_HEADER = (_hdr, _val)
+    except ValueError:
+        # Leave unset if malformed
+        SECURE_PROXY_SSL_HEADER = None
+
+if not DEBUG:
+    # Redirect HTTP->HTTPS (can be disabled if handled entirely at the edge)
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'true').lower() == 'true'
+
+    # HTTP Strict Transport Security (set a short value first; increase after verification)
+    SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_SECURE_HSTS_SECONDS', '3600'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get('DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS', 'true').lower() == 'true'
+    # Enable preload by default for production readiness; you may disable via env if needed.
+    SECURE_HSTS_PRELOAD = os.environ.get('DJANGO_SECURE_HSTS_PRELOAD', 'true').lower() == 'true'
+
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_REFERRER_POLICY = 'same-origin'
+else:
+    # Development defaults
+    SECURE_SSL_REDIRECT = False
+    SECURE_HSTS_SECONDS = 0
 
 # ============================================================================
 # EMAIL CONFIGURATION - For Notifications

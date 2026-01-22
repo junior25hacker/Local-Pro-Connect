@@ -5,247 +5,220 @@
 
 {% block extra_css %}
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-  
-  body {
-    font-family: 'Inter', sans-serif;
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary-blue: #0052CC;
+    --primary-dark: #003D99;
+    --accent-green: #17B890;
+    --accent-yellow: #FFC300;
+    --bg-white: #FFFFFF;
+    --bg-light: #F8FAFC;
   }
-  
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background-color: var(--bg-light);
+  }
+
   .signup-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, rgba(0, 76, 153, 0.95) 0%, rgba(0, 123, 255, 0.9) 100%),
-                url('/static/assets/image/Gemini_Generated_Image_10go4k10go4k10go.png');
+    padding: 20px;
+    background-color: var(--bg-light);
+  }
+
+  .signup-card {
+    background: var(--bg-white);
+    border-radius: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    min-height: 700px;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .signup-sidebar {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(0, 82, 204, 0.9) 0%, rgba(0, 61, 153, 0.95) 100%),
+    url('{% static "assets/image/maze.png" %}');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
-    position: relative;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
   }
-  
-  .signup-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(0, 123, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
-    pointer-events: none;
+
+  .sidebar-content h1 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
-  
-  .signup-card {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
-    padding: 50px;
-    max-width: 600px;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    animation: slideUp 0.6s ease-out;
+
+  .sidebar-content p {
+    font-size: 18px;
+    opacity: 0.9;
+    line-height: 1.6;
   }
-  
+
+  .sidebar-footer {
+    font-size: 14px;
+    opacity: 0.8;
+  }
+
+  .signup-form-side {
+    flex: 1.2;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
   @keyframes slideUp {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(30px) scale(0.98);
     }
+
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
-  
+
   .signup-header {
-    text-align: center;
     margin-bottom: 35px;
   }
-  
-  .signup-header .icon-wrapper {
-    width: 90px;
-    height: 90px;
-    background: linear-gradient(135deg, #004C99 0%, #007bff 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 25px;
-    box-shadow: 0 8px 25px rgba(0, 76, 153, 0.4),
-                0 0 0 10px rgba(0, 123, 255, 0.1);
-    animation: pulse 2s ease-in-out infinite;
+
+  .signup-header img {
+    height: 45px;
+    margin-bottom: 25px;
   }
-  
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-      box-shadow: 0 8px 25px rgba(0, 76, 153, 0.4),
-                  0 0 0 10px rgba(0, 123, 255, 0.1);
-    }
-    50% {
-      transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(0, 123, 255, 0.5),
-                  0 0 0 15px rgba(0, 123, 255, 0.15);
-    }
-  }
-  
-  .signup-header .icon-wrapper i {
-    font-size: 36px;
-    color: white;
-  }
-  
+
   .signup-header h2 {
-    background: linear-gradient(135deg, #004C99 0%, #007bff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #1e293b;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 32px;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
   }
-  
+
   .signup-header p {
-    color: #555;
+    color: #64748b;
     font-size: 16px;
-    font-weight: 400;
+    font-weight: 500;
   }
-  
+
   .form-label {
     font-weight: 600;
-    color: #2d3748;
+    color: #1e293b;
     margin-bottom: 8px;
     font-size: 14px;
-    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  
+
   .form-label i {
-    color: #004C99;
+    color: var(--primary-blue);
+    width: 16px;
   }
-  
-  .form-control, .form-select {
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 12px 15px;
+
+  .form-control {
+    border: 2px solid #f1f5f9;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 12px 16px;
     font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
     transition: all 0.3s ease;
   }
-  
-  .form-control:focus, .form-select:focus {
-    border-color: #004C99;
-    box-shadow: 0 0 0 3px rgba(0, 76, 153, 0.1);
+
+  .form-control:focus {
+    background-color: white;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1);
   }
-  
-  .form-control.is-invalid {
-    border-color: #dc3545;
-  }
-  
-  .invalid-feedback {
-    font-size: 13px;
-    margin-top: 5px;
-  }
-  
+
   .btn-signup {
-    background: linear-gradient(135deg, #004C99 0%, #007bff 100%);
+    background: var(--primary-blue);
     border: none;
     padding: 16px;
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     border-radius: 12px;
     color: white;
     width: 100%;
-    transition: all 0.4s ease;
-    margin-top: 15px;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 0.5px;
-    box-shadow: 0 8px 20px rgba(0, 76, 153, 0.3);
-    position: relative;
-    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 82, 204, 0.3);
   }
-  
-  .btn-signup::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-  }
-  
-  .btn-signup:hover::before {
-    left: 100%;
-  }
-  
+
   .btn-signup:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 123, 255, 0.4);
-    background: linear-gradient(135deg, #003d7a 0%, #0056b3 100%);
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 82, 204, 0.4);
   }
-  
-  .btn-signup:active {
-    transform: translateY(-1px);
-  }
-  
+
   .signup-footer {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 35px;
     padding-top: 25px;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #f1f5f9;
   }
-  
+
   .signup-footer p {
-    color: #666;
-    margin-bottom: 10px;
+    color: #64748b;
+    margin-bottom: 8px;
+    font-size: 15px;
   }
-  
+
   .signup-footer a {
-    color: #007bff;
-    font-weight: 600;
+    color: var(--primary-blue);
+    font-weight: 700;
     text-decoration: none;
   }
-  
+
   .signup-footer a:hover {
-    text-decoration: underline;
+    color: var(--accent-green);
   }
-  
-  .input-icon {
-    position: relative;
-  }
-  
-  .input-icon i {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #999;
-  }
-  
-  .input-icon .form-control {
-    padding-left: 45px;
-  }
-  
+
   .row-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
-  
+
+  @media (max-width: 900px) {
+    .signup-sidebar {
+      display: none;
+    }
+
+    .signup-card {
+      max-width: 550px;
+    }
+
+    .signup-form-side {
+      padding: 40px 30px;
+    }
+  }
+
   @media (max-width: 576px) {
     .row-fields {
       grid-template-columns: 1fr;
     }
-    
-    .signup-card {
-      padding: 30px 20px;
+
+    .signup-header h2 {
+      font-size: 26px;
     }
   }
 </style>
@@ -254,103 +227,95 @@
 {% block content %}
 <div class="signup-container">
   <div class="signup-card">
-    <div class="signup-header">
-      <div class="icon-wrapper">
-        <i class="fas fa-user-plus"></i>
+    <!-- Sidebar Panel -->
+    <div class="signup-sidebar">
+      <div class="sidebar-header">
+        <a href="/">
+          <img src="{% static 'assets/image/newlogo.png' %}" alt="Logo"
+            style="height: 40px; filter: brightness(0) invert(1);">
+        </a>
       </div>
-      <h2>Create Your Account</h2>
-      <p>Join Local Pro Connect and access trusted professionals</p>
+      <div class="sidebar-content">
+        <h1>Transform Your Neighborhood Flow</h1>
+        <p>Join thousands of users connecting with top-rated local professionals every day. Quality service, guaranteed.
+        </p>
+      </div>
+      <div class="sidebar-footer">
+        &copy; 2026 Local Pro Connect. Your trusted partner.
+      </div>
     </div>
-    
-    {% if form.non_field_errors %}
+
+    <!-- Form Panel -->
+    <div class="signup-form-side">
+      <div class="signup-header">
+        <h2>Create Account</h2>
+        <p>Start your journey with us today</p>
+      </div>
+
+      {% if form.non_field_errors %}
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         {% for error in form.non_field_errors %}
-          <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
         {% endfor %}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
-    {% endif %}
-    
-    <form method="post" novalidate>
-      {% csrf_token %}
-      
-      <div class="mb-3">
-        <label class="form-label"><i class="fas fa-user me-2"></i>Username *</label>
-        <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
-               value="{{ form.username.value|default:'' }}" required placeholder="Choose a username">
-        {% if form.username.errors %}
-          <div class="invalid-feedback d-block">
-            {% for error in form.username.errors %}{{ error }}{% endfor %}
-          </div>
-        {% endif %}
-      </div>
-      
-      <div class="mb-3">
-        <label class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
-        <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
-               value="{{ form.email.value|default:'' }}" placeholder="your.email@example.com">
-        {% if form.email.errors %}
-          <div class="invalid-feedback d-block">
-            {% for error in form.email.errors %}{{ error }}{% endfor %}
-          </div>
-        {% endif %}
-      </div>
-      
-      <div class="row-fields">
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+
         <div class="mb-3">
-          <label class="form-label"><i class="fas fa-id-card me-2"></i>First Name</label>
-          <input type="text" name="first_name" class="form-control {% if form.first_name.errors %}is-invalid{% endif %}" 
-                 value="{{ form.first_name.value|default:'' }}" placeholder="John">
-          {% if form.first_name.errors %}
-            <div class="invalid-feedback d-block">
-              {% for error in form.first_name.errors %}{{ error }}{% endfor %}
-            </div>
+          <label class="form-label"><i class="fas fa-user"></i>Username</label>
+          <input type="text" name="username" class="form-control" value="{{ form.username.value|default:'' }}" required
+            placeholder="e.g. jdoe24">
+          {% if form.username.errors %}
+          <div class="text-danger small mt-1">{% for error in form.username.errors %}{{ error }}{% endfor %}</div>
           {% endif %}
         </div>
-        
+
         <div class="mb-3">
-          <label class="form-label"><i class="fas fa-id-card me-2"></i>Last Name</label>
-          <input type="text" name="last_name" class="form-control {% if form.last_name.errors %}is-invalid{% endif %}" 
-                 value="{{ form.last_name.value|default:'' }}" placeholder="Doe">
-          {% if form.last_name.errors %}
-            <div class="invalid-feedback d-block">
-              {% for error in form.last_name.errors %}{{ error }}{% endfor %}
-            </div>
+          <label class="form-label"><i class="fas fa-envelope"></i>Email Address</label>
+          <input type="email" name="email" class="form-control" value="{{ form.email.value|default:'' }}"
+            placeholder="name@example.com">
+          {% if form.email.errors %}
+          <div class="text-danger small mt-1">{% for error in form.email.errors %}{{ error }}{% endfor %}</div>
           {% endif %}
         </div>
-      </div>
-      
-      <div class="mb-3">
-        <label class="form-label"><i class="fas fa-lock me-2"></i>Password *</label>
-        <input type="password" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
-               required placeholder="Create a strong password">
-        {% if form.password1.errors %}
-          <div class="invalid-feedback d-block">
-            {% for error in form.password1.errors %}{{ error }}{% endfor %}
+
+        <div class="row-fields">
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-id-badge"></i>First Name</label>
+            <input type="text" name="first_name" class="form-control" value="{{ form.first_name.value|default:'' }}"
+              placeholder="John">
           </div>
-        {% endif %}
-        <small class="text-muted">Must be at least 8 characters</small>
-      </div>
-      
-      <div class="mb-3">
-        <label class="form-label"><i class="fas fa-lock me-2"></i>Confirm Password *</label>
-        <input type="password" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
-               required placeholder="Re-enter your password">
-        {% if form.password2.errors %}
-          <div class="invalid-feedback d-block">
-            {% for error in form.password2.errors %}{{ error }}{% endfor %}
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-id-badge"></i>Last Name</label>
+            <input type="text" name="last_name" class="form-control" value="{{ form.last_name.value|default:'' }}"
+              placeholder="Doe">
           </div>
-        {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"><i class="fas fa-lock"></i>Password</label>
+          <input type="password" name="password1" class="form-control" required placeholder="Min. 8 characters">
+          {% if form.password1.errors %}
+          <div class="text-danger small mt-1">{% for error in form.password1.errors %}{{ error }}{% endfor %}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label"><i class="fas fa-shield-alt"></i>Confirm Password</label>
+          <input type="password" name="password2" class="form-control" required placeholder="Repeat password">
+        </div>
+
+        <button class="btn-signup" type="submit">Get Started</button>
+      </form>
+
+      <div class="signup-footer">
+        <p>Already have an account? <a href="{% url 'accounts:login_page' %}">Sign in</a></p>
+        <p>A professional? <a href="{% url 'accounts:signup_provider_page' %}"
+            style="color: var(--accent-green); font-weight: 700;">Become a Pro</a></p>
       </div>
-      
-      <button class="btn btn-signup" type="submit">
-        <i class="fas fa-user-check me-2"></i>Create Account
-      </button>
-    </form>
-    
-    <div class="signup-footer">
-      <p>Already have an account? <a href="{% url 'accounts:login_page' %}">Sign in here</a></p>
-      <p>Are you a professional? <a href="{% url 'accounts:signup_provider_page' %}">Register as Provider</a></p>
     </div>
   </div>
 </div>

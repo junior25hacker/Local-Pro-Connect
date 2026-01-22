@@ -1,0 +1,752 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Dashboard - Service Requests{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>My Service Requests</h1>
+            <hr>
+
+            <!-- Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center stats-card">
+                        <div class="card-body">
+                            <h3 class="text-warning">{{ pending_count }}</h3>
+                            <p class="text-muted">Pending</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center stats-card">
+                        <div class="card-body">
+                            <h3 class="text-primary">{{ in_progress_count }}</h3>
+                            <p class="text-muted">In Progress</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center stats-card">
+                        <div class="card-body">
+                            <h3 class="text-success">{{ completed_count }}</h3>
+                            <p class="text-muted">Ready to Rate</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center stats-card">
+                        <div class="card-body">
+                            <h3 class="text-info">{{ history_count }}</h3>
+                            <p class="text-muted">History</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabbed Interface -->
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="in-progress">
+                    <i class="fas fa-spinner"></i> In Progress
+                    <span class="tab-count">{{ in_progress_count }}</span>
+                </button>
+                <button class="tab-btn" data-tab="pending">
+                    <i class="fas fa-clock"></i> Pending
+                    <span class="tab-count">{{ pending_count }}</span>
+                </button>
+                <button class="tab-btn" data-tab="completed">
+                    <i class="fas fa-check-circle"></i> Ready to Rate
+                    <span class="tab-count">{{ completed_count }}</span>
+                </button>
+                <button class="tab-btn" data-tab="history">
+                    <i class="fas fa-history"></i> History
+                    <span class="tab-count">{{ history_count }}</span>
+                </button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- In Progress Tab -->
+                <div class="tab-panel active" id="in-progress-tab">
+                    {% if in_progress_requests %}
+                    <div class="request-grid">
+                        {% for request in in_progress_requests %}
+                        <div class="request-card in-progress">
+                            <div class="request-header">
+                                <h4>Request #{{ request.id }}</h4>
+                                <span class="status-badge status-in-progress">
+                                    <i class="fas fa-spinner"></i> In Progress
+                                </span>
+                            </div>
+
+                            <div class="request-body">
+                                <p class="request-description">{{ request.description|truncatewords:30 }}</p>
+
+                                {% if request.provider %}
+                                <div class="provider-info">
+                                    <strong>Provider:</strong> {{
+                                    request.provider.provider_profile.company_name|default:request.provider.get_full_name
+                                    }}
+                                    {% if request.provider.provider_profile.phone %}
+                                    <br><i class="fas fa-phone"></i> {{ request.provider.provider_profile.phone }}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> Accepted: {{ request.accepted_at|date:"M d, Y"
+                                        }}</span>
+                                    {% if request.urgent %}
+                                    <span class="urgent-indicator"><i class="fas fa-exclamation-circle"></i>
+                                        Urgent</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="request-actions">
+                                <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                                {% if request.provider.provider_profile.phone %}
+                                <a href="tel:{{ request.provider.provider_profile.phone }}" class="btn btn-sm btn-success"
+                                   title="Call Provider">
+                                    <i class="fas fa-phone"></i> Contact
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+                        <h5>No In-Progress Requests</h5>
+                        <p>You don't have any active service requests at the moment.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Pending Tab -->
+                <div class="tab-panel" id="pending-tab">
+                    {% if pending_requests %}
+                    <div class="request-grid">
+                        {% for request in pending_requests %}
+                        <div class="request-card pending">
+                            <div class="request-header">
+                                <h4>Request #{{ request.id }}</h4>
+                                <span class="status-badge status-pending">
+                                    <i class="fas fa-clock"></i> Pending
+                                </span>
+                            </div>
+
+                            <div class="request-body">
+                                <p class="request-description">{{ request.description|truncatewords:30 }}</p>
+
+                                <div class="provider-info">
+                                    <strong>Sent to:</strong> {{ request.provider_name }}
+                                </div>
+
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> Sent: {{ request.created_at|date:"M d, Y"
+                                        }}</span>
+                                    {% if request.urgent %}
+                                    <span class="urgent-indicator"><i class="fas fa-exclamation-circle"></i>
+                                        Urgent</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="request-actions">
+                                <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-inbox"></i></div>
+                        <h5>No Pending Requests</h5>
+                        <p>You don't have any pending service requests.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Completed Tab -->
+                <div class="tab-panel" id="completed-tab">
+                    {% if completed_requests %}
+                    <div class="request-grid">
+                        {% for request in completed_requests %}
+                        <div class="request-card completed">
+                            <div class="request-header">
+                                <h4>Request #{{ request.id }}</h4>
+                                <span class="status-badge status-completed">
+                                    <i class="fas fa-check-circle"></i> Completed
+                                </span>
+                            </div>
+
+                            <div class="request-body">
+                                <p class="request-description">{{ request.description|truncatewords:30 }}</p>
+
+                                {% if request.provider %}
+                                <div class="provider-info">
+                                    <strong>Provider:</strong> {{
+                                    request.provider.provider_profile.company_name|default:request.provider.get_full_name
+                                    }}
+                                </div>
+                                {% endif %}
+
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> Completed: {{
+                                        request.completion.completed_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="request-actions">
+                                <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                                <button class="btn btn-sm btn-warning rate-service-btn"
+                                    data-request-id="{{ request.id }}">
+                                    <i class="fas fa-star"></i> Rate Service
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-star"></i></div>
+                        <h5>No Completed Requests</h5>
+                        <p>You don't have any completed requests awaiting rating.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-panel" id="history-tab">
+                    {% if history_requests %}
+                    <div class="request-grid">
+                        {% for request in history_requests %}
+                        <div class="request-card history">
+                            <div class="request-header">
+                                <h4>Request #{{ request.id }}</h4>
+                                <span class="status-badge status-history">
+                                    <i class="fas fa-history"></i> Rated
+                                </span>
+                            </div>
+
+                            <div class="request-body">
+                                <p class="request-description">{{ request.description|truncatewords:30 }}</p>
+
+                                {% if request.provider %}
+                                <div class="provider-info">
+                                    <strong>Provider:</strong> {{
+                                    request.provider.provider_profile.company_name|default:request.provider.get_full_name
+                                    }}
+                                </div>
+                                {% endif %}
+
+                                {% if request.completion.rating %}
+                                <div class="rating-display">
+                                    <strong>Your Rating:</strong>
+                                    <span class="stars">
+                                        {% for i in "12345" %}
+                                        {% if forloop.counter <= request.completion.rating.stars %} <i
+                                            class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                            <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                            {% endfor %}
+                                    </span>
+                                </div>
+                                {% endif %}
+
+                                <div class="request-meta">
+                                    <span><i class="fas fa-calendar"></i> Completed: {{
+                                        request.completion.completed_at|date:"M d, Y" }}</span>
+                                </div>
+                            </div>
+
+                            <div class="request-actions">
+                                <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon"><i class="fas fa-history"></i></div>
+                        <h5>No History</h5>
+                        <p>You haven't rated any completed services yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .stats-card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 3px solid #e2e8f0;
+        padding-bottom: 0;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 1rem 1.5rem;
+        color: #666;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 3px solid transparent;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+        color: #004C99;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.05) 0%, rgba(0, 166, 90, 0.05) 100%);
+    }
+
+    .tab-btn.active {
+        color: #004C99;
+        border-bottom-color: #00A65A;
+        background: linear-gradient(135deg, rgba(0, 76, 153, 0.08) 0%, rgba(0, 166, 90, 0.08) 100%);
+    }
+
+    .tab-count {
+        background: #004C99;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        min-width: 24px;
+        text-align: center;
+    }
+
+    .tab-btn.active .tab-count {
+        background: #00A65A;
+    }
+
+    .tab-panel {
+        display: none;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tab-panel.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .request-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .request-card {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .request-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 76, 153, 0.15);
+        border-color: #004C99;
+    }
+
+    .request-card.in-progress {
+        border-left: 5px solid #004C99;
+    }
+
+    .request-card.pending {
+        border-left: 5px solid #FFC300;
+    }
+
+    .request-card.completed {
+        border-left: 5px solid #00A65A;
+    }
+
+    .request-card.history {
+        border-left: 5px solid #17a2b8;
+    }
+
+    .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .request-header h4 {
+        color: #004C99;
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .status-in-progress {
+        background: linear-gradient(135deg, #004C99, #0066cc);
+        color: white;
+    }
+
+    .status-pending {
+        background: linear-gradient(135deg, #FFC300, #FFD54F);
+        color: #F57F17;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #00A65A, #28a745);
+        color: white;
+    }
+
+    .status-history {
+        background: linear-gradient(135deg, #17a2b8, #20c997);
+        color: white;
+    }
+
+    .request-body {
+        margin-bottom: 1rem;
+    }
+
+    .request-description {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .provider-info {
+        background: #f8f9fa;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .request-meta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .urgent-indicator {
+        color: #d32f2f;
+        font-weight: 600;
+    }
+
+    .request-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .mark-complete-btn,
+    .rate-service-btn {
+        transition: all 0.3s ease;
+    }
+
+    .mark-complete-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 166, 90, 0.3);
+    }
+
+    .rate-service-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(255, 195, 0, 0.3);
+    }
+
+    .rating-display {
+        background: #fff9e6;
+        padding: 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .rating-display .stars {
+        margin-left: 0.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #666;
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: rgba(0, 76, 153, 0.3);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h5 {
+        color: #004C99;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+        .request-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .dashboard-tabs {
+            flex-direction: column;
+        }
+
+        .tab-btn {
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style>
+
+<!-- Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ratingModalLabel">Rate Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h6>How would you rate this service?</h6>
+                    <div class="star-rating" id="starRating">
+                        <i class="fas fa-star star" data-rating="1" style="font-size: 2rem; cursor: pointer; color: #dee2e6; margin: 0 0.2rem;"></i>
+                        <i class="fas fa-star star" data-rating="2" style="font-size: 2rem; cursor: pointer; color: #dee2e6; margin: 0 0.2rem;"></i>
+                        <i class="fas fa-star star" data-rating="3" style="font-size: 2rem; cursor: pointer; color: #dee2e6; margin: 0 0.2rem;"></i>
+                        <i class="fas fa-star star" data-rating="4" style="font-size: 2rem; cursor: pointer; color: #dee2e6; margin: 0 0.2rem;"></i>
+                        <i class="fas fa-star star" data-rating="5" style="font-size: 2rem; cursor: pointer; color: #dee2e6; margin: 0 0.2rem;"></i>
+                    </div>
+                    <div id="ratingText" class="text-muted mt-2">Click to rate</div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="feedbackText" class="form-label">Feedback (Optional)</label>
+                    <textarea class="form-control" id="feedbackText" rows="3" 
+                              placeholder="Share your experience with this service..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitRatingBtn" disabled>
+                    <i class="fas fa-star"></i> Submit Rating
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetTab = this.dataset.tab;
+            
+            // Remove active class from all buttons and panels
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding panel
+            this.classList.add('active');
+            document.getElementById(targetTab + '-tab').classList.add('active');
+        });
+    });
+
+    // Rating functionality
+    const ratingModal = new bootstrap.Modal(document.getElementById('ratingModal'));
+    const rateButtons = document.querySelectorAll('.rate-service-btn');
+    const stars = document.querySelectorAll('.star');
+    const ratingText = document.getElementById('ratingText');
+    const submitRatingBtn = document.getElementById('submitRatingBtn');
+    const feedbackText = document.getElementById('feedbackText');
+    
+    let currentRequestId = null;
+    let selectedRating = 0;
+
+    // Rating descriptions
+    const ratingDescriptions = {
+        1: "Poor - Not satisfied",
+        2: "Fair - Below expectations",
+        3: "Good - Met expectations",
+        4: "Very Good - Exceeded expectations",
+        5: "Excellent - Outstanding service"
+    };
+
+    // Handle rate service button clicks
+    rateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentRequestId = this.dataset.requestId;
+            
+            // Reset modal state
+            selectedRating = 0;
+            feedbackText.value = '';
+            updateStars(0);
+            ratingText.textContent = 'Click to rate';
+            submitRatingBtn.disabled = true;
+            
+            ratingModal.show();
+        });
+    });
+
+    // Handle star clicks
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.dataset.rating);
+            updateStars(selectedRating);
+            ratingText.textContent = ratingDescriptions[selectedRating];
+            submitRatingBtn.disabled = false;
+        });
+        
+        star.addEventListener('mouseover', function() {
+            const hoverRating = parseInt(this.dataset.rating);
+            updateStars(hoverRating, true);
+        });
+    });
+
+    // Reset stars on mouse leave
+    document.getElementById('starRating').addEventListener('mouseleave', function() {
+        updateStars(selectedRating);
+    });
+
+    function updateStars(rating, isHover = false) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.style.color = isHover ? '#ffc107' : '#f39c12';
+            } else {
+                star.style.color = '#dee2e6';
+            }
+        });
+    }
+
+    // Handle rating submission
+    submitRatingBtn.addEventListener('click', function() {
+        if (!currentRequestId || selectedRating === 0) return;
+        
+        // Disable button and show loading
+        submitRatingBtn.disabled = true;
+        submitRatingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Prepare data
+        const ratingData = {
+            stars: selectedRating,
+            feedback: feedbackText.value.trim()
+        };
+        
+        // Submit rating
+        fetch(`/requests/api/${currentRequestId}/rating/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify(ratingData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', 'Rating submitted successfully! Thank you for your feedback.');
+                ratingModal.hide();
+                
+                // Reload page to update dashboard
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert('danger', data.error || 'Failed to submit rating. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting rating:', error);
+            showAlert('danger', 'Network error. Please check your connection and try again.');
+        })
+        .finally(() => {
+            // Re-enable button
+            submitRatingBtn.disabled = false;
+            submitRatingBtn.innerHTML = '<i class="fas fa-star"></i> Submit Rating';
+        });
+    });
+
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
+{% endblock %}

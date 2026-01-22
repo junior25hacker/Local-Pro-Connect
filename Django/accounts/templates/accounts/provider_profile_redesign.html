@@ -19,14 +19,14 @@
         --text-light: #6C757D;
         --bg-light: #F8FAFB;
     }
-    
+
     body {
         background: linear-gradient(135deg, var(--light-blue) 0%, var(--bg-light) 100%);
         min-height: 100vh;
         font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
         color: var(--text-dark);
     }
-    
+
     /* Professional Header with Gradient */
     .profile-hero {
         background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 50%, var(--accent-teal) 100%);
@@ -34,7 +34,7 @@
         position: relative;
         overflow: hidden;
     }
-    
+
     .profile-hero::before {
         content: '';
         position: absolute;
@@ -42,17 +42,24 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: 
+        background:
             radial-gradient(circle at 20% 50%, rgba(0, 166, 90, 0.2) 0%, transparent 50%),
             radial-gradient(circle at 80% 80%, rgba(0, 188, 212, 0.2) 0%, transparent 50%);
         animation: pulse 15s ease-in-out infinite;
     }
-    
+
     @keyframes pulse {
-        0%, 100% { opacity: 0.5; }
-        50% { opacity: 0.8; }
+
+        0%,
+        100% {
+            opacity: 0.5;
+        }
+
+        50% {
+            opacity: 0.8;
+        }
     }
-    
+
     .profile-hero::after {
         content: '';
         position: absolute;
@@ -62,7 +69,7 @@
         height: 100px;
         background: linear-gradient(180deg, transparent 0%, var(--bg-light) 100%);
     }
-    
+
     /* Main Profile Card - Professional Design */
     .profile-header-card {
         background: white;
@@ -75,7 +82,7 @@
         border: 1px solid rgba(0, 123, 255, 0.1);
         transition: all 0.4s ease;
     }
-    
+
     .profile-header-card::before {
         content: '';
         position: absolute;
@@ -86,12 +93,12 @@
         background: linear-gradient(90deg, var(--primary-blue), var(--primary-green), var(--accent-teal));
         border-radius: 20px 20px 0 0;
     }
-    
+
     .profile-header-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 25px 70px rgba(0, 76, 153, 0.18);
     }
-    
+
     /* Avatar - Professional Style */
     .profile-avatar-container {
         display: flex;
@@ -99,7 +106,7 @@
         align-items: center;
         gap: 1rem;
     }
-    
+
     .profile-avatar {
         width: 180px;
         height: 180px;
@@ -116,18 +123,18 @@
         position: relative;
         transition: all 0.3s ease;
     }
-    
+
     .profile-avatar:hover {
         transform: scale(1.05) rotate(3deg);
         box-shadow: 0 20px 50px rgba(0, 166, 90, 0.3);
     }
-    
+
     .profile-avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
-    
+
     .verification-badge-small {
         position: absolute;
         bottom: 10px;
@@ -143,23 +150,30 @@
         box-shadow: 0 4px 12px rgba(0, 166, 90, 0.4);
         animation: verifiedPulse 2s infinite;
     }
-    
+
     @keyframes verifiedPulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
     }
-    
+
     .verification-badge-small i {
         color: white;
         font-size: 1.2rem;
     }
-    
+
     /* Profile Info - Clean Typography */
     .profile-info {
         flex: 1;
         padding: 0 2rem;
     }
-    
+
     .profile-info h1 {
         color: var(--primary-blue);
         font-weight: 800;
@@ -167,14 +181,14 @@
         font-size: 2.5rem;
         line-height: 1.2;
     }
-    
+
     .profile-meta {
         display: flex;
         flex-wrap: wrap;
         gap: 2rem;
         margin-top: 1.5rem;
     }
-    
+
     .meta-item {
         display: flex;
         align-items: center;
@@ -182,7 +196,7 @@
         font-size: 1rem;
         color: var(--text-light);
     }
-    
+
     .meta-item i {
         width: 35px;
         height: 35px;
@@ -194,12 +208,12 @@
         color: var(--primary-blue);
         font-size: 1rem;
     }
-    
+
     .meta-item strong {
         color: var(--text-dark);
         font-weight: 600;
     }
-    
+
     /* Rating Card - Professional Design */
     .profile-rating-card {
         background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
@@ -210,7 +224,7 @@
         box-shadow: 0 10px 30px rgba(0, 76, 153, 0.3);
         min-width: 200px;
     }
-    
+
     .rating-score {
         font-size: 3.5rem;
         font-weight: 800;
@@ -218,20 +232,20 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
-    
+
     .rating-stars {
         font-size: 1.3rem;
         margin-bottom: 0.75rem;
         color: #FFD700;
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
     .rating-count {
         font-size: 0.95rem;
         opacity: 0.9;
         font-weight: 500;
     }
-    
+
     /* Section Cards - Modern Design */
     .section-card {
         background: white;
@@ -244,7 +258,7 @@
         position: relative;
         overflow: hidden;
     }
-    
+
     .section-card::before {
         content: '';
         position: absolute;
@@ -256,16 +270,16 @@
         opacity: 0;
         transition: opacity 0.3s ease;
     }
-    
+
     .section-card:hover {
         box-shadow: 0 8px 30px rgba(0, 76, 153, 0.15);
         transform: translateY(-3px);
     }
-    
+
     .section-card:hover::before {
         opacity: 1;
     }
-    
+
     .section-title {
         color: var(--primary-blue);
         font-size: 1.75rem;
@@ -277,7 +291,7 @@
         padding-bottom: 1rem;
         border-bottom: 2px solid var(--light-blue);
     }
-    
+
     .section-title-icon {
         width: 50px;
         height: 50px;
@@ -290,7 +304,7 @@
         font-size: 1.4rem;
         box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
     }
-    
+
     /* Stats Grid - Professional Layout */
     .stats-grid {
         display: grid;
@@ -298,7 +312,7 @@
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
-    
+
     .stat-card {
         background: linear-gradient(135deg, var(--light-blue) 0%, white 100%);
         padding: 2rem;
@@ -307,14 +321,14 @@
         border: 2px solid rgba(0, 123, 255, 0.1);
         transition: all 0.3s ease;
     }
-    
+
     .stat-card:hover {
         background: linear-gradient(135deg, var(--light-green) 0%, white 100%);
         border-color: var(--primary-green);
         transform: translateY(-5px) scale(1.02);
         box-shadow: 0 8px 25px rgba(0, 166, 90, 0.2);
     }
-    
+
     .stat-number {
         font-size: 3rem;
         font-weight: 800;
@@ -323,7 +337,7 @@
         margin-bottom: 0.5rem;
         text-shadow: 0 2px 4px rgba(0, 76, 153, 0.1);
     }
-    
+
     .stat-label {
         font-size: 0.9rem;
         color: var(--text-light);
@@ -331,7 +345,7 @@
         letter-spacing: 1px;
         font-weight: 600;
     }
-    
+
     /* Info Grid - Two Column Layout */
     .info-grid-2col {
         display: grid;
@@ -339,20 +353,20 @@
         gap: 2rem;
         margin-top: 1.5rem;
     }
-    
+
     @media (max-width: 768px) {
         .info-grid-2col {
             grid-template-columns: 1fr;
         }
     }
-    
+
     .info-field {
         padding: 1.25rem;
         background: var(--bg-light);
         border-radius: 10px;
         border-left: 4px solid var(--primary-blue);
     }
-    
+
     .info-field-label {
         font-size: 0.85rem;
         color: var(--text-light);
@@ -361,13 +375,13 @@
         margin-bottom: 0.5rem;
         font-weight: 600;
     }
-    
+
     .info-field-value {
         font-size: 1.1rem;
         color: var(--text-dark);
         font-weight: 600;
     }
-    
+
     /* Buttons - Professional Style */
     .btn-primary-custom {
         background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
@@ -384,14 +398,14 @@
         box-shadow: 0 4px 15px rgba(0, 76, 153, 0.25);
         text-decoration: none;
     }
-    
+
     .btn-primary-custom:hover {
         background: linear-gradient(135deg, var(--secondary-blue) 0%, var(--accent-teal) 100%);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 123, 255, 0.35);
         color: white;
     }
-    
+
     .btn-success-custom {
         background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
         border: none;
@@ -407,14 +421,14 @@
         box-shadow: 0 4px 15px rgba(0, 166, 90, 0.25);
         text-decoration: none;
     }
-    
+
     .btn-success-custom:hover {
         background: linear-gradient(135deg, var(--dark-green) 0%, #006b3a 100%);
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 166, 90, 0.35);
         color: white;
     }
-    
+
     .btn-outline-custom {
         background: white;
         border: 2px solid var(--primary-blue);
@@ -429,14 +443,14 @@
         transition: all 0.3s ease;
         text-decoration: none;
     }
-    
+
     .btn-outline-custom:hover {
         background: var(--primary-blue);
         color: white;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 76, 153, 0.25);
     }
-    
+
     /* Action Buttons Full Width */
     .action-btn-full {
         width: 100%;
@@ -444,14 +458,14 @@
         margin-bottom: 1rem;
         justify-content: center;
     }
-    
+
     /* Quick Info List */
     .quick-info-list {
         list-style: none;
         padding: 0;
         margin: 0;
     }
-    
+
     .quick-info-item {
         padding: 1.25rem;
         background: var(--bg-light);
@@ -460,12 +474,12 @@
         border-left: 4px solid var(--primary-green);
         transition: all 0.3s ease;
     }
-    
+
     .quick-info-item:hover {
         background: var(--light-green);
         transform: translateX(5px);
     }
-    
+
     .quick-info-label {
         font-size: 0.85rem;
         color: var(--text-light);
@@ -475,13 +489,13 @@
         font-weight: 600;
         display: block;
     }
-    
+
     .quick-info-value {
         font-size: 1rem;
         color: var(--text-dark);
         font-weight: 600;
     }
-    
+
     /* Badge Styles */
     .badge-verified {
         background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
@@ -495,7 +509,7 @@
         gap: 0.5rem;
         box-shadow: 0 4px 12px rgba(0, 166, 90, 0.25);
     }
-    
+
     .badge-pending {
         background: linear-gradient(135deg, #FFA500, #FF8C00);
         color: white;
@@ -508,7 +522,7 @@
         gap: 0.5rem;
         box-shadow: 0 4px 12px rgba(255, 165, 0, 0.25);
     }
-    
+
     /* Verification Shield Card */
     .verification-shield-card {
         background: linear-gradient(135deg, var(--light-green) 0%, var(--light-blue) 100%);
@@ -519,7 +533,7 @@
         position: relative;
         overflow: hidden;
     }
-    
+
     .verification-shield-card::before {
         content: '✓';
         position: absolute;
@@ -530,87 +544,94 @@
         opacity: 0.08;
         font-weight: 900;
     }
-    
+
     .shield-icon {
         font-size: 4rem;
         color: var(--primary-green);
         margin-bottom: 1rem;
         animation: shieldPulse 2s infinite;
     }
-    
+
     @keyframes shieldPulse {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.1); }
+
+        0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
     }
-    
+
     .shield-title {
         color: var(--primary-blue);
         font-size: 1.5rem;
         font-weight: 800;
         margin-bottom: 0.5rem;
     }
-    
+
     .shield-text {
         color: var(--text-light);
         font-size: 0.95rem;
         line-height: 1.6;
     }
-    
+
     /* Responsive Design */
     @media (max-width: 1200px) {
         .profile-header-card {
             padding: 2rem;
         }
     }
-    
+
     @media (max-width: 768px) {
         .profile-hero {
             padding: 3rem 0 6rem 0;
         }
-        
+
         .profile-header-card {
             margin-top: -80px;
             padding: 1.5rem;
         }
-        
+
         .profile-avatar {
             width: 140px;
             height: 140px;
             font-size: 3rem;
         }
-        
+
         .profile-info h1 {
             font-size: 2rem;
         }
-        
+
         .profile-meta {
             flex-direction: column;
             gap: 1rem;
         }
-        
+
         .stats-grid {
             grid-template-columns: 1fr;
         }
-        
+
         .section-card {
             padding: 1.5rem;
         }
     }
-    
+
     /* Description Text */
     .description-text {
         color: var(--text-light);
         line-height: 1.8;
         font-size: 1.05rem;
     }
-    
+
     /* Modal Customization */
     .modal-content {
         border-radius: 16px;
         border: none;
         box-shadow: 0 10px 40px rgba(0, 76, 153, 0.15);
     }
-    
+
     .modal-header {
         background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
         color: white;
@@ -618,15 +639,15 @@
         padding: 1.5rem 2rem;
         border: none;
     }
-    
+
     .modal-header .btn-close {
         filter: brightness(0) invert(1);
     }
-    
+
     .modal-body {
         padding: 2rem;
     }
-    
+
     .modal-footer {
         padding: 1.5rem 2rem;
         border-top: 2px solid var(--light-blue);
@@ -647,24 +668,24 @@
                 <div class="profile-avatar-container">
                     <div class="profile-avatar">
                         {% if provider_profile and provider_profile.profile_picture %}
-                            <img src="{{ provider_profile.profile_picture.url }}" alt="Profile picture">
+                        <img src="{{ provider_profile.profile_picture.url }}" alt="Profile picture">
                         {% else %}
-                            <i class="fas fa-user"></i>
+                        <i class="fas fa-user"></i>
                         {% endif %}
                         {% if provider_profile.is_verified %}
-                            <div class="verification-badge-small">
-                                <i class="fas fa-check"></i>
-                            </div>
+                        <div class="verification-badge-small">
+                            <i class="fas fa-check"></i>
+                        </div>
                         {% endif %}
                     </div>
                 </div>
             </div>
-            
+
             <!-- Profile Info Section -->
             <div class="col-lg-6 col-md-8">
                 <div class="profile-info">
                     <h1>{{ provider_profile.company_name }}</h1>
-                    
+
                     <div class="profile-meta">
                         <div class="meta-item">
                             <i class="fas fa-briefcase"></i>
@@ -681,38 +702,37 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Rating Section -->
             <div class="col-lg-3 col-md-12 text-center mt-3 mt-lg-0">
                 <div class="profile-rating-card">
                     <div class="rating-score">{{ provider_profile.rating|default:"0.0" }}</div>
                     <div class="rating-stars">
                         {% for i in "12345" %}
-                            {% if forloop.counter <= provider_profile.rating %}
-                                <i class="fas fa-star"></i>
+                        {% if forloop.counter <= provider_profile.rating %} <i class="fas fa-star"></i>
                             {% else %}
-                                <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
                             {% endif %}
-                        {% endfor %}
+                            {% endfor %}
                     </div>
                     <div class="rating-count">{{ provider_profile.total_reviews }} reviews</div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Quick Action Button -->
     <div class="mb-4">
-        <a href="{% url 'accounts:search_page' %}" class="btn-primary-custom action-btn-full">
+        <a href="{% url 'accounts:professionals_list' %}" class="btn-primary-custom action-btn-full">
             <i class="fas fa-search"></i>
             <span>Browse Available Services</span>
         </a>
     </div>
-    
+
     <div class="row">
         <!-- Main Content Column -->
         <div class="col-lg-8">
-            
+
             <!-- About Business Section -->
             <div class="section-card">
                 <h3 class="section-title">
@@ -722,10 +742,11 @@
                     <span>About Your Business</span>
                 </h3>
                 <p class="description-text">
-                    {{ provider_profile.bio|default:"Add a compelling business description to attract more clients. Describe your services, expertise, and what makes you stand out from the competition." }}
+                    {{ provider_profile.bio|default:"Add a compelling business description to attract more clients.
+                    Describe your services, expertise, and what makes you stand out from the competition." }}
                 </p>
             </div>
-            
+
             <!-- Performance Stats Section -->
             <div class="section-card">
                 <h3 class="section-title">
@@ -734,7 +755,7 @@
                     </div>
                     <span>Performance Statistics</span>
                 </h3>
-                
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number">{{ provider_profile.services_rendered }}</div>
@@ -750,7 +771,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Contact & Service Details -->
             <div class="section-card">
                 <h3 class="section-title">
@@ -759,7 +780,7 @@
                     </div>
                     <span>Contact & Service Details</span>
                 </h3>
-                
+
                 <div class="info-grid-2col">
                     <div class="info-field">
                         <div class="info-field-label">Phone Number</div>
@@ -770,16 +791,17 @@
                         <div class="info-field-value">{{ provider_profile.get_service_type_display }}</div>
                     </div>
                 </div>
-                
+
                 <div class="info-field mt-3">
                     <div class="info-field-label">Business Address</div>
                     <div class="info-field-value">
                         {{ provider_profile.business_address|default:"Not provided" }}<br>
-                        <small class="text-muted">{{ provider_profile.city }}, {{ provider_profile.state }} {{ provider_profile.zip_code }}</small>
+                        <small class="text-muted">{{ provider_profile.city }}, {{ provider_profile.state }} {{
+                            provider_profile.zip_code }}</small>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Profile Management Section -->
             <div class="section-card">
                 <h3 class="section-title">
@@ -788,8 +810,9 @@
                     </div>
                     <span>Profile Management</span>
                 </h3>
-                <p class="description-text mb-4">Keep your professional information current to attract more clients and build trust.</p>
-                
+                <p class="description-text mb-4">Keep your professional information current to attract more clients and
+                    build trust.</p>
+
                 <div class="d-flex flex-wrap gap-3">
                     <a href="#" class="btn-primary-custom" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                         <i class="fas fa-edit"></i>
@@ -801,12 +824,12 @@
                     </a>
                 </div>
             </div>
-            
+
         </div>
-        
+
         <!-- Sidebar Column -->
         <div class="col-lg-4">
-            
+
             <!-- Quick Information Card -->
             <div class="section-card">
                 <h3 class="section-title">
@@ -815,19 +838,19 @@
                     </div>
                     <span>Quick Info</span>
                 </h3>
-                
+
                 <ul class="quick-info-list">
                     <li class="quick-info-item">
                         <span class="quick-info-label">Account Status</span>
                         <div class="quick-info-value">
                             {% if provider_profile.is_verified %}
-                                <span class="badge-verified">
-                                    <i class="fas fa-check-circle"></i> Verified
-                                </span>
+                            <span class="badge-verified">
+                                <i class="fas fa-check-circle"></i> Verified
+                            </span>
                             {% else %}
-                                <span class="badge-pending">
-                                    <i class="fas fa-clock"></i> Pending Review
-                                </span>
+                            <span class="badge-pending">
+                                <i class="fas fa-clock"></i> Pending Review
+                            </span>
                             {% endif %}
                         </div>
                     </li>
@@ -845,14 +868,14 @@
                     </li>
                 </ul>
             </div>
-            
+
             <!-- Verification Shield Card -->
             <div class="verification-shield-card section-card">
                 <i class="fas fa-shield-alt shield-icon"></i>
                 <h4 class="shield-title">Verified Professional</h4>
                 <p class="shield-text">Your profile is verified and visible to customers on Local Pro Connect.</p>
             </div>
-            
+
             <!-- Provider Actions -->
             <div class="section-card">
                 <h3 class="section-title">
@@ -861,18 +884,18 @@
                     </div>
                     <span>Actions</span>
                 </h3>
-                
+
                 <a href="{% url 'accounts:provider_dashboard' %}" class="btn-primary-custom action-btn-full">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
-                
+
                 <a href="{% url 'requests:request_list' %}" class="btn-success-custom action-btn-full">
                     <i class="fas fa-clipboard-list"></i>
                     <span>View Requests</span>
                 </a>
             </div>
-            
+
             <!-- Sign Out Section -->
             <div class="section-card text-center">
                 <a href="/accounts/logout/" class="btn-outline-custom action-btn-full">
@@ -880,7 +903,7 @@
                     <span>Sign Out</span>
                 </a>
             </div>
-            
+
         </div>
     </div>
 </div>
@@ -888,18 +911,23 @@
 <!-- Edit Profile Modal - Redesigned -->
 <div class="modal fade" id="editProfileModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
-        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 60px rgba(0, 76, 153, 0.2);">
-            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-blue), var(--primary-green)); color: white; border-radius: 20px 20px 0 0; padding: 2rem; border: none;">
+        <div class="modal-content"
+            style="border-radius: 20px; border: none; box-shadow: 0 20px 60px rgba(0, 76, 153, 0.2);">
+            <div class="modal-header"
+                style="background: linear-gradient(135deg, var(--primary-blue), var(--primary-green)); color: white; border-radius: 20px 20px 0 0; padding: 2rem; border: none;">
                 <div>
-                    <h4 class="modal-title mb-2" style="font-weight: 800; font-size: 1.75rem;"><i class="fas fa-user-edit me-3"></i>Edit Your Professional Profile</h4>
-                    <p class="mb-0" style="font-size: 0.95rem; opacity: 0.95;">Keep your information current to attract more clients</p>
+                    <h4 class="modal-title mb-2" style="font-weight: 800; font-size: 1.75rem;"><i
+                            class="fas fa-user-edit me-3"></i>Edit Your Professional Profile</h4>
+                    <p class="mb-0" style="font-size: 0.95rem; opacity: 0.95;">Keep your information current to attract
+                        more clients</p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: brightness(0) invert(1); opacity: 1;"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    style="filter: brightness(0) invert(1); opacity: 1;"></button>
             </div>
             <form id="editProfileForm" method="POST" action="/accounts/api/provider/profile/">
                 {% csrf_token %}
                 <div class="modal-body" style="padding: 2.5rem; background: var(--bg-light);">
-                    
+
                     <!-- Business Information Section -->
                     <div class="edit-section">
                         <div class="section-header">
@@ -908,71 +936,75 @@
                             </div>
                             <h5>Business Information</h5>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <label for="editCompanyName" class="form-label-custom">
                                     <i class="fas fa-building me-2"></i>Company / Business Name
                                 </label>
-                                <input type="text" class="form-control-custom" id="editCompanyName" name="company_name" 
-                                       value="{{ provider_profile.company_name|default:'' }}" placeholder="Enter your business name">
+                                <input type="text" class="form-control-custom" id="editCompanyName" name="company_name"
+                                    value="{{ provider_profile.company_name|default:'' }}"
+                                    placeholder="Enter your business name">
                             </div>
                             <div class="col-md-6 mb-4">
                                 <label for="editServiceType" class="form-label-custom">
-                                    <i class="fas fa-wrench me-2"></i>Service Type <span style="color: var(--emergency-red);">*</span>
+                                    <i class="fas fa-wrench me-2"></i>Service Type <span
+                                        style="color: var(--emergency-red);">*</span>
                                 </label>
                                 <select class="form-control-custom" id="editServiceType" name="service_type" required>
                                     <option value="">Select service type</option>
-                                    <option value="plumbing" {% if provider_profile.service_type == 'plumbing' %}selected{% endif %}>Plumbing</option>
-                                    <option value="electrical" {% if provider_profile.service_type == 'electrical' %}selected{% endif %}>Electrical</option>
-                                    <option value="carpentry" {% if provider_profile.service_type == 'carpentry' %}selected{% endif %}>Carpentry</option>
-                                    <option value="cleaning" {% if provider_profile.service_type == 'cleaning' %}selected{% endif %}>Cleaning</option>
-                                    <option value="tutoring" {% if provider_profile.service_type == 'tutoring' %}selected{% endif %}>Tutoring</option>
-                                    <option value="hvac" {% if provider_profile.service_type == 'hvac' %}selected{% endif %}>HVAC</option>
-                                    <option value="roofing" {% if provider_profile.service_type == 'roofing' %}selected{% endif %}>Roofing</option>
-                                    <option value="landscaping" {% if provider_profile.service_type == 'landscaping' %}selected{% endif %}>Landscaping</option>
-                                    <option value="painting" {% if provider_profile.service_type == 'painting' %}selected{% endif %}>Painting</option>
-                                    <option value="other" {% if provider_profile.service_type == 'other' %}selected{% endif %}>Other</option>
+                                    <option value="plumbing" {% if provider_profile.service_type == "plumbing" %}selected{% endif %}>Plumbing</option>
+                                    <option value="electrical" {% if provider_profile.service_type == "electrical" %}selected{% endif %}>Electrical</option>
+                                    <option value="carpentry" {% if provider_profile.service_type == "carpentry" %}selected{% endif %}>Carpentry</option>
+                                    <option value="cleaning" {% if provider_profile.service_type == "cleaning" %}selected{% endif %}>Cleaning</option>
+                                    <option value="tutoring" {% if provider_profile.service_type == "tutoring" %}selected{% endif %}>Tutoring</option>
+                                    <option value="hvac" {% if provider_profile.service_type == "hvac" %}selected{% endif %}>HVAC</option>
+                                    <option value="roofing" {% if provider_profile.service_type == "roofing" %}selected{% endif %}>Roofing</option>
+                                    <option value="landscaping" {% if provider_profile.service_type == "landscaping" %}selected{% endif %}>Landscaping</option>
+                                    <option value="painting" {% if provider_profile.service_type == "painting" %}selected{% endif %}>Painting</option>
+                                    <option value="other" {% if provider_profile.service_type == "other" %}selected{% endif %}>Other</option>
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label for="editBio" class="form-label-custom">
                                 <i class="fas fa-file-alt me-2"></i>Professional Bio
                             </label>
-                            <textarea class="form-control-custom" id="editBio" name="bio" rows="4" 
-                                      placeholder="Tell potential clients about your business, expertise, and what makes you stand out...">{{ provider_profile.bio|default:'' }}</textarea>
+                            <textarea class="form-control-custom" id="editBio" name="bio" rows="4"
+                                placeholder="Tell potential clients about your business, expertise, and what makes you stand out...">{{ provider_profile.bio|default:'' }}</textarea>
                             <small class="form-hint">This appears on your public profile</small>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label for="editDescription" class="form-label-custom">
                                 <i class="fas fa-list me-2"></i>Service Description
                             </label>
-                            <textarea class="form-control-custom" id="editDescription" name="service_description" rows="3" 
-                                      placeholder="Describe the services you offer in detail...">{{ provider_profile.service_description|default:'' }}</textarea>
+                            <textarea class="form-control-custom" id="editDescription" name="service_description"
+                                rows="3"
+                                placeholder="Describe the services you offer in detail...">{{ provider_profile.service_description|default:'' }}</textarea>
                             <small class="form-hint">List the specific services you provide</small>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <label for="editYears" class="form-label-custom">
                                     <i class="fas fa-calendar-alt me-2"></i>Years of Experience
                                 </label>
-                                <input type="number" class="form-control-custom" id="editYears" name="years_experience" 
-                                       value="{{ provider_profile.years_experience|default:0 }}" min="0" placeholder="e.g., 5">
+                                <input type="number" class="form-control-custom" id="editYears" name="years_experience"
+                                    value="{{ provider_profile.years_experience|default:0 }}" min="0"
+                                    placeholder="e.g., 5">
                             </div>
                             <div class="col-md-6 mb-4">
                                 <label for="editPhone" class="form-label-custom">
                                     <i class="fas fa-phone me-2"></i>Contact Phone
                                 </label>
-                                <input type="tel" class="form-control-custom" id="editPhone" name="phone" 
-                                       value="{{ provider_profile.phone|default:'' }}" placeholder="+237 6XX XXX XXX">
+                                <input type="tel" class="form-control-custom" id="editPhone" name="phone"
+                                    value="{{ provider_profile.phone|default:'' }}" placeholder="+237 6XX XXX XXX">
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Location Information Section -->
                     <div class="edit-section">
                         <div class="section-header">
@@ -981,53 +1013,61 @@
                             </div>
                             <h5>Location & Service Area</h5>
                         </div>
-                        
+
                         <div class="mb-4">
                             <label for="editAddress" class="form-label-custom">
                                 <i class="fas fa-road me-2"></i>Business Address
                             </label>
-                            <input type="text" class="form-control-custom" id="editAddress" name="business_address" 
-                                   value="{{ provider_profile.business_address|default:'' }}" placeholder="Street address">
+                            <input type="text" class="form-control-custom" id="editAddress" name="business_address"
+                                value="{{ provider_profile.business_address|default:'' }}" placeholder="Street address">
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-4 mb-4">
                                 <label for="editCity" class="form-label-custom">
-                                    <i class="fas fa-city me-2"></i>City <span style="color: var(--emergency-red);">*</span>
+                                    <i class="fas fa-city me-2"></i>City <span
+                                        style="color: var(--emergency-red);">*</span>
                                 </label>
-                                <input type="text" class="form-control-custom" id="editCity" name="city" 
-                                       value="{{ provider_profile.city|default:'' }}" placeholder="e.g., Douala" required>
+                                <input type="text" class="form-control-custom" id="editCity" name="city"
+                                    value="{{ provider_profile.city|default:'' }}" placeholder="e.g., Douala" required>
                             </div>
                             <div class="col-md-4 mb-4">
                                 <label for="editState" class="form-label-custom">
-                                    <i class="fas fa-map me-2"></i>Region <span style="color: var(--emergency-red);">*</span>
+                                    <i class="fas fa-map me-2"></i>Region <span
+                                        style="color: var(--emergency-red);">*</span>
                                 </label>
                                 <select class="form-control-custom" id="editState" name="state" required>
                                     <option value="">Select Region</option>
-                                    <option value="Adamawa" {% if provider_profile.state == 'Adamawa' %}selected{% endif %}>Adamawa</option>
-                                    <option value="Centre" {% if provider_profile.state == 'Centre' %}selected{% endif %}>Centre</option>
-                                    <option value="East" {% if provider_profile.state == 'East' %}selected{% endif %}>East</option>
-                                    <option value="Far North" {% if provider_profile.state == 'Far North' %}selected{% endif %}>Far North</option>
-                                    <option value="Littoral" {% if provider_profile.state == 'Littoral' %}selected{% endif %}>Littoral</option>
-                                    <option value="North" {% if provider_profile.state == 'North' %}selected{% endif %}>North</option>
-                                    <option value="Northwest" {% if provider_profile.state == 'Northwest' %}selected{% endif %}>Northwest</option>
-                                    <option value="South" {% if provider_profile.state == 'South' %}selected{% endif %}>South</option>
-                                    <option value="Southwest" {% if provider_profile.state == 'Southwest' %}selected{% endif %}>Southwest</option>
-                                    <option value="West" {% if provider_profile.state == 'West' %}selected{% endif %}>West</option>
+                                    <option value="Adamawa" {% if provider_profile.state == "Adamawa" %}selected{% endif %}>Adamawa</option>
+                                    <option value="Centre" {% if provider_profile.state == "Centre" %}selected{% endif %}>
+                                        Centre</option>
+                                    <option value="East" {% if provider_profile.state == "East" %}selected{% endif %}>East
+                                    </option>
+                                    <option value="Far North" {% if provider_profile.state == "Far North" %}selected{% endif %}>Far North</option>
+                                    <option value="Littoral" {% if provider_profile.state == "Littoral" %}selected{% endif %}>Littoral</option>
+                                    <option value="North" {% if provider_profile.state == "North" %}selected{% endif %}>
+                                        North</option>
+                                    <option value="Northwest" {% if provider_profile.state == "Northwest" %}selected{% endif %}>Northwest</option>
+                                    <option value="South" {% if provider_profile.state == "South" %}selected{% endif %}>
+                                        South</option>
+                                    <option value="Southwest" {% if provider_profile.state == "Southwest" %}selected{% endif %}>Southwest</option>
+                                    <option value="West" {% if provider_profile.state == "West" %}selected{% endif %}>West
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-4">
                                 <label for="editZip" class="form-label-custom">
                                     <i class="fas fa-mailbox me-2"></i>Postal Code
                                 </label>
-                                <input type="text" class="form-control-custom" id="editZip" name="zip_code" 
-                                       value="{{ provider_profile.zip_code|default:'' }}" placeholder="e.g., 237">
+                                <input type="text" class="form-control-custom" id="editZip" name="zip_code"
+                                    value="{{ provider_profile.zip_code|default:'' }}" placeholder="e.g., 237">
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
-                <div class="modal-footer" style="padding: 1.75rem 2.5rem; background: white; border-top: 3px solid var(--light-blue); border-radius: 0 0 20px 20px;">
+                <div class="modal-footer"
+                    style="padding: 1.75rem 2.5rem; background: white; border-top: 3px solid var(--light-blue); border-radius: 0 0 20px 20px;">
                     <button type="button" class="btn-cancel-custom" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Cancel
                     </button>
@@ -1041,129 +1081,129 @@
 </div>
 
 <style>
-/* Edit Modal Styles */
-.edit-section {
-    background: white;
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-    border: 2px solid var(--light-blue);
-    transition: all 0.3s ease;
-}
+    /* Edit Modal Styles */
+    .edit-section {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        border: 2px solid var(--light-blue);
+        transition: all 0.3s ease;
+    }
 
-.edit-section:hover {
-    border-color: var(--primary-blue);
-    box-shadow: 0 4px 20px rgba(0, 76, 153, 0.1);
-}
+    .edit-section:hover {
+        border-color: var(--primary-blue);
+        box-shadow: 0 4px 20px rgba(0, 76, 153, 0.1);
+    }
 
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.75rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--light-blue);
-}
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--light-blue);
+    }
 
-.section-icon {
-    width: 45px;
-    height: 45px;
-    background: linear-gradient(135deg, var(--light-blue), var(--light-green));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-blue);
-    font-size: 1.3rem;
-}
+    .section-icon {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, var(--light-blue), var(--light-green));
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-blue);
+        font-size: 1.3rem;
+    }
 
-.section-header h5 {
-    color: var(--primary-blue);
-    font-weight: 700;
-    font-size: 1.3rem;
-    margin: 0;
-}
+    .section-header h5 {
+        color: var(--primary-blue);
+        font-weight: 700;
+        font-size: 1.3rem;
+        margin: 0;
+    }
 
-.form-label-custom {
-    font-weight: 600;
-    color: var(--text-dark);
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
-    display: block;
-}
+    .form-label-custom {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
 
-.form-label-custom i {
-    color: var(--primary-blue);
-}
+    .form-label-custom i {
+        color: var(--primary-blue);
+    }
 
-.form-control-custom {
-    width: 100%;
-    padding: 0.875rem 1.125rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 10px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: white;
-}
+    .form-control-custom {
+        width: 100%;
+        padding: 0.875rem 1.125rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
 
-.form-control-custom:focus {
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 4px rgba(0, 76, 153, 0.1);
-    outline: none;
-}
+    .form-control-custom:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 4px rgba(0, 76, 153, 0.1);
+        outline: none;
+    }
 
-.form-control-custom:hover {
-    border-color: var(--secondary-blue);
-}
+    .form-control-custom:hover {
+        border-color: var(--secondary-blue);
+    }
 
-.form-hint {
-    display: block;
-    margin-top: 0.5rem;
-    color: var(--text-light);
-    font-size: 0.85rem;
-    font-style: italic;
-}
+    .form-hint {
+        display: block;
+        margin-top: 0.5rem;
+        color: var(--text-light);
+        font-size: 0.85rem;
+        font-style: italic;
+    }
 
-.btn-cancel-custom {
-    background: white;
-    border: 2px solid #6c757d;
-    color: #6c757d;
-    padding: 0.875rem 2rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
+    .btn-cancel-custom {
+        background: white;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        padding: 0.875rem 2rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
 
-.btn-cancel-custom:hover {
-    background: #6c757d;
-    color: white;
-    transform: translateY(-2px);
-}
+    .btn-cancel-custom:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
 
-.btn-save-custom {
-    background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
-    border: none;
-    color: white;
-    padding: 0.875rem 2.5rem;
-    border-radius: 10px;
-    font-weight: 700;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 166, 90, 0.3);
-}
+    .btn-save-custom {
+        background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+        border: none;
+        color: white;
+        padding: 0.875rem 2.5rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 166, 90, 0.3);
+    }
 
-.btn-save-custom:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 166, 90, 0.4);
-}
+    .btn-save-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 166, 90, 0.4);
+    }
 
-.btn-save-custom:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+    .btn-save-custom:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 </style>
 
 <!-- Upload Photo Modal -->
@@ -1179,11 +1219,13 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="profilePhoto" class="form-label">Choose Photo</label>
-                        <input type="file" class="form-control" id="profilePhoto" name="profile_picture" accept="image/*" required>
+                        <input type="file" class="form-control" id="profilePhoto" name="profile_picture"
+                            accept="image/*" required>
                         <small class="text-muted">Allowed formats: JPG, PNG, GIF. Max size: 5MB</small>
                     </div>
                     <div id="photoPreview" class="text-center" style="display: none; margin-top: 15px;">
-                        <img id="previewImg" src="" alt="Preview" style="max-width: 100%; max-height: 300px; border-radius: 12px;">
+                        <img id="previewImg" src="" alt="Preview"
+                            style="max-width: 100%; max-height: 300px; border-radius: 12px;">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1198,111 +1240,111 @@
 </div>
 
 <script>
-// CSRF helper
-function getCsrfTokenFromForm(formEl) {
-    const input = formEl ? formEl.querySelector('input[name="csrfmiddlewaretoken"]') : null;
-    return input ? input.value : '';
-}
-
-async function parseJsonSafe(response) {
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('application/json')) {
-        return await response.json();
+    // CSRF helper
+    function getCsrfTokenFromForm(formEl) {
+        const input = formEl ? formEl.querySelector('input[name="csrfmiddlewaretoken"]') : null;
+        return input ? input.value : '';
     }
-    const text = await response.text();
-    return { success: false, error: text || `Unexpected response (HTTP ${response.status})` };
-}
 
-// Edit Profile Form Handler
-document.getElementById('editProfileForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const formData = new FormData(form);
-    const saveBtn = document.getElementById('saveProfileBtn');
-    
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-
-    fetch('/accounts/api/provider/profile/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': getCsrfTokenFromForm(form)
+    async function parseJsonSafe(response) {
+        const contentType = response.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+            return await response.json();
         }
-    })
-    .then(parseJsonSafe)
-    .then(data => {
-        if (data.success) {
-            alert('Profile updated successfully!');
-            bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
-            location.reload();
-        } else {
-            alert('Error: ' + (data.error || 'Failed to update profile'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while saving your profile');
-    })
-    .finally(() => {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
-    });
-});
-
-// Photo Preview Handler
-document.getElementById('profilePhoto').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('previewImg').src = event.target.result;
-            document.getElementById('photoPreview').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+        const text = await response.text();
+        return { success: false, error: text || `Unexpected response (HTTP ${response.status})` };
     }
-});
 
-// Upload Photo Form Handler
-document.getElementById('uploadPhotoForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const form = this;
-    const formData = new FormData(form);
-    const uploadBtn = document.getElementById('uploadPhotoBtn');
-    
-    uploadBtn.disabled = true;
-    uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+    // Edit Profile Form Handler
+    document.getElementById('editProfileForm').addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    fetch('/accounts/api/provider/profile/', {
-        method: 'POST',
-        body: formData,
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': getCsrfTokenFromForm(form)
-        }
-    })
-    .then(parseJsonSafe)
-    .then(data => {
-        if (data.success) {
-            alert('Photo uploaded successfully!');
-            bootstrap.Modal.getInstance(document.getElementById('uploadPhotoModal')).hide();
-            location.reload();
-        } else {
-            alert('Error: ' + (data.error || 'Failed to upload photo'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while uploading');
-    })
-    .finally(() => {
-        uploadBtn.disabled = false;
-        uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Photo';
+        const form = this;
+        const formData = new FormData(form);
+        const saveBtn = document.getElementById('saveProfileBtn');
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+
+        fetch('/accounts/api/provider/profile/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCsrfTokenFromForm(form)
+            }
+        })
+            .then(parseJsonSafe)
+            .then(data => {
+                if (data.success) {
+                    alert('Profile updated successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to update profile'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving your profile');
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Save Changes';
+            });
     });
-});
+
+    // Photo Preview Handler
+    document.getElementById('profilePhoto').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                document.getElementById('previewImg').src = event.target.result;
+                document.getElementById('photoPreview').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Upload Photo Form Handler
+    document.getElementById('uploadPhotoForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = this;
+        const formData = new FormData(form);
+        const uploadBtn = document.getElementById('uploadPhotoBtn');
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Uploading...';
+
+        fetch('/accounts/api/provider/profile/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCsrfTokenFromForm(form)
+            }
+        })
+            .then(parseJsonSafe)
+            .then(data => {
+                if (data.success) {
+                    alert('Photo uploaded successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('uploadPhotoModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.error || 'Failed to upload photo'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while uploading');
+            })
+            .finally(() => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Upload Photo';
+            });
+    });
 </script>
 
 {% endblock %}

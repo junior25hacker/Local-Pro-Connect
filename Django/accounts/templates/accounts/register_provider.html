@@ -5,268 +5,248 @@
 
 {% block extra_css %}
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-  
-  body {
-    font-family: 'Inter', sans-serif;
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary-blue: #0052CC;
+    --primary-dark: #003D99;
+    --accent-green: #17B890;
+    --accent-yellow: #FFC300;
+    --bg-white: #FFFFFF;
+    --bg-light: #F8FAFC;
   }
-  
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background-color: var(--bg-light);
+  }
+
   .signup-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 60px 20px;
-    background: linear-gradient(135deg, rgba(0, 76, 153, 0.95) 0%, rgba(0, 123, 255, 0.9) 100%),
-                url('/static/assets/image/Gemini_Generated_Image_10go4k10go4k10go.png');
+    padding: 20px;
+    background-color: var(--bg-light);
+  }
+
+  .signup-card {
+    background: var(--bg-white);
+    border-radius: 30px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    overflow: hidden;
+    min-height: 850px;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .signup-sidebar {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(0, 82, 204, 0.9) 0%, rgba(0, 61, 153, 0.95) 100%),
+    url('{% static "assets/image/maze.png" %}');
     background-size: cover;
     background-position: center;
-    background-attachment: fixed;
-    position: relative;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
   }
-  
-  .signup-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 70%, rgba(0, 123, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
-    pointer-events: none;
+
+  .sidebar-content h1 {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
-  
-  .signup-card {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.2);
-    padding: 50px;
-    max-width: 950px;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-    animation: slideUp 0.6s ease-out;
+
+  .sidebar-content p {
+    font-size: 18px;
+    opacity: 0.9;
+    line-height: 1.6;
   }
-  
+
+  .signup-form-side {
+    flex: 1.5;
+    padding: 60px;
+    max-height: 850px;
+    overflow-y: auto;
+  }
+
   @keyframes slideUp {
     from {
       opacity: 0;
-      transform: translateY(30px);
+      transform: translateY(30px) scale(0.98);
     }
+
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
   }
-  
+
   .signup-header {
-    text-align: center;
-    margin-bottom: 35px;
+    margin-bottom: 40px;
   }
-  
-  .signup-header .icon-wrapper {
-    width: 90px;
-    height: 90px;
-    background: linear-gradient(135deg, #004C99 0%, #007bff 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 25px;
-    box-shadow: 0 8px 25px rgba(0, 76, 153, 0.4),
-                0 0 0 10px rgba(0, 123, 255, 0.1);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-      box-shadow: 0 8px 25px rgba(0, 76, 153, 0.4),
-                  0 0 0 10px rgba(0, 123, 255, 0.1);
-    }
-    50% {
-      transform: scale(1.05);
-      box-shadow: 0 12px 35px rgba(0, 123, 255, 0.5),
-                  0 0 0 15px rgba(0, 123, 255, 0.15);
-    }
-  }
-  
-  .signup-header .icon-wrapper i {
-    font-size: 36px;
-    color: white;
-  }
-  
+
   .signup-header h2 {
-    background: linear-gradient(135deg, #004C99 0%, #007bff 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #1e293b;
     font-weight: 700;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 32px;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
   }
-  
+
   .signup-header p {
-    color: #555;
+    color: #64748b;
     font-size: 16px;
-    font-weight: 400;
   }
-  
+
   .form-section {
-    margin-bottom: 30px;
-    padding-bottom: 25px;
-    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 35px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f1f5f9;
   }
-  
+
   .form-section:last-of-type {
     border-bottom: none;
   }
-  
+
   .form-section-title {
-    background: linear-gradient(135deg, #004C99, #007bff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 20px;
+    color: var(--primary-blue);
+    font-size: 18px;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-family: 'Poppins', sans-serif;
+    gap: 12px;
   }
-  
+
   .form-section-title i {
-    color: #007bff;
+    background: rgba(0, 82, 204, 0.08);
+    color: var(--primary-blue);
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 16px;
   }
-  
+
   .form-label {
     font-weight: 600;
-    color: #2d3748;
+    color: #1e293b;
     margin-bottom: 8px;
     font-size: 14px;
-    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
-  
-  .form-label .required {
-    color: #004C99;
-    font-weight: 700;
-  }
-  
+
   .form-label i {
-    color: #007bff;
+    color: var(--primary-blue);
+    width: 16px;
   }
-  
-  .form-control, .form-select {
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 12px 15px;
+
+  .form-control,
+  .form-select {
+    border: 2px solid #f1f5f9;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 12px 16px;
     font-size: 15px;
+    font-family: inherit;
+    font-weight: 500;
     transition: all 0.3s ease;
   }
-  
-  .form-control:focus, .form-select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+
+  .form-control:focus,
+  .form-select:focus {
+    background-color: white;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(0, 82, 204, 0.1);
   }
-  
-  .form-control.is-invalid, .form-select.is-invalid {
-    border-color: #dc3545;
-  }
-  
-  .invalid-feedback {
-    font-size: 13px;
-    margin-top: 5px;
-  }
-  
+
   .btn-signup {
-    background: linear-gradient(135deg, #004C99 0%, #007bff 100%);
+    background: var(--primary-blue);
     border: none;
-    padding: 16px;
-    font-size: 17px;
-    font-weight: 600;
+    padding: 18px;
+    font-size: 18px;
+    font-weight: 700;
     border-radius: 12px;
     color: white;
     width: 100%;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
     margin-top: 15px;
-    font-family: 'Poppins', sans-serif;
-    letter-spacing: 0.5px;
-    box-shadow: 0 8px 20px rgba(0, 76, 153, 0.3);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 82, 204, 0.3);
   }
-  
-  .btn-signup::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s ease;
-  }
-  
-  .btn-signup:hover::before {
-    left: 100%;
-  }
-  
+
   .btn-signup:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(0, 123, 255, 0.4);
-    background: linear-gradient(135deg, #003d7a 0%, #0056b3 100%);
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 82, 204, 0.4);
   }
-  
-  .btn-signup:active {
-    transform: translateY(-1px);
-  }
-  
+
   .signup-footer {
     text-align: center;
-    margin-top: 25px;
+    margin-top: 35px;
     padding-top: 25px;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #f1f5f9;
   }
-  
+
   .signup-footer p {
-    color: #666;
-    margin-bottom: 10px;
+    color: #64748b;
+    margin-bottom: 8px;
+    font-size: 14px;
   }
-  
+
   .signup-footer a {
-    color: #007bff;
-    font-weight: 600;
+    color: var(--primary-blue);
+    font-weight: 700;
     text-decoration: none;
   }
-  
-  .signup-footer a:hover {
-    text-decoration: underline;
-  }
-  
+
   .row-fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
-  
+
   .row-fields-3 {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
   }
-  
-  @media (max-width: 768px) {
-    .row-fields, .row-fields-3 {
+
+  @media (max-width: 950px) {
+    .signup-sidebar {
+      display: none;
+    }
+
+    .signup-card {
+      max-width: 600px;
+    }
+  }
+
+  @media (max-width: 576px) {
+
+    .row-fields,
+    .row-fields-3 {
       grid-template-columns: 1fr;
     }
-    
+
+    .signup-header h2 {
+      font-size: 26px;
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    .row-fields,
+    .row-fields-3 {
+      grid-template-columns: 1fr;
+    }
+
     .signup-card {
       padding: 30px 20px;
     }
@@ -277,205 +257,247 @@
 {% block content %}
 <div class="signup-container">
   <div class="signup-card">
-    <div class="signup-header">
-      <div class="icon-wrapper">
-        <i class="fas fa-briefcase"></i>
+    <!-- Sidebar Panel -->
+    <div class="signup-sidebar">
+      <div class="sidebar-top">
+        <a href="/" style="text-decoration: none;">
+          <div class="brand-logo" style="display: flex; align-items: center; gap: 12px; margin-bottom: 40px;">
+            <div
+              style="background: white; padding: 10px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+              <img src="{% static 'assets/image/newlogo.png' %}" alt="Local Pro Connect"
+                style="height: 30px; width: auto;">
+            </div>
+            <span style="color: white; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">Local Pro <span
+                style="color: var(--accent-yellow);">Connect</span></span>
+          </div>
+        </a>
+        <div class="sidebar-content">
+          <h1>Grow Your Business with Us.</h1>
+          <p>Join thousands of local professionals who are expanding their reach and growing their business through
+            Local Pro Connect.</p>
+        </div>
       </div>
-      <h2>Become a Provider</h2>
-      <p>Join our network of trusted professionals and grow your business</p>
+
+      <div class="sidebar-footer" style="font-size: 14px; opacity: 0.8; font-weight: 500;">
+        &copy; 2026 Local Pro Connect. All rights reserved. Professional excellence in every connection.
+      </div>
     </div>
-    
-    {% if form.non_field_errors %}
+
+    <!-- Form Panel -->
+    <div class="signup-form-side">
+      <div class="signup-header text-center">
+        <h2>Become a Professional</h2>
+        <p>List your services and start connecting with local clients.</p>
+      </div>
+
+      {% if form.non_field_errors %}
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         {% for error in form.non_field_errors %}
-          <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+        <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
         {% endfor %}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
-    {% endif %}
-    
-    <form method="post" novalidate>
-      {% csrf_token %}
-      
-      <!-- Account Information Section -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <i class="fas fa-user-circle"></i> Account Information
-        </div>
-      
-        <div class="row-fields">
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-user me-2"></i>Username <span class="required">*</span></label>
-            <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
-                   value="{{ form.username.value|default:'' }}" required placeholder="Choose a username">
-            {% if form.username.errors %}
+      {% endif %}
+
+      <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <!-- Account Information -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-user-circle"></i>
+            Account Information
+          </div>
+          <div class="row-fields">
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-user"></i> Username</label>
+              <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                value="{{ form.username.value|default:'' }}" required placeholder="Pick a username">
+              {% if form.username.errors %}
               <div class="invalid-feedback d-block">{% for error in form.username.errors %}{{ error }}{% endfor %}</div>
-            {% endif %}
-          </div>
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-envelope me-2"></i>Email Address</label>
-            <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" 
-                   value="{{ form.email.value|default:'' }}" placeholder="your.email@example.com">
-            {% if form.email.errors %}
+              {% endif %}
+            </div>
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
+              <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                value="{{ form.email.value|default:'' }}" required placeholder="your@email.com">
+              {% if form.email.errors %}
               <div class="invalid-feedback d-block">{% for error in form.email.errors %}{{ error }}{% endfor %}</div>
-            {% endif %}
+              {% endif %}
+            </div>
+          </div>
+          <div class="row-fields">
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-id-card"></i> First Name</label>
+              <input type="text" name="first_name"
+                class="form-control {% if form.first_name.errors %}is-invalid{% endif %}"
+                value="{{ form.first_name.value|default:'' }}" required placeholder="First Name">
+              {% if form.first_name.errors %}
+              <div class="invalid-feedback d-block">{% for error in form.first_name.errors %}{{ error }}{% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-id-card"></i> Last Name</label>
+              <input type="text" name="last_name"
+                class="form-control {% if form.last_name.errors %}is-invalid{% endif %}"
+                value="{{ form.last_name.value|default:'' }}" required placeholder="Last Name">
+              {% if form.last_name.errors %}
+              <div class="invalid-feedback d-block">{% for error in form.last_name.errors %}{{ error }}{% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="row-fields">
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-lock"></i> Password</label>
+              <input type="password" name="password1"
+                class="form-control {% if form.password1.errors %}is-invalid{% endif %}" required
+                placeholder="Create Password">
+              {% if form.password1.errors %}
+              <div class="invalid-feedback d-block">{% for error in form.password1.errors %}{{ error }}{% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-check-circle"></i> Confirm Password</label>
+              <input type="password" name="password2"
+                class="form-control {% if form.password2.errors %}is-invalid{% endif %}" required
+                placeholder="Repeat Password">
+              {% if form.password2.errors %}
+              <div class="invalid-feedback d-block">{% for error in form.password2.errors %}{{ error }}{% endfor %}
+              </div>
+              {% endif %}
+            </div>
           </div>
         </div>
-        
-        <div class="row-fields">
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-lock me-2"></i>Password <span class="required">*</span></label>
-            <input type="password" name="password1" class="form-control {% if form.password1.errors %}is-invalid{% endif %}" 
-                   required placeholder="Create a strong password">
-            {% if form.password1.errors %}
-              <div class="invalid-feedback d-block">{% for error in form.password1.errors %}{{ error }}{% endfor %}</div>
+
+        <!-- Business Details -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-building"></i>
+            Business Details
+          </div>
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-store"></i> Company Name</label>
+            <input type="text" name="company_name"
+              class="form-control {% if form.company_name.errors %}is-invalid{% endif %}"
+              value="{{ form.company_name.value|default:'' }}" placeholder="Your Business Name">
+            {% if form.company_name.errors %}
+            <div class="invalid-feedback d-block">{% for error in form.company_name.errors %}{{ error }}{% endfor %}
+            </div>
             {% endif %}
           </div>
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-lock me-2"></i>Confirm Password <span class="required">*</span></label>
-            <input type="password" name="password2" class="form-control {% if form.password2.errors %}is-invalid{% endif %}" 
-                   required placeholder="Re-enter your password">
-            {% if form.password2.errors %}
-              <div class="invalid-feedback d-block">{% for error in form.password2.errors %}{{ error }}{% endfor %}</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      
-      <!-- Business Information Section -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <i class="fas fa-building"></i> Business Information
-        </div>
-        
-        <div class="mb-3">
-          <label class="form-label"><i class="fas fa-store me-2"></i>Company Name</label>
-          <input type="text" name="company_name" class="form-control {% if form.company_name.errors %}is-invalid{% endif %}" 
-                 value="{{ form.company_name.value|default:'' }}" placeholder="Your Business Name">
-          {% if form.company_name.errors %}
-            <div class="invalid-feedback d-block">{% for error in form.company_name.errors %}{{ error }}{% endfor %}</div>
-          {% endif %}
-        </div>
-        
-        <div class="row-fields">
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-wrench me-2"></i>Service Type <span class="required">*</span></label>
-            <select name="service_type" class="form-select {% if form.service_type.errors %}is-invalid{% endif %}" required>
-              <option value="">-- Select a service --</option>
-              <option value="plumbing" {% if form.service_type.value == 'plumbing' %}selected{% endif %}>Plumbing</option>
-              <option value="electrical" {% if form.service_type.value == 'electrical' %}selected{% endif %}>Electrical</option>
-              <option value="carpentry" {% if form.service_type.value == 'carpentry' %}selected{% endif %}>Carpentry</option>
-              <option value="cleaning" {% if form.service_type.value == 'cleaning' %}selected{% endif %}>Cleaning</option>
-              <option value="tutoring" {% if form.service_type.value == 'tutoring' %}selected{% endif %}>Tutoring</option>
-              <option value="hvac" {% if form.service_type.value == 'hvac' %}selected{% endif %}>HVAC</option>
-              <option value="roofing" {% if form.service_type.value == 'roofing' %}selected{% endif %}>Roofing</option>
-              <option value="landscaping" {% if form.service_type.value == 'landscaping' %}selected{% endif %}>Landscaping</option>
-              <option value="painting" {% if form.service_type.value == 'painting' %}selected{% endif %}>Painting</option>
-              <option value="other" {% if form.service_type.value == 'other' %}selected{% endif %}>Other</option>
-            </select>
-            {% if form.service_type.errors %}
-              <div class="invalid-feedback d-block">{% for error in form.service_type.errors %}{{ error }}{% endfor %}</div>
-            {% endif %}
-          </div>
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-phone me-2"></i>Phone Number</label>
-            <input type="tel" name="phone" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" 
-                   value="{{ form.phone.value|default:'' }}" placeholder="+237 6XX XXX XXX">
-            {% if form.phone.errors %}
+          <div class="row-fields">
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-wrench"></i> Service Type</label>
+              <select name="service_type" class="form-select {% if form.service_type.errors %}is-invalid{% endif %}"
+                required>
+                <option value="">-- Select --</option>
+                <option value="plumbing" {% if form.service_type.value=='plumbing' %}selected{% endif %}>Plumbing
+                </option>
+                <option value="electrical" {% if form.service_type.value=='electrical' %}selected{% endif %}>Electrical
+                </option>
+                <option value="carpentry" {% if form.service_type.value=='carpentry' %}selected{% endif %}>Carpentry
+                </option>
+                <option value="cleaning" {% if form.service_type.value=='cleaning' %}selected{% endif %}>Cleaning
+                </option>
+                <option value="tutoring" {% if form.service_type.value=='tutoring' %}selected{% endif %}>Tutoring
+                </option>
+                <option value="hvac" {% if form.service_type.value=='hvac' %}selected{% endif %}>HVAC</option>
+                <option value="roofing" {% if form.service_type.value=='roofing' %}selected{% endif %}>Roofing</option>
+                <option value="landscaping" {% if form.service_type.value=='landscaping' %}selected{% endif %}>
+                  Landscaping</option>
+                <option value="painting" {% if form.service_type.value=='painting' %}selected{% endif %}>Painting
+                </option>
+                <option value="other" {% if form.service_type.value=='other' %}selected{% endif %}>Other</option>
+              </select>
+              {% if form.service_type.errors %}
+              <div class="invalid-feedback d-block">{% for error in form.service_type.errors %}{{ error }}{% endfor %}
+              </div>
+              {% endif %}
+            </div>
+            <div class="mb-4">
+              <label class="form-label"><i class="fas fa-phone"></i> Phone Number</label>
+              <input type="tel" name="phone" class="form-control {% if form.phone.errors %}is-invalid{% endif %}"
+                value="{{ form.phone.value|default:'' }}" placeholder="+237 6XX XXX XXX">
+              {% if form.phone.errors %}
               <div class="invalid-feedback d-block">{% for error in form.phone.errors %}{{ error }}{% endfor %}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-history"></i> Years of Experience</label>
+            <input type="number" name="years_experience"
+              class="form-control {% if form.years_experience.errors %}is-invalid{% endif %}"
+              value="{{ form.years_experience.value|default:0 }}" min="0" required>
+            {% if form.years_experience.errors %}
+            <div class="invalid-feedback d-block">{% for error in form.years_experience.errors %}{{ error }}{% endfor %}
+            </div>
             {% endif %}
           </div>
         </div>
-        
-        <div class="mb-3">
-          <label class="form-label"><i class="fas fa-calendar-alt me-2"></i>Years of Experience <span class="required">*</span></label>
-          <input type="number" name="years_experience" class="form-control {% if form.years_experience.errors %}is-invalid{% endif %}" 
-                 value="{{ form.years_experience.value|default:0 }}" min="0" required placeholder="e.g., 5">
-          {% if form.years_experience.errors %}
-            <div class="invalid-feedback d-block">{% for error in form.years_experience.errors %}{{ error }}{% endfor %}</div>
-          {% endif %}
-        </div>
-      </div>
-      
-      <!-- Location Information Section -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <i class="fas fa-map-marker-alt"></i> Location Information
-        </div>
-        
-        <div class="mb-3">
-          <label class="form-label"><i class="fas fa-building me-2"></i>Business Address</label>
-          <input type="text" name="business_address" class="form-control {% if form.business_address.errors %}is-invalid{% endif %}" 
-                 value="{{ form.business_address.value|default:'' }}" placeholder="Street address, building, etc.">
-          {% if form.business_address.errors %}
-            <div class="invalid-feedback d-block">{% for error in form.business_address.errors %}{{ error }}{% endfor %}</div>
-          {% endif %}
-        </div>
-        
-        <div class="row-fields-3">
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-city me-2"></i>City</label>
-            <input type="text" name="city" class="form-control {% if form.city.errors %}is-invalid{% endif %}" 
-                   value="{{ form.city.value|default:'' }}" placeholder="e.g., Douala">
-            {% if form.city.errors %}
-              <div class="invalid-feedback d-block">{% for error in form.city.errors %}{{ error }}{% endfor %}</div>
+
+        <!-- Location & Bio -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="fas fa-map-marker-alt"></i>
+            Location & Profile
+          </div>
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-home"></i> Business Address</label>
+            <input type="text" name="business_address"
+              class="form-control {% if form.business_address.errors %}is-invalid{% endif %}"
+              value="{{ form.business_address.value|default:'' }}" placeholder="Street, Building, etc.">
+            {% if form.business_address.errors %}
+            <div class="invalid-feedback d-block">{% for error in form.business_address.errors %}{{ error }}{% endfor %}
+            </div>
             {% endif %}
           </div>
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-map me-2"></i>Region</label>
-            <select name="state" class="form-select {% if form.state.errors %}is-invalid{% endif %}">
-              <option value="">-- Select Region --</option>
-              <option value="Adamawa" {% if form.state.value == 'Adamawa' %}selected{% endif %}>Adamawa</option>
-              <option value="Centre" {% if form.state.value == 'Centre' %}selected{% endif %}>Centre</option>
-              <option value="East" {% if form.state.value == 'East' %}selected{% endif %}>East</option>
-              <option value="Far North" {% if form.state.value == 'Far North' %}selected{% endif %}>Far North</option>
-              <option value="Littoral" {% if form.state.value == 'Littoral' %}selected{% endif %}>Littoral</option>
-              <option value="North" {% if form.state.value == 'North' %}selected{% endif %}>North</option>
-              <option value="Northwest" {% if form.state.value == 'Northwest' %}selected{% endif %}>Northwest</option>
-              <option value="South" {% if form.state.value == 'South' %}selected{% endif %}>South</option>
-              <option value="Southwest" {% if form.state.value == 'Southwest' %}selected{% endif %}>Southwest</option>
-              <option value="West" {% if form.state.value == 'West' %}selected{% endif %}>West</option>
-            </select>
-            {% if form.state.errors %}
-              <div class="invalid-feedback d-block">{% for error in form.state.errors %}{{ error }}{% endfor %}</div>
-            {% endif %}
+          <div class="row-fields-3">
+            <div class="mb-4">
+              <label class="form-label">City</label>
+              <input type="text" name="city" class="form-control {% if form.city.errors %}is-invalid{% endif %}"
+                value="{{ form.city.value|default:'' }}" placeholder="Douala">
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Region</label>
+              <select name="state" class="form-select">
+                <option value="">-- Select --</option>
+                <option value="Adamawa">Adamawa</option>
+                <option value="Centre">Centre</option>
+                <option value="East">East</option>
+                <option value="Far North">Far North</option>
+                <option value="Littoral">Littoral</option>
+                <option value="North">North</option>
+                <option value="Northwest">Northwest</option>
+                <option value="South">South</option>
+                <option value="Southwest">Southwest</option>
+                <option value="West">West</option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label class="form-label">Zip Code</label>
+              <input type="text" name="zip_code" class="form-control" placeholder="237">
+            </div>
           </div>
-          <div class="mb-3">
-            <label class="form-label"><i class="fas fa-mailbox me-2"></i>Postal Code</label>
-            <input type="text" name="zip_code" class="form-control {% if form.zip_code.errors %}is-invalid{% endif %}" 
-                   value="{{ form.zip_code.value|default:'' }}" placeholder="e.g., 237">
-            {% if form.zip_code.errors %}
-              <div class="invalid-feedback d-block">{% for error in form.zip_code.errors %}{{ error }}{% endfor %}</div>
-            {% endif %}
-          </div>
-        </div>
-      </div>
-      
-      <!-- About You Section -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <i class="fas fa-info-circle"></i> About Your Business
-        </div>
-        
-        <div class="mb-3">
-          <label class="form-label"><i class="fas fa-file-alt me-2"></i>Bio / Description</label>
-          <textarea name="bio" class="form-control {% if form.bio.errors %}is-invalid{% endif %}" rows="4" 
-                    placeholder="Tell clients about your business, expertise, and what makes you stand out...">{{ form.bio.value|default:'' }}</textarea>
-          {% if form.bio.errors %}
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-info-circle"></i> Professional Bio</label>
+            <textarea name="bio" class="form-control {% if form.bio.errors %}is-invalid{% endif %}" rows="3"
+              placeholder="Tell clients about your expertise...">{{ form.bio.value|default:'' }}</textarea>
+            {% if form.bio.errors %}
             <div class="invalid-feedback d-block">{% for error in form.bio.errors %}{{ error }}{% endfor %}</div>
-          {% endif %}
-          <small class="text-muted">This will be displayed on your profile to potential clients.</small>
+            {% endif %}
+          </div>
         </div>
+
+        <button type="submit" class="btn-signup">Become a Professional</button>
+      </form>
+
+      <div class="signup-footer">
+        <p>Already have an account? <a href="{% url 'accounts:login_page' %}">Sign In</a></p>
+        <p>Looking for services? <a href="{% url 'accounts:signup_user_page' %}">Register as User</a></p>
       </div>
-      
-      <button class="btn btn-signup" type="submit">
-        <i class="fas fa-rocket me-2"></i>Register as Provider
-      </button>
-    </form>
-    
-    <div class="signup-footer">
-      <p>Already have an account? <a href="{% url 'accounts:login_page' %}">Sign in here</a></p>
-      <p>Not a professional? <a href="{% url 'accounts:signup_user_page' %}">Register as User</a></p>
     </div>
   </div>
 </div>

@@ -37,9 +37,9 @@ class HaversineFormulaTests(TestCase):
     
     def test_known_distance_nyc_to_la(self):
         """Test known distance: NYC (40.7128, -74.0060) to LA (34.0522, -118.2437)"""
-        # Approximate distance: 3944 km
+        # Approximate great-circle distance with Earth mean radius is ~3936 km
         distance = haversine_distance(40.7128, -74.0060, 34.0522, -118.2437)
-        self.assertGreater(distance, 3940)
+        self.assertGreater(distance, 3930)
         self.assertLess(distance, 3950)
     
     def test_known_distance_london_to_paris(self):

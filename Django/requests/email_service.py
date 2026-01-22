@@ -114,9 +114,9 @@ def send_request_to_provider(service_request, provider_profile=None, async_send=
                     company_name=service_request.provider_name
                 )
             except ProviderProfile.DoesNotExist:
-                logger.warning(
-                    f"Provider profile not found for '{service_request.provider_name}' "
-                    f"(request #{service_request.id})"
+                logger.debug(
+                    "Provider profile not found for request provider_name",
+                    extra={"provider_name": service_request.provider_name, "request_id": service_request.id},
                 )
                 provider_profile = None
         
@@ -129,13 +129,13 @@ def send_request_to_provider(service_request, provider_profile=None, async_send=
             provider_email = get_provider_email_by_name(service_request.provider_name)
         
         if not provider_email:
-            logger.error(
-                f"Could not find provider email for request #{service_request.id} "
-                f"(provider: {service_request.provider_name})"
+            logger.debug(
+                "Could not find provider email for request",
+                extra={"request_id": service_request.id, "provider_name": service_request.provider_name},
             )
             return {
                 'success': False,
-                'message': f'Provider email not found for {service_request.provider_name}',
+                'message': 'Provider email not found',
                 'email_sent': False,
             }
         

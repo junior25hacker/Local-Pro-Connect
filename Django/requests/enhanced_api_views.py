@@ -14,7 +14,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db import transaction
 from django.core.exceptions import ValidationError
@@ -31,7 +30,6 @@ logger = logging.getLogger(__name__)
 
 @require_http_methods(["POST"])
 @login_required
-@csrf_exempt
 def api_upload_request_photo(request, request_id):
     """
     Upload a photo for a service request with secure validation.
@@ -112,7 +110,6 @@ def api_upload_request_photo(request, request_id):
 
 @require_http_methods(["POST"])
 @login_required
-@csrf_exempt
 def api_update_request_status(request, request_id):
     """
     Update request status following the state machine.
@@ -413,7 +410,6 @@ def api_filtered_requests(request):
 
 @require_http_methods(["POST"])
 @login_required
-@csrf_exempt
 def api_accept_completion(request, request_id):
     """
     Accept job completion - changes status to 'done' and optionally saves rating.

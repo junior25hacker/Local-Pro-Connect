@@ -4,7 +4,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Request List/Detail JS Loaded');
     
     // Initialize all features
     initializeAnimations();

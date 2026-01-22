@@ -13,7 +13,6 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db import transaction
 from decimal import Decimal
@@ -188,7 +187,6 @@ def api_user_accepted_requests(request):
 
 @require_http_methods(["POST"])
 @login_required
-@csrf_exempt
 def api_mark_job_completed(request, request_id):
     """
     Mark a job as completed by the user.
@@ -268,6 +266,10 @@ def api_mark_job_completed(request, request_id):
                 provider_showed_up=data.get('provider_showed_up', True),
                 completed_at=timezone.now(),
             )
+            
+            # Update request status to completed
+            service_request.status = 'completed'
+            service_request.save(update_fields=['status'])
         
         logger.info(f"Job completion created for request #{request_id} by user {request.user.username}")
         
@@ -289,7 +291,6 @@ def api_mark_job_completed(request, request_id):
 
 @require_http_methods(["POST"])
 @login_required
-@csrf_exempt
 def api_submit_rating(request, request_id):
     """
     Submit rating and feedback for a completed job.
@@ -437,7 +438,10 @@ def api_submit_rating(request, request_id):
                         logger.info(f"Updated provider {service_request.provider.username} rating to {provider_profile.rating}")
                 
                 except ProviderProfile.DoesNotExist:
-                    logger.warning(f"Provider profile not found for user {service_request.provider.username}")
+                    logger.debug(
+                        "Provider profile not found for request provider user",
+                        extra={"request_id": service_request.id, "provider_user": getattr(service_request.provider, 'username', None)},
+                    )
         
         logger.info(f"Rating submitted for request #{request_id} by user {request.user.username}: {stars} stars")
         
@@ -459,7 +463,6 @@ def api_submit_rating(request, request_id):
 
 @require_http_methods(["POST"])
 @login_required
-@csrf_exempt
 def api_submit_feedback(request, request_id):
     """
     Submit additional feedback for a service request.

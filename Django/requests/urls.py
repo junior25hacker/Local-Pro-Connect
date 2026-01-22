@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from .views import (
     create_request,
     create_request_success,
@@ -34,10 +35,19 @@ from .priority_queue_api import (
     api_request_priority_details,
     api_providers_within_radius,
 )
+from .dashboard_views import (
+    user_dashboard,
+    api_user_dashboard_data,
+    api_user_pending_requests,
+    api_user_in_progress_requests,
+    api_user_completed_requests,
+    api_provider_completed_jobs,
+)
 
 app_name = "requests"
 
 urlpatterns = [
+    path("", request_list, name="request_index"),
     path("create/", create_request, name="create_request"),
     path("success/", create_request_success, name="create_request_success"),
     path("decision/<int:request_id>/<str:action>/<str:token>/", provider_decision, name="provider_decision"),
@@ -47,6 +57,11 @@ urlpatterns = [
     path("export/pdf/", export_requests_pdf, name="export_requests_pdf"),
     path("<int:request_id>/tracking/", live_provider_tracking, name="live_provider_tracking"),
     path("<int:request_id>/", request_detail, name="request_detail"),
+    
+    # Dashboard URLs
+    path("dashboard/user/", user_dashboard, name="user_dashboard"),
+    # Redirect from old URL pattern to maintain backward compatibility
+    path("user/dashboard/", RedirectView.as_view(pattern_name="requests:user_dashboard", permanent=True), name="user_dashboard_redirect"),
     
     # API Endpoints
     path("api/locations-autocomplete/", locations_autocomplete, name="locations_autocomplete"),
@@ -75,4 +90,11 @@ urlpatterns = [
     path("api/provider/pending/", api_provider_pending_requests, name="api_provider_pending_requests"),
     path("api/<int:request_id>/priority-details/", api_request_priority_details, name="api_request_priority_details"),
     path("api/providers-nearby/", api_providers_within_radius, name="api_providers_within_radius"),
+    
+    # Dashboard API Endpoints
+    path("api/dashboard/user/data/", api_user_dashboard_data, name="api_user_dashboard_data"),
+    path("api/dashboard/user/pending/", api_user_pending_requests, name="api_user_pending_requests"),
+    path("api/dashboard/user/in-progress/", api_user_in_progress_requests, name="api_user_in_progress_requests"),
+    path("api/dashboard/user/completed/", api_user_completed_requests, name="api_user_completed_requests"),
+    path("api/dashboard/provider/completed/", api_provider_completed_jobs, name="api_provider_completed_jobs"),
 ]

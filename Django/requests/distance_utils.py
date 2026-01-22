@@ -3,9 +3,12 @@ Distance calculation utilities using the Haversine formula.
 Calculates distance between two points on Earth using their latitude and longitude coordinates.
 """
 
+import logging
 import math
 from decimal import Decimal
 from typing import Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 
 def haversine_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
@@ -78,9 +81,8 @@ def calculate_request_distance(service_request, provider_profile) -> Optional[fl
         
         return haversine_distance(request_lat, request_lon, provider_lat, provider_lon)
     
-    except (ValueError, TypeError) as e:
-        # Log error in production
-        print(f"Error calculating distance: {e}")
+    except (ValueError, TypeError):
+        logger.exception("Error calculating distance")
         return None
 
 
@@ -128,22 +130,21 @@ def get_providers_within_radius(request_lat: float, request_lon: float,
 
 
 def format_distance_display(distance_km: Optional[float]) -> str:
-    """
-    Format distance for display in notifications and UI.
-    
-    Args:
-        distance_km (Optional[float]): Distance in kilometers
-    
-    Returns:
-        str: Formatted distance string
+    """Format distance for display in notifications and UI.
+
+    Notes:
+        - Keep formatting stable for UI + tests.
+        - Do not insert a space between value and unit (e.g. "3.3km away").
+        - Avoid trailing ".0" when distance is a whole number.
     """
     if distance_km is None:
         return "Distance not available"
-    
+
     if distance_km < 1.0:
         return f"{int(distance_km * 1000)}m away"
-    else:
-        return f"{distance_km}km away"
+
+    # Always show one decimal place and include a space before unit (matches UI/tests)
+    return f"{float(distance_km):.1f} km away"
 
 
 def calculate_priority_score(service_request) -> int:
@@ -173,13 +174,19 @@ def calculate_priority_score(service_request) -> int:
     # Distance bonus (if available)
     if hasattr(service_request, 'distance_km') and service_request.distance_km is not None:
         # Closer requests get more points (50 points at 0km, decreasing to 0 at 50km+)
-        distance_score = max(0, 50 - service_request.distance_km)
+        # Ensure Decimal is handled correctly
+        distance_km = float(service_request.distance_km)
+        distance_score = max(0.0, 50.0 - distance_km)
         score += int(distance_score)
     
     # Time bonus (older requests get slight priority)
-    if service_request.created_at:
-        hours_old = (timezone.now() - service_request.created_at).total_seconds() / 3600
-        time_score = min(30, hours_old * 2)  # 2 points per hour, max 30
+    created_at = getattr(service_request, 'created_at', None) or getattr(service_request, 'created', None)
+    if created_at:
+        # Ensure timezone-aware datetime for consistent behavior
+        if timezone.is_naive(created_at):
+            created_at = timezone.make_aware(created_at, timezone.get_current_timezone())
+        hours_old = max(0.0, (timezone.now() - created_at).total_seconds() / 3600)
+        time_score = min(30.0, hours_old * 2.0)  # 2 points per hour, max 30
         score += int(time_score)
     
     return score

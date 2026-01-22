@@ -32,7 +32,6 @@ class ServiceRequest(models.Model):
         ('accepted', 'Accepted'),
         ('declined', 'Declined'),
         ('completed', 'Completed'),
-        ('done', 'Done'),
     ]
 
     DECLINE_REASON_CHOICES = [
@@ -113,7 +112,8 @@ class ServiceRequest(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending'
+        default='pending',
+        db_index=True,
     )
 
     # Decline information
@@ -126,7 +126,9 @@ class ServiceRequest(models.Model):
     decline_message = models.TextField(null=True, blank=True)
 
     # Timestamps
-    created_at = models.DateTimeField(auto_now_add=True)
+    # NOTE: Use default=timezone.now (not auto_now_add) so timestamps can be set explicitly
+    # (e.g. for imports/tests) while still defaulting to creation time.
+    created_at = models.DateTimeField(default=timezone.now, db_index=True)
     accepted_at = models.DateTimeField(null=True, blank=True)
     declined_at = models.DateTimeField(null=True, blank=True)
     
@@ -276,6 +278,52 @@ class ServiceRequest(models.Model):
         request_list.sort(key=lambda r: r.get_priority_score(), reverse=True)
         
         return request_list
+    
+    def is_in_progress(self):
+        """
+        Check if request is currently in progress (accepted but not completed).
+        
+        Returns:
+            bool: True if request is accepted and not yet completed
+        """
+        if self.status != 'accepted':
+            return False
+        
+        # Check if job has been completed
+        return not hasattr(self, 'completion')
+    
+    def can_be_completed(self):
+        """
+        Validate if request can be marked as complete.
+        
+        Returns:
+            tuple: (bool, str) - (can_complete, error_message)
+        """
+        if self.status != 'accepted':
+            return False, "Only accepted requests can be marked as completed."
+        
+        if hasattr(self, 'completion'):
+            return False, "This request has already been marked as completed."
+        
+        if not self.provider:
+            return False, "No provider assigned to this request."
+        
+        return True, ""
+    
+    def can_be_rated(self):
+        """
+        Check if request is ready for rating.
+        
+        Returns:
+            tuple: (bool, str) - (can_rate, error_message)
+        """
+        if not hasattr(self, 'completion'):
+            return False, "Request must be completed before rating."
+        
+        if hasattr(self.completion, 'rating'):
+            return False, "This request has already been rated."
+        
+        return True, ""
 
 
 class RequestPhoto(models.Model):

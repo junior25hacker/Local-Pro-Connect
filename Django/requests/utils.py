@@ -118,9 +118,13 @@ def get_provider_email_by_name(provider_name):
         The provider's email address or None
     """
     # Import here to avoid circular imports
+    import logging
+
     from accounts.models import ProviderProfile
     from django.contrib.auth.models import User
     from django.db.models import Q
+
+    logger = logging.getLogger(__name__)
     
     if not provider_name or not provider_name.strip():
         return None
@@ -134,7 +138,7 @@ def get_provider_email_by_name(provider_name):
         ).select_related('user').first()
         
         if provider and provider.user and provider.user.email:
-            print(f"Found provider '{provider_name}' by exact company name match: {provider.user.email}")
+            logger.info("Provider email resolved by exact company name match", extra={"provider_name": provider_name})
             return provider.user.email
         
         # Strategy 2: Try partial match on company_name
@@ -143,7 +147,7 @@ def get_provider_email_by_name(provider_name):
         ).select_related('user').first()
         
         if provider and provider.user and provider.user.email:
-            print(f"Found provider '{provider_name}' by company name contains: {provider.user.email}")
+            logger.info("Provider email resolved by company name contains match", extra={"provider_name": provider_name})
             return provider.user.email
         
         # Strategy 3: Try matching on user first_name or last_name
@@ -153,13 +157,13 @@ def get_provider_email_by_name(provider_name):
         ).select_related('user').first()
         
         if provider and provider.user and provider.user.email:
-            print(f"Found provider '{provider_name}' by user name match: {provider.user.email}")
+            logger.info("Provider email resolved by user name match", extra={"provider_name": provider_name})
             return provider.user.email
         
-        print(f"Warning: Could not find provider email for '{provider_name}' using any lookup strategy")
+        logger.debug("Provider email could not be resolved", extra={"provider_name": provider_name})
         
-    except Exception as e:
-        print(f"Error looking up provider email for '{provider_name}': {str(e)}")
+    except Exception:
+        logger.exception("Error looking up provider email", extra={"provider_name": provider_name})
     
     return None
 

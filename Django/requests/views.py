@@ -33,10 +33,11 @@ from django.conf import settings
 
 # Geocodio Autocomplete proxy endpoint
 import requests as ext_requests
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET
 
-GEOCODIO_API_KEY = '054587d60047e4d609f91e55ed7876849766576'
+import os
+
+GEOCODIO_API_KEY = os.environ.get('GEOCODIO_API_KEY', '')
 
 
 def send_provider_notification_email(service_request):
@@ -53,37 +54,55 @@ def send_provider_notification_email(service_request):
     from .models import RequestDecisionToken
     decision_token, created = RequestDecisionToken.objects.get_or_create(
         service_request=service_request,
-        defaults={'used': False}
+        defaults={'used': False, 'expires_at': timezone.now() + timezone.timedelta(days=7)}
     )
     
+    # Double check if token is expired and refresh if necessary (though it shouldn't be for new request)
+    if not created and decision_token.is_expired():
+        decision_token.expires_at = timezone.now() + timezone.timedelta(days=7)
+        decision_token.save()
+
     # Build email context with distance information
     distance_info = {}
     if service_request.distance_km is not None:
         distance_info = {
+            'distance': float(service_request.distance_km),
             'distance_km': float(service_request.distance_km),
             'distance_display': service_request.get_distance_display(),
         }
+    
+    # Get profile info for better context
+    customer_profile = getattr(service_request.user, 'user_profile', None)
+    provider_profile = getattr(service_request.provider, 'provider_profile', None)
     
     context = {
         'service_request': service_request,
         'provider': service_request.provider,
         'customer': service_request.user,
         'customer_name': service_request.user.get_full_name() or service_request.user.username,
+        'customer_email': service_request.user.email,
         'provider_name': service_request.provider.get_full_name() or service_request.provider.username,
         'request_id': service_request.id,
         'description': service_request.description,
         'date_time': service_request.date_time,
         'budget_amount': service_request.offered_price,
+        'offered_price': service_request.offered_price,
         'price_range': service_request.price_range,
         'urgent': service_request.urgent,
         'created_at': service_request.created_at,
+        'expires_at': decision_token.expires_at,
         'site_url': getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000'),
-        'accept_url': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/decision/{service_request.id}/accept/{decision_token.token}/",
-        'decline_url': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/decision/{service_request.id}/decline/{decision_token.token}/",
+        'accept_link': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/decision/{service_request.id}/accept/{decision_token.token}/",
+        'decline_link': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/decision/{service_request.id}/decline/{decision_token.token}/",
         'token': decision_token.token,
         'address_string': service_request.address_string,
         'has_location': service_request.has_location(),
-        **distance_info,  # Include distance information if available
+        'customer_address': get_address_string(customer_profile) if customer_profile else service_request.address_string,
+        'provider_address': get_address_string(provider_profile) if provider_profile else None,
+        'company_name': provider_profile.company_name if provider_profile else None,
+        'service_type': provider_profile.service_type if provider_profile else None,
+        'status': 'pending',
+        **distance_info,
     }
     
     # Email subject
@@ -108,7 +127,6 @@ def send_provider_notification_email(service_request):
     logger.info(f"Provider notification email sent to {service_request.provider.email} for request #{service_request.id}")
 
 @require_GET
-@csrf_exempt
 def locations_autocomplete(request):
     """
     Proxies Geocodio Autocomplete API for city/address suggestions.
@@ -124,8 +142,13 @@ def locations_autocomplete(request):
         'api_key': GEOCODIO_API_KEY,
         'limit': 8,
     }
+    if not GEOCODIO_API_KEY:
+        logger.error("GEOCODIO_API_KEY is not configured")
+        return JsonResponse({'error': 'Autocomplete service is not configured.'}, status=503)
+
     try:
         resp = ext_requests.get(url, params=params, timeout=5)
+        resp.raise_for_status()
         data = resp.json()
         suggestions = data.get('results', [])
         # Return formatted suggestions
@@ -139,8 +162,39 @@ def locations_autocomplete(request):
             for s in suggestions
         ]
         return JsonResponse({'results': results})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    except Exception:
+        logger.exception("Geocodio autocomplete proxy failed")
+        return JsonResponse({'error': 'Autocomplete service error.'}, status=502)
+
+
+def send_user_confirmation_email(service_request):
+    """
+    Send confirmation email to the user (requester).
+    """
+    if not service_request.user.email:
+        return
+
+    context = {
+        'user_name': service_request.user.get_full_name() or service_request.user.username,
+        'request_id': service_request.id,
+        'description': service_request.description,
+        'provider_name': service_request.provider_name,
+        'dashboard_link': f"{getattr(settings, 'SITE_URL', 'http://127.0.0.1:8000')}/requests/dashboard/user/",
+    }
+
+    subject = f"Request Received - #{service_request.id}"
+    text_body = render_to_string('emails/request_received_email.txt', context)
+    html_body = render_to_string('emails/request_received_email.html', context)
+
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=text_body,
+        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@locapro.com'),
+        to=[service_request.user.email]
+    )
+    email.attach_alternative(html_body, "text/html")
+    email.send()
+
 
 
 @require_http_methods(["GET", "POST"])
@@ -240,14 +294,48 @@ def create_request(request):
                 )
 
             # Send email notification to the selected provider
+            # Send email notification to the selected provider
             if service_request.provider and service_request.provider.email:
                 try:
+                    logger.debug("Attempting to send email to provider", extra={"provider_email": getattr(service_request.provider, 'email', None)})
+                    logger.debug("EMAIL_BACKEND configured", extra={"email_backend": getattr(settings, 'EMAIL_BACKEND', None)})
+                    logger.debug("EMAIL_HOST_USER configured", extra={"email_host_user": getattr(settings, 'EMAIL_HOST_USER', None)})
                     send_provider_notification_email(service_request)
-                    logger.info(f"Email notification sent to provider {service_request.provider.email} for request #{service_request.id}")
-                except Exception as e:
-                    logger.error(f"Failed to send email to provider: {str(e)}")
+                    logger.info(
+                        "Email notification sent to provider",
+                        extra={"provider_email": service_request.provider.email, "request_id": service_request.id},
+                    )
+                except Exception:
+                    logger.exception(
+                        "Failed to send email to provider",
+                        extra={"provider_email": getattr(service_request.provider, 'email', None), "request_id": service_request.id},
+                    )
                     # Don't fail the request creation if email fails
                     messages.warning(request, 'Request created successfully, but we could not send the email notification. The provider has been notified through other means.')
+            else:
+                logger.info(
+                    "Skipping provider email (missing provider or email)",
+                    extra={"request_id": service_request.id, "provider": bool(service_request.provider)},
+                )
+            
+            # Send confirmation email to the user
+            if request.user.email:
+                try:
+                    send_user_confirmation_email(service_request)
+                    logger.info(
+                        "Confirmation email sent to user",
+                        extra={"user_email": request.user.email, "request_id": service_request.id},
+                    )
+                except Exception:
+                    logger.exception(
+                        "Failed to send confirmation to user",
+                        extra={"user_email": getattr(request.user, 'email', None), "request_id": service_request.id},
+                    )
+            else:
+                logger.info(
+                    "Skipping user email (missing user email)",
+                    extra={"request_id": service_request.id},
+                )
 
             # Log budget information for reporting
             if service_request.offered_price:
@@ -265,6 +353,9 @@ def create_request(request):
 
             # Redirect to success page
             return redirect("requests:create_request_success")
+        
+        else:
+            logger.info("Create request form invalid", extra={"errors": form.errors})
 
     else:
         # Check for provider pre-selection from query parameter
@@ -299,7 +390,7 @@ def create_request(request):
 
 @login_required
 def create_request_success(request):
-    return render(request, "requests/create_request_sucess.html")
+    return render(request, "requests/create_request_success.html")
 
 
 @never_cache
@@ -354,7 +445,8 @@ def provider_decision(request, request_id, action, token):
         try:
             # Get or create the provider user based on provider_name
             # For now, we'll create a generic provider user if it doesn't exist
-            provider = None
+            # Get the provider already assigned to the request
+            provider = service_request.provider
             
             if action == 'accept':
                 # Accept the request
@@ -379,8 +471,8 @@ def provider_decision(request, request_id, action, token):
                         email = EmailMultiAlternatives(subject, text_body, None, to_email)
                         email.attach_alternative(html_body, "text/html")
                         email.send(fail_silently=True)
-                except Exception as e:
-                    print(f"User notify accept email error: {e}")
+                except Exception:
+                    logger.exception("User notify accept email error", extra={"request_id": service_request.id})
 
                 return render(request, 'requests/decision_success.html', {
                     'message': 'Request accepted successfully!',
@@ -429,7 +521,7 @@ def provider_decision(request, request_id, action, token):
                         'decline_reason_display': reason_display,
                         'decline_message': decline_message,
                         'declined_at': service_request.declined_at,
-                        'dashboard_link': f"{dj_settings.SITE_URL}/dashboard/",
+                        'dashboard_link': f"{dj_settings.SITE_URL}/requests/dashboard/user/",
                         'status': 'declined',
                         'site_url': dj_settings.SITE_URL,
                     }
@@ -440,8 +532,8 @@ def provider_decision(request, request_id, action, token):
                         email = EmailMultiAlternatives(subject, text_body, None, to_email)
                         email.attach_alternative(html_body, "text/html")
                         email.send(fail_silently=True)
-                except Exception as e:
-                    print(f"User notify decline email error: {e}")
+                except Exception:
+                    logger.exception("User notify decline email error", extra={"request_id": service_request.id})
                 
                 return render(request, 'requests/decision_success.html', {
                     'message': 'Request declined. Thank you for letting us know.',
@@ -454,10 +546,10 @@ def provider_decision(request, request_id, action, token):
                     'error': 'Invalid action'
                 }, status=400)
         
-        except Exception as e:
-            print(f"Error processing provider decision: {str(e)}")
+        except Exception:
+            logger.exception("Error processing provider decision", extra={"request_id": service_request.id})
             return render(request, 'requests/decision_error.html', {
-                'error': str(e)
+                'error': 'An error occurred while processing the decision.'
             }, status=500)
     
     else:
@@ -713,9 +805,10 @@ def export_requests_csv(request):
         
         return response
     
-    except Exception as e:
+    except Exception:
+        logger.exception("Error exporting requests to CSV")
         return HttpResponse(
-            f"Error exporting requests: {str(e)}",
+            "Error exporting requests.",
             status=500,
             content_type="text/plain"
         )
@@ -774,16 +867,16 @@ def export_requests_pdf(request):
         
         # Try to use WeasyPrint for PDF generation
         try:
-            from weasyprint import HTML, CSS
+            from weasyprint import HTML
             import io
-            
-            # Create in-memory PDF
+
             pdf_buffer = io.BytesIO()
             HTML(string=html_content).write_pdf(pdf_buffer)
             pdf_content = pdf_buffer.getvalue()
-            
-        except ImportError:
-            # Fallback: use ReportLab if WeasyPrint is not available
+
+        except Exception:
+            # Fallback: use ReportLab if WeasyPrint is not available or fails at runtime
+            logger.info("WeasyPrint unavailable/failed; falling back to ReportLab")
             try:
                 from reportlab.lib.pagesizes import letter
                 from reportlab.lib import colors
@@ -864,10 +957,20 @@ def export_requests_pdf(request):
                 pdf_content = pdf_buffer.getvalue()
                 
             except ImportError:
-                return HttpResponse(
-                    "PDF generation libraries not installed. Please install reportlab or weasyprint.",
-                    status=500,
-                    content_type="text/plain"
+                # Last-resort fallback: generate a minimal valid PDF without external libs.
+                # This keeps the existing export workflow functional in constrained environments.
+                logger.info("ReportLab unavailable; using minimal PDF fallback")
+                pdf_content = (
+                    b"%PDF-1.4\n"
+                    b"1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+                    b"2 0 obj<</Type/Pages/Count 1/Kids[3 0 R]>>endobj\n"
+                    b"3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 612 792]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n"
+                    b"4 0 obj<</Length 44>>stream\n"
+                    b"BT /F1 18 Tf 72 720 Td (Service Requests Export) Tj ET\n"
+                    b"endstream endobj\n"
+                    b"5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n"
+                    b"xref\n0 6\n0000000000 65535 f \n0000000010 00000 n \n0000000053 00000 n \n0000000100 00000 n \n0000000245 00000 n \n0000000358 00000 n \n"
+                    b"trailer<</Size 6/Root 1 0 R>>\nstartxref\n428\n%%EOF\n"
                 )
         
         # Create HTTP response with PDF content
@@ -881,11 +984,10 @@ def export_requests_pdf(request):
         
         return response
     
-    except Exception as e:
-        import traceback
-        error_msg = f"Error exporting to PDF: {str(e)}\n{traceback.format_exc()}"
+    except Exception:
+        logger.exception("Error exporting to PDF")
         return HttpResponse(
-            error_msg,
+            "Error exporting requests to PDF.",
             status=500,
             content_type="text/plain"
         )

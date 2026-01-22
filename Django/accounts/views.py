@@ -6,7 +6,7 @@ from .forms import UserRegistrationForm, ProviderRegistrationForm, UserLoginForm
 from .models import ProviderProfile, UserProfile
 from django.views.decorators.http import require_http_methods
 from django.http import JsonResponse, HttpResponseForbidden
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.decorators import login_required
 from .decorators import provider_required, owner_required, read_only_profile
 from urllib.parse import urlencode
@@ -15,13 +15,11 @@ from django.conf import settings
 import json
 import logging
 from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
 from requests.models import ServiceRequest
 
 logger = logging.getLogger(__name__)
 
-def home(request):
-    return render(request, 'pages/index.html')
+
 
 def login_page(request):
     """Serve login page through Django"""
@@ -35,7 +33,6 @@ def signup_provider_page(request):
     """Redirect to the Django form-based provider registration page"""
     return redirect('accounts:register_provider')
 
-@csrf_exempt
 @require_http_methods(['GET', 'POST'])
 def auth_view(request):
     """
@@ -228,6 +225,11 @@ def user_profile(request):
     if not request.user.is_authenticated:
         return redirect('accounts:register_user')
     
+    # Check if user is a provider - redirect to provider profile
+    if hasattr(request.user, 'provider_profile'):
+        logger.info(f'Provider {request.user.username} redirected from user profile to provider profile')
+        return redirect('accounts:provider_profile')
+    
     # Get or create user profile
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     
@@ -305,26 +307,48 @@ def provider_dashboard(request):
     RBAC Rules:
     - Only authenticated users with a ProviderProfile can access
     - Returns 403 Forbidden for non-providers
-    - Displays provider's service requests and statistics
+    - Displays provider's service requests and comprehensive statistics
+    
+    Shows:
+    - Pending requests (awaiting provider response)
+    - Accepted requests (in progress)
+    - Declined requests (rejected by provider)
+    - Completed requests (finished jobs)
     """
     try:
         provider_profile = request.user.provider_profile
     except ProviderProfile.DoesNotExist:
+        logger.error(f'Provider profile not found for user: {request.user.username}')
         messages.error(request, 'Provider profile not found.')
-        return redirect('accounts:home')
+        return redirect('http://127.0.0.1:5501/index.html')
     
     # Get provider's service requests from requests app
     from requests.models import ServiceRequest
+    from requests.completion_models import JobCompletion
     
-    # Get all requests for this provider (filter by user, not provider_profile)
+    # Get all requests for this provider
     all_requests = ServiceRequest.objects.filter(
         provider=request.user
-    ).select_related('user').order_by('-created_at')
+    ).select_related('user', 'user__user_profile').prefetch_related('photos').order_by('-created_at')
     
     # Categorize requests by status
     pending_requests = all_requests.filter(status='pending')
     accepted_requests = all_requests.filter(status='accepted')
     declined_requests = all_requests.filter(status='declined')
+    completed_requests = all_requests.filter(status='completed')
+    
+    # Get jobs that have been marked as done (have JobCompletion records)
+    completed_job_ids = JobCompletion.objects.filter(
+        service_request__provider=request.user
+    ).values_list('service_request_id', flat=True)
+    
+    done_requests = all_requests.filter(id__in=completed_job_ids)
+    
+    # Calculate statistics
+    total_requests = all_requests.count()
+    total_completed = done_requests.count()
+    
+    logger.info(f'Provider dashboard accessed by {request.user.username}: {total_requests} total requests')
     
     context = {
         'provider_profile': provider_profile,
@@ -332,9 +356,15 @@ def provider_dashboard(request):
         'pending_requests': pending_requests,
         'accepted_requests': accepted_requests,
         'declined_requests': declined_requests,
+        'completed_requests': completed_requests,
+        'done_requests': done_requests,
         'pending_count': pending_requests.count(),
         'accepted_count': accepted_requests.count(),
         'declined_count': declined_requests.count(),
+        'completed_count': completed_requests.count(),
+        'done_count': done_requests.count(),
+        'total_requests': total_requests,
+        'total_completed': total_completed,
     }
     
     return render(request, 'requests/provider_dashboard.html', context)
@@ -360,7 +390,7 @@ def edit_provider_profile(request, provider_id=None):
             provider_profile = request.user.provider_profile
         except ProviderProfile.DoesNotExist:
             messages.error(request, 'Provider profile not found.')
-            return redirect('accounts:home')
+            return redirect('http://127.0.0.1:5501/index.html')
     
     # Check ownership - only provider owner can edit
     if provider_profile.user != request.user:
@@ -411,7 +441,7 @@ def logout_view(request):
     logger.info(f'User logged out: {username}')
     messages.success(request, 'You have been successfully logged out.')
     # UXA: after logout, redirect to static homepage
-    return redirect('http://127.0.0.1:5500/index.html')
+    return redirect('http://127.0.0.1:5501/index.html')
 
 
 @require_http_methods(['POST'])
@@ -599,7 +629,6 @@ def api_provider_profile(request):
     return JsonResponse(data)
 
 
-@csrf_exempt
 @require_http_methods(['POST'])
 def api_contact(request):
     name = request.POST.get('name', '').strip()
@@ -637,12 +666,13 @@ def api_contact(request):
         return render(request, 'accounts/registration_success.html', {
             'title': 'Message Sent',
         })
-    except Exception as e:
+    except Exception:
+        logger.exception("Contact form send failed")
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
-            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+            return JsonResponse({'success': False, 'error': 'Failed to send message.'}, status=500)
         return render(request, 'base.html', {
             'title': 'Contact Error',
-            'content': f'Failed to send message: {str(e)}'
+            'content': 'Failed to send message.'
         }, status=500)
 
 @require_http_methods(['GET'])
@@ -661,63 +691,10 @@ def api_check_auth(request):
         })
 
 
-@require_http_methods(['POST'])
-def api_service_request(request):
-    """API endpoint to handle service requests"""
-    if not request.user.is_authenticated:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
-    
-    try:
-        # Get form data
-        description = request.POST.get('description', '')
-        preferred_date = request.POST.get('preferred_date', '')
-        preferred_time = request.POST.get('preferred_time', '')
-        contact_phone = request.POST.get('contact_phone', '')
-        
-        # Validate required fields
-        if not description or not preferred_date or not contact_phone:
-            return JsonResponse({
-                'success': False,
-                'error': 'Please fill in all required fields'
-            }, status=400)
-        
-        # TODO: Save service request to database when model is created
-        # For now, we'll just return success
-        
-        return JsonResponse({
-            'success': True,
-            'message': 'Service request sent successfully'
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=400)
 
 
-def search_page(request):
-    """
-    Search page for finding professionals.
-    """
-    # Get all providers for search results
-    providers = ProviderProfile.objects.all()
-    
-    # Filter by service type if provided
-    service_type = request.GET.get('service')
-    if service_type:
-        providers = providers.filter(service_type=service_type)
-    
-    # Filter by location if provided
-    city = request.GET.get('city')
-    if city:
-        providers = providers.filter(city__icontains=city)
-    
-    context = {
-        'providers': providers,
-        'service_type': service_type,
-        'city': city,
-    }
-    return render(request, 'pages/search.html', context)
+
+
 
 
 def api_search_providers(request):
@@ -758,39 +735,46 @@ def api_search_providers(request):
     return JsonResponse({'providers': results})
 
 
+def healthz(request):
+    """Basic health check endpoint for load balancers/monitoring."""
+    return JsonResponse({'status': 'ok'})
+
+
 def professionals_list(request):
-    """
-    Display list of professionals filtered by service type.
-    Supports filtering and sorting via query parameters.
-    """
+    """Display list of professionals filtered by service type (paginated)."""
+    from django.core.paginator import Paginator
+
     service = request.GET.get('service', 'all')
-    
-    # Validate service parameter
+
     valid_services = ['all'] + [choice[0] for choice in ProviderProfile.SERVICE_CHOICES]
     if service not in valid_services:
         service = 'all'
-    
-    # Base queryset - active providers only
-    professionals = ProviderProfile.objects.filter(
+
+    professionals_qs = ProviderProfile.objects.filter(
         user__is_active=True
-    ).select_related('user')
-    
-    # Filter by service type
+    ).select_related('user').order_by('-rating', 'user__username')
+
     if service and service != 'all':
-        professionals = professionals.filter(service_type=service)
-    
-    # Get service name for display
+        professionals_qs = professionals_qs.filter(service_type=service)
+
     if service == 'all':
         service_name = 'All Services'
     else:
         service_name = dict(ProviderProfile.SERVICE_CHOICES).get(service, service.title())
-    
+
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(professionals_qs, 20)
+    page_obj = paginator.get_page(page_number)
+
     context = {
         'service_name': service_name,
         'service_type': service,
-        'professionals_count': professionals.count(),
+        'professionals': page_obj.object_list,
+        'page_obj': page_obj,
+        'paginator': paginator,
+        'professionals_count': paginator.count,
     }
-    
+
     return render(request, 'accounts/professionals_list.html', context)
 
 @require_http_methods(['GET'])
@@ -922,5 +906,5 @@ def api_professionals_list(request):
         logger.error(f'Error in api_professionals_list: {str(e)}', exc_info=True)
         return JsonResponse({
             'success': False,
-            'error': f'Error processing filter: {str(e)}'
+            'error': 'Error processing filter.'
         }, status=500)

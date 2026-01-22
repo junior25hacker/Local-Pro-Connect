@@ -1,9 +1,11 @@
 New Service Request
 ===================
 
-Hi {{ provider_name }},
+Dear {{ provider_name }},
 
-You have received a new service request from a customer. Please review the details below and decide whether to accept or decline this request.
+We trust this message finds you well.
+
+You have received a new service request from a potential customer who is interested in your services. We kindly ask you to review the details below and decide whether to accept or decline this opportunity.
 
 REQUEST DETAILS
 ===============

@@ -9,35 +9,43 @@
         <div class="col-md-12">
             <h1>Provider Dashboard</h1>
             <hr>
-            
+
             <!-- Statistics -->
             <div class="row mb-4">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <h3 class="text-primary">{{ pending_count }}</h3>
-                            <p class="text-muted">Pending Requests</p>
+                            <h3 class="text-warning">{{ pending_count }}</h3>
+                            <p class="text-muted">Pending</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card text-center">
                         <div class="card-body">
-                            <h3 class="text-success">{{ accepted_count }}</h3>
-                            <p class="text-muted">Accepted Requests</p>
+                            <h3 class="text-primary">{{ accepted_count }}</h3>
+                            <p class="text-muted">In Progress</p>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h3 class="text-success">{{ done_count }}</h3>
+                            <p class="text-muted">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="card text-center">
                         <div class="card-body">
                             <h3 class="text-danger">{{ declined_count }}</h3>
-                            <p class="text-muted">Declined Requests</p>
+                            <p class="text-muted">Declined</p>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Pending Requests -->
             {% if pending_requests %}
             <div class="card mb-4">
@@ -64,7 +72,8 @@
                                     <td>{{ request.description|truncatewords:15 }}</td>
                                     <td>{{ request.created_at|date:"M d, Y g:i A" }}</td>
                                     <td>
-                                        <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">View</a>
+                                        <a href="{% url 'requests:request_detail' request.id %}"
+                                            class="btn btn-sm btn-info">View</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -78,7 +87,7 @@
                 <strong>No pending requests</strong> - You're all caught up!
             </div>
             {% endif %}
-            
+
             <!-- Accepted Requests -->
             {% if accepted_requests %}
             <div class="card mb-4">
@@ -105,7 +114,14 @@
                                     <td>{{ request.description|truncatewords:15 }}</td>
                                     <td>{{ request.accepted_at|date:"M d, Y g:i A" }}</td>
                                     <td>
-                                        <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">View</a>
+                                        <a href="{% url 'requests:request_detail' request.id %}"
+                                            class="btn btn-sm btn-info me-2">View</a>
+                                        <button class="btn btn-sm btn-success complete-job-btn" 
+                                                data-request-id="{{ request.id }}"
+                                                data-client-name="{{ request.user.get_full_name|default:request.user.username }}"
+                                                title="Mark this job as completed">
+                                            <i class="fas fa-check"></i> Complete
+                                        </button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -115,7 +131,7 @@
                 </div>
             </div>
             {% endif %}
-            
+
             <!-- Declined Requests -->
             {% if declined_requests %}
             <div class="card mb-4">
@@ -144,7 +160,8 @@
                                     <td>{{ request.declined_at|date:"M d, Y g:i A" }}</td>
                                     <td>{{ request.get_decline_reason_display }}</td>
                                     <td>
-                                        <a href="{% url 'requests:request_detail' request.id %}" class="btn btn-sm btn-info">View</a>
+                                        <a href="{% url 'requests:request_detail' request.id %}"
+                                            class="btn btn-sm btn-info">View</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -154,7 +171,45 @@
                 </div>
             </div>
             {% endif %}
-            
+
+            <!-- Completed Requests -->
+            {% if done_requests %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Completed Requests ({{ done_count }})</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Client Name</th>
+                                    <th>Description</th>
+                                    <th>Completed Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in done_requests %}
+                                <tr>
+                                    <td>#{{ request.id }}</td>
+                                    <td>{{ request.user.first_name|default:request.user.username }}</td>
+                                    <td>{{ request.description|truncatewords:15 }}</td>
+                                    <td>{{ request.completion.completed_at|date:"M d, Y g:i A" }}</td>
+                                    <td>
+                                        <a href="{% url 'requests:request_detail' request.id %}"
+                                            class="btn btn-sm btn-info">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- No Requests -->
             {% if not all_requests %}
             <div class="alert alert-info">
@@ -169,21 +224,165 @@
     .card {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    
+
     .table-hover tbody tr:hover {
         background-color: #f5f5f5;
     }
-    
+
     .text-primary {
         color: #007bff !important;
     }
-    
+
     .text-success {
         color: #28a745 !important;
     }
-    
+
     .text-danger {
         color: #dc3545 !important;
     }
+    
+    .complete-job-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .complete-job-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
 </style>
+
+<!-- Job Completion Modal -->
+<div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeJobModalLabel">Complete Job</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to mark this job as completed?</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Client:</strong> <span id="clientName"></span><br>
+                    <strong>Note:</strong> Once marked as complete, the client will be notified and can rate your service.
+                </div>
+                <div class="mb-3">
+                    <label for="workQuality" class="form-label">Work Quality (Optional)</label>
+                    <select class="form-select" id="workQuality" name="work_quality">
+                        <option value="">Select quality level...</option>
+                        <option value="excellent">Excellent</option>
+                        <option value="good">Good</option>
+                        <option value="satisfactory">Satisfactory</option>
+                    </select>
+                    <div class="form-text">This helps improve our service quality.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmCompleteBtn">
+                    <i class="fas fa-check"></i> Mark Complete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const completeButtons = document.querySelectorAll('.complete-job-btn');
+    const completeModal = new bootstrap.Modal(document.getElementById('completeJobModal'));
+    const confirmBtn = document.getElementById('confirmCompleteBtn');
+    const clientNameSpan = document.getElementById('clientName');
+    const workQualitySelect = document.getElementById('workQuality');
+    
+    let currentRequestId = null;
+
+    // Handle complete button clicks
+    completeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentRequestId = this.dataset.requestId;
+            const clientName = this.dataset.clientName;
+            
+            clientNameSpan.textContent = clientName;
+            workQualitySelect.value = '';
+            
+            completeModal.show();
+        });
+    });
+
+    // Handle confirm completion
+    confirmBtn.addEventListener('click', function() {
+        if (!currentRequestId) return;
+        
+        const workQuality = workQualitySelect.value;
+        
+        // Disable button and show loading
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Completing...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Send completion request
+        fetch(`/requests/api/${currentRequestId}/complete/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                work_quality: workQuality
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                showAlert('success', 'Job marked as completed successfully! The client has been notified.');
+                
+                // Hide modal
+                completeModal.hide();
+                
+                // Reload page to update dashboard
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                showAlert('danger', data.error || 'Failed to complete job. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error completing job:', error);
+            showAlert('danger', 'Network error. Please check your connection and try again.');
+        })
+        .finally(() => {
+            // Re-enable button
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-check"></i> Mark Complete';
+        });
+    });
+
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+
+<!-- Add CSRF token for AJAX requests -->
+{% csrf_token %}
 {% endblock %}

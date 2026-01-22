@@ -1,0 +1,21 @@
+Request Received - Local Pro Connect
+==================================
+
+Dear {{ user_name }},
+
+Thank you for using Local Pro Connect! We have successfully received your service request.
+
+DETAILS
+-------
+Request ID: #{{ request_id }}
+Service: {{ description }}
+Provider: {{ provider_name }}
+Status: Pending Provider Acceptance
+
+We have notified {{ provider_name }} about your request. Once they review and accept the job, you will receive another notification with the next steps.
+
+You can track the status of your request on your dashboard:
+{{ dashboard_link }}
+
+---
+© 2024 Local Pro Connect. All rights reserved.

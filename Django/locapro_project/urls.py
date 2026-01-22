@@ -16,7 +16,9 @@ urlpatterns = [
 
     path('accounts/', include('accounts.urls')),
     path('requests/', include('requests.urls')),
-    path('', include('accounts.urls')),
+    path('api/requests/', include('requests.api_urls')),
+    path('healthz/', accounts_views.healthz, name='healthz'),
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
 ]
 
 # Serve pages directory and root index.html

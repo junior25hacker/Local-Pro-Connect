@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            background-color: #ffffff;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #004C99 0%, #003366 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid #004C99;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #004C99;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Request Received!</h1>
+        </div>
+        <div class="content">
+            <p>Dear {{ user_name }},</p>
+            <p>Thank you for using Local Pro Connect! We have successfully received your service request.</p>
+
+            <div class="info-box">
+                <h3>Request Details (ID: #{{ request_id }})</h3>
+                <p><strong>Service:</strong> {{ description|truncatewords:10 }}</p>
+                <p><strong>Provider:</strong> {{ provider_name }}</p>
+                <p><strong>Status:</strong> Pending Provider Acceptance</p>
+            </div>
+
+            <p>We have notified <strong>{{ provider_name }}</strong> about your request. Once they review and accept the
+                job, you will receive another notification with the next steps.</p>
+
+            <p>You can track the status of your request at any time from your dashboard.</p>
+
+            <div style="text-align: center;">
+                <a href="{{ dashboard_link }}" class="btn">View My Dashboard</a>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Local Pro Connect. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+
+</html>

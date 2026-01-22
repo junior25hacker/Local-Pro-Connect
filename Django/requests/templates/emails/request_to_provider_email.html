@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
         body {
@@ -8,24 +9,28 @@
             margin: 0;
             padding: 20px;
         }
+
         .container {
             background-color: white;
             border-radius: 8px;
             padding: 30px;
             max-width: 600px;
             margin: 0 auto;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .header {
             border-bottom: 3px solid #007bff;
             padding-bottom: 15px;
             margin-bottom: 20px;
         }
+
         .header h1 {
             color: #333;
             margin: 0;
             font-size: 24px;
         }
+
         .request-details {
             background-color: #f9f9f9;
             border-left: 4px solid #007bff;
@@ -33,6 +38,7 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+
         .distance-section {
             background-color: #e8f4f8;
             border-left: 4px solid #17a2b8;
@@ -40,6 +46,7 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+
         .customer-info {
             background-color: #f0f8e8;
             border-left: 4px solid #28a745;
@@ -47,6 +54,7 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+
         .provider-info {
             background-color: #fff8e8;
             border-left: 4px solid #ffc107;
@@ -54,23 +62,28 @@
             margin: 20px 0;
             border-radius: 4px;
         }
+
         .detail-row {
             margin: 10px 0;
             padding: 5px 0;
             border-bottom: 1px solid #eee;
         }
+
         .detail-row:last-child {
             border-bottom: none;
         }
+
         .detail-label {
             font-weight: bold;
             color: #555;
             display: inline-block;
             width: 120px;
         }
+
         .detail-value {
             color: #333;
         }
+
         .urgent-badge {
             display: inline-block;
             background-color: #dc3545;
@@ -80,10 +93,12 @@
             font-size: 12px;
             font-weight: bold;
         }
+
         .action-buttons {
             margin: 30px 0;
             text-align: center;
         }
+
         .btn {
             display: inline-block;
             padding: 12px 30px;
@@ -93,20 +108,25 @@
             font-weight: bold;
             transition: background-color 0.3s;
         }
+
         .btn-accept {
             background-color: #28a745;
             color: white;
         }
+
         .btn-accept:hover {
             background-color: #218838;
         }
+
         .btn-decline {
             background-color: #dc3545;
             color: white;
         }
+
         .btn-decline:hover {
             background-color: #c82333;
         }
+
         .footer {
             border-top: 1px solid #eee;
             margin-top: 20px;
@@ -115,6 +135,7 @@
             color: #888;
             text-align: center;
         }
+
         .expires {
             background-color: #fffbea;
             border: 1px solid #ffc107;
@@ -126,15 +147,20 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
             <h1>New Service Request</h1>
         </div>
 
-        <p>Hi {{ provider_name }},</p>
+        <p>Dear {{ provider_name }},</p>
 
-        <p>You have received a new service request from a customer. Please review the details below and decide whether to accept or decline this request.</p>
+        <p>We trust this message finds you well.</p>
+
+        <p>You have received a new service request from a potential customer who is interested in your services. We
+            kindly ask you to review the details below at your earliest convenience and decide whether you would like to
+            accept or decline this opportunity.</p>
 
         <div class="request-details">
             <h3>Request Details</h3>
@@ -165,7 +191,8 @@
             {% if offered_price %}
             <div class="detail-row">
                 <span class="detail-label">Offered Budget:</span>
-                <span class="detail-value" style="color: #27ae60; font-weight: bold;">{{ offered_price|floatformat:2 }} CFA</span>
+                <span class="detail-value" style="color: #27ae60; font-weight: bold;">{{ offered_price|floatformat:2 }}
+                    CFA</span>
             </div>
             {% endif %}
 
@@ -261,4 +288,5 @@
         </div>
     </div>
 </body>
+
 </html>

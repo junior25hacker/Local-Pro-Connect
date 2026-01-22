@@ -385,7 +385,6 @@ def api_request_priority_details(request, request_id):
 
 
 @require_http_methods(["GET"])
-@login_required
 def api_providers_within_radius(request):
     """
     Get list of providers within a specified radius from a request location.

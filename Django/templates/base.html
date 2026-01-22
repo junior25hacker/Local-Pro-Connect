@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,17 +13,19 @@
     <link rel="stylesheet" href="{% static 'css/request.css' %}?v=2.0">
     <style>
         body {
-            background: 
+            background:
                 linear-gradient(135deg, rgba(0, 82, 204, 0.8) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(23, 184, 144, 0.8) 100%),
                 url('/static/assets/image/Gemini_Generated_Image_10go4k10go4k10go.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
         }
+
         .navbar {
             background: linear-gradient(135deg, #004C99 0%, #003366 100%);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
+
         .navbar-brand {
             color: white !important;
             font-weight: bold;
@@ -31,37 +34,46 @@
             gap: 0.5rem;
             transition: transform 0.3s ease;
         }
+
         .navbar-brand:hover {
             transform: scale(1.05);
         }
+
         .navbar-brand img {
             height: 40px;
             width: auto;
             transition: transform 0.3s ease;
         }
+
         .navbar-brand:hover img {
             transform: rotate(5deg);
         }
+
         .navbar-brand-text {
             font-size: 1.25rem;
         }
+
         .navbar-brand-text .highlight {
             color: #00A65A;
         }
+
         .nav-link {
             color: rgba(255, 255, 255, 0.9) !important;
             font-weight: 500;
             transition: all 0.3s ease;
             padding: 0.5rem 1rem !important;
         }
+
         .nav-link:hover {
             color: #FFC300 !important;
             transform: translateY(-2px);
         }
+
         main {
             min-height: 70vh;
             padding: 2rem 0;
         }
+
         footer {
             background: linear-gradient(135deg, #004C99 0%, #003366 100%);
             color: white;
@@ -70,15 +82,17 @@
             margin-top: 3rem;
             box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
         }
+
         footer p {
             margin: 0;
             font-size: 0.95rem;
         }
+
         /* Profile Dropdown Styling - Premium Design */
         .profile-indicator {
             position: relative;
         }
-        
+
         .profile-avatar {
             width: 40px;
             height: 40px;
@@ -93,7 +107,7 @@
             transition: all 0.3s ease;
             flex-shrink: 0;
         }
-        
+
         .profile-avatar-fallback {
             width: 40px;
             height: 40px;
@@ -115,7 +129,7 @@
             text-transform: uppercase;
             flex-shrink: 0;
         }
-        
+
         .profile-dropdown-toggle {
             display: flex;
             align-items: center;
@@ -129,19 +143,19 @@
             overflow: hidden;
             max-height: 48px;
         }
-        
+
         .profile-dropdown-toggle:hover {
             background: rgba(255, 255, 255, 0.15);
             transform: translateY(-1px);
         }
-        
+
         .profile-dropdown-toggle:hover .profile-avatar,
         .profile-dropdown-toggle:hover .profile-avatar-fallback {
             border-color: #FFD54F;
             box-shadow: 0 4px 12px rgba(255, 195, 0, 0.5);
             transform: scale(1.05);
         }
-        
+
         .profile-username {
             font-weight: 600;
             font-size: 0.95rem;
@@ -150,7 +164,7 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        
+
         .dropdown-menu {
             border-radius: 12px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -162,18 +176,19 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
         }
-        
+
         @keyframes dropdownFadeIn {
             from {
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .dropdown-item {
             padding: 0.75rem 1.5rem;
             transition: all 0.25s ease;
@@ -183,45 +198,45 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .dropdown-item i {
             width: 20px;
             color: #004C99;
             transition: all 0.25s ease;
         }
-        
+
         .dropdown-item:hover {
             background: linear-gradient(90deg, rgba(0, 76, 153, 0.08) 0%, rgba(0, 76, 153, 0.12) 100%);
             color: #004C99;
             padding-left: 2rem;
         }
-        
+
         .dropdown-item:hover i {
             transform: translateX(3px);
             color: #FFC300;
         }
-        
+
         .dropdown-item:active {
             background-color: rgba(0, 76, 153, 0.15);
         }
-        
+
         .dropdown-divider {
             border-color: rgba(0, 76, 153, 0.15);
             margin: 0.5rem 0;
         }
-        
+
         .dropdown-item.logout-item {
             color: #d32f2f;
         }
-        
+
         .dropdown-item.logout-item i {
             color: #d32f2f;
         }
-        
+
         .dropdown-item.logout-item:hover {
             background: linear-gradient(90deg, rgba(211, 47, 47, 0.08) 0%, rgba(211, 47, 47, 0.12) 100%);
         }
-        
+
         /* Provider Badge */
         .provider-badge {
             display: inline-flex;
@@ -236,10 +251,11 @@
             margin-left: 0.5rem;
             box-shadow: 0 2px 6px rgba(0, 166, 90, 0.3);
         }
-        
+
         .provider-badge i {
             font-size: 0.7rem;
         }
+
         /* Responsive navbar */
         @media (max-width: 991px) {
             .profile-dropdown-toggle {
@@ -248,16 +264,16 @@
                 border-radius: 50px;
                 justify-content: flex-start;
             }
-            
+
             .profile-username {
                 max-width: 150px;
             }
-            
+
             .provider-badge {
                 font-size: 0.7rem;
                 padding: 0.2rem 0.6rem;
             }
-            
+
             .navbar-nav .dropdown-menu {
                 border: none;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -266,81 +282,89 @@
                 margin-top: 0.5rem;
                 border-radius: 10px;
             }
-            
+
             .navbar-nav .dropdown-item {
                 color: #333 !important;
                 padding: 0.85rem 1.25rem;
                 font-size: 0.95rem;
             }
-            
+
             .navbar-nav .dropdown-item:hover {
                 background: linear-gradient(90deg, rgba(0, 76, 153, 0.1) 0%, rgba(0, 76, 153, 0.15) 100%);
                 color: #004C99 !important;
                 padding-left: 1.75rem;
             }
-            
+
             .navbar-nav .dropdown-item i {
                 font-size: 1.1rem;
             }
-            
+
             .navbar-nav .logout-item {
                 color: #d32f2f !important;
             }
-            
+
             .navbar-nav .logout-item:hover {
                 background: linear-gradient(90deg, rgba(211, 47, 47, 0.1) 0%, rgba(211, 47, 47, 0.15) 100%);
             }
         }
-        
+
         @media (max-width: 576px) {
+
             .profile-avatar,
             .profile-avatar-fallback {
                 width: 36px;
                 height: 36px;
                 font-size: 1rem;
             }
-            
+
             .profile-username {
                 font-size: 0.9rem;
                 max-width: 100px;
             }
-            
+
             .provider-badge {
                 display: none;
             }
-            
+
             .dropdown-menu {
                 min-width: 200px;
                 font-size: 0.9rem;
             }
         }
-        
+
         /* Accessibility enhancements */
         .profile-dropdown-toggle:focus {
             outline: 2px solid #FFC300;
             outline-offset: 2px;
         }
-        
+
         .dropdown-item:focus {
             outline: 2px solid #004C99;
             outline-offset: -2px;
             background: rgba(0, 76, 153, 0.1);
         }
-        
+
         /* Loading state for profile image */
         .profile-avatar[src=""] {
             opacity: 0;
         }
-        
+
         .profile-avatar.loading {
             animation: pulse 1.5s ease-in-out infinite;
         }
-        
+
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
-        
+
         /* Ripple effect for dropdown items */
         .ripple-effect {
             position: absolute;
@@ -350,7 +374,7 @@
             animation: ripple-animation 0.6s ease-out;
             pointer-events: none;
         }
-        
+
         @keyframes ripple-animation {
             to {
                 transform: scale(4);
@@ -360,11 +384,13 @@
     </style>
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid px-4">
-            <a class="navbar-brand" href="http://127.0.0.1:5500/index.html">
-                <img src="/static/assets/image/newlogo.png" alt="Local Pro Connect Logo" onerror="this.style.display='none'">
+            <a class="navbar-brand" href="/">
+                <img src="/static/assets/image/newlogo.png" alt="Local Pro Connect Logo"
+                    onerror="this.style.display='none'">
                 <span class="navbar-brand-text">Local Pro<span class="highlight">Connect</span></span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -373,46 +399,37 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="http://127.0.0.1:5500/index.html"><i class="fas fa-home me-1"></i>Home</a>
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
                     </li>
                     {% if user.is_authenticated %}
                     <!-- Authenticated-only: show profile shortcut for the CURRENT logged-in user -->
                     <li class="nav-item dropdown profile-indicator">
-                        <a class="nav-link profile-dropdown-toggle" 
-                           href="#" 
-                           id="profileDropdown" 
-                           role="button" 
-                           data-bs-toggle="dropdown" 
-                           aria-expanded="false"
-                           aria-label="User profile menu">
+                        <a class="nav-link profile-dropdown-toggle" href="#" id="profileDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" aria-label="User profile menu">
                             {% if provider_profile and provider_profile.profile_picture %}
-                                <img src="{{ provider_profile.profile_picture.url }}" 
-                                     alt="{{ user.username }}'s profile picture" 
-                                     class="profile-avatar"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="profile-avatar-fallback" style="display: none;">
-                                    {{ user.username|first|upper }}
-                                </div>
+                            <img src="{{ provider_profile.profile_picture.url }}"
+                                alt="{{ user.username }}'s profile picture" class="profile-avatar" loading="lazy"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="profile-avatar-fallback" style="display: none;">
+                                {{ user.username|first|upper }}
+                            </div>
                             {% elif user_profile and user_profile.profile_picture %}
-                                <img src="{{ user_profile.profile_picture.url }}" 
-                                     alt="{{ user.username }}'s profile picture" 
-                                     class="profile-avatar"
-                                     loading="lazy"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="profile-avatar-fallback" style="display: none;">
-                                    {{ user.username|first|upper }}
-                                </div>
+                            <img src="{{ user_profile.profile_picture.url }}"
+                                alt="{{ user.username }}'s profile picture" class="profile-avatar" loading="lazy"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="profile-avatar-fallback" style="display: none;">
+                                {{ user.username|first|upper }}
+                            </div>
                             {% else %}
-                                <div class="profile-avatar-fallback">
-                                    {{ user.username|first|upper }}
-                                </div>
+                            <div class="profile-avatar-fallback">
+                                {{ user.username|first|upper }}
+                            </div>
                             {% endif %}
                             <span class="profile-username">{{ user.username }}</span>
                             {% if is_provider %}
-                                <span class="provider-badge">
-                                    <i class="fas fa-check-circle"></i> Pro
-                                </span>
+                            <span class="provider-badge">
+                                <i class="fas fa-check-circle"></i> Pro
+                            </span>
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
@@ -421,7 +438,9 @@
                                     My Profile
                                 </a>
                             </li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <a class="dropdown-item logout-item" href="{% url 'accounts:logout' %}">
                                     Logout
@@ -436,14 +455,14 @@
     </nav>
 
     {% if messages %}
-        <div class="container mt-3">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 
     <main class="container">
@@ -459,4 +478,5 @@
     <script src="{% static 'js/profile-dropdown.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

@@ -6,8 +6,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Rejection Modal initialized');
-
     // ========================================================================
     // DOM ELEMENTS
     // ========================================================================
@@ -526,12 +524,4 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('==================');
     }
 
-    // Expose logFormState for debugging
-    window.rejectionModal = {
-        logState: logFormState,
-        close: closeModal,
-        reset: resetModalUI
-    };
-
-    console.log('Rejection Modal ready. Use window.rejectionModal for debugging.');
 });

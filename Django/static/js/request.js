@@ -882,7 +882,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 console.error("Error:", error);
                 loadingOverlay.remove();
-                alert("Error submitting form. Please try again.");
+                // Avoid blocking alerts in production; show a simple inline message
+                const msg = document.createElement('div');
+                msg.className = 'alert alert-danger mt-3';
+                msg.textContent = 'Error submitting form. Please try again.';
+                document.querySelector('form')?.prepend(msg);
             });
         }, 5000); // 5-second delay for async email processing
     }

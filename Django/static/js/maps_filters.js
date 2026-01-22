@@ -660,7 +660,6 @@ function animateCardsReorder(cards) {
 // ==============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Maps & Filters initialized');
     
     initializeViewToggle();
     initializeFilters();
