@@ -33,6 +33,16 @@ def signup_provider_page(request):
     """Redirect to the Django form-based provider registration page"""
     return redirect('accounts:register_provider')
 
+@require_http_methods(['GET', 'POST']) 
+def auth_view(request):
+    # Debug CSRF token
+    if request.method == 'POST':
+        csrf_token = request.META.get('HTTP_X_CSRFTOKEN', '')
+        print(f"[DEBUG] Received CSRF token length: {len(csrf_token)}")
+        print(f"[DEBUG] Expected CSRF token length should be 64")
+        if len(csrf_token) != 64:
+            print(f"[DEBUG] Invalid CSRF token received: '{csrf_token[:20]}...'")
+
 @require_http_methods(['GET', 'POST'])
 def auth_view(request):
     """
@@ -738,6 +748,31 @@ def api_search_providers(request):
 def healthz(request):
     """Basic health check endpoint for load balancers/monitoring."""
     return JsonResponse({'status': 'ok'})
+
+
+def simple_login_view(request):
+    """Simple login view using Django forms instead of AJAX"""
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # Authenticate user
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            # Redirect to appropriate dashboard
+            try:
+                provider_profile = user.provider_profile
+                return redirect('/requests/provider/dashboard/')
+            except:
+                return redirect('/requests/user/dashboard/')
+        else:
+            # Authentication failed
+            return render(request, 'simple_login.html', {
+                'error': 'Invalid username or password'
+            })
+    
+    return render(request, 'simple_login.html')
 
 
 def professionals_list(request):
