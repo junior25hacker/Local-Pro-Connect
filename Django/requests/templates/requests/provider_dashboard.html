@@ -46,34 +46,105 @@
                 </div>
             </div>
 
-            <!-- Pending Requests -->
+            <!-- New/Pending Requests - Awaiting Provider Response -->
             {% if pending_requests %}
-            <div class="card mb-4">
-                <div class="card-header bg-warning text-dark">
-                    <h5 class="mb-0">Pending Requests ({{ pending_count }})</h5>
+            <div class="card mb-4 border-warning">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bell me-2"></i>New Requests Awaiting Your Response ({{ pending_count }})
+                    </h5>
+                    <span class="badge bg-danger pulse-badge">Action Required</span>
                 </div>
                 <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-info-circle me-1"></i>
+                        These requests are waiting for your response. You can accept or decline them directly from here.
+                    </p>
                     <div class="table-responsive">
                         <table class="table table-hover">
-                            <thead>
+                            <thead class="table-light">
                                 <tr>
                                     <th>Request ID</th>
-                                    <th>Client Name</th>
+                                    <th>Client</th>
                                     <th>Description</th>
-                                    <th>Submitted Date</th>
+                                    <th>Budget</th>
+                                    <th>Submitted</th>
+                                    <th>Priority</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for request in pending_requests %}
-                                <tr>
-                                    <td>#{{ request.id }}</td>
-                                    <td>{{ request.user.first_name|default:request.user.username }}</td>
-                                    <td>{{ request.description|truncatewords:15 }}</td>
-                                    <td>{{ request.created_at|date:"M d, Y g:i A" }}</td>
+                                <tr class="{% if request.urgent %}table-danger{% endif %}">
                                     <td>
-                                        <a href="{% url 'requests:request_detail' request.id %}"
-                                            class="btn btn-sm btn-info">View</a>
+                                        <strong>#{{ request.id }}</strong>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 12px;">
+                                                {{ request.user.first_name|default:request.user.username|slice:":1"|upper }}
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{ request.user.get_full_name|default:request.user.username }}</div>
+                                                <small class="text-muted">{{ request.user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" title="{{ request.description }}">
+                                            {{ request.description|truncatewords:10 }}
+                                        </div>
+                                        {% if request.address_string %}
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-map-marker-alt me-1"></i>{{ request.address_string|truncatewords:5 }}
+                                        </small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if request.offered_price %}
+                                        <span class="badge bg-success">${{ request.offered_price }}</span>
+                                        {% elif request.price_range %}
+                                        <span class="badge bg-secondary">{{ request.price_range }}</span>
+                                        {% else %}
+                                        <span class="text-muted">Not specified</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div>{{ request.created_at|date:"M d, Y" }}</div>
+                                        <small class="text-muted">{{ request.created_at|time:"g:i A" }}</small>
+                                    </td>
+                                    <td>
+                                        {% if request.urgent %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>URGENT
+                                        </span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Normal</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group-vertical btn-group-sm">
+                                            <a href="{% url 'requests:request_detail' request.id %}"
+                                                class="btn btn-outline-info mb-1" title="View Details">
+                                                <i class="fas fa-eye me-1"></i>View
+                                            </a>
+                                            <button type="button" 
+                                                class="btn btn-success mb-1 accept-request-btn"
+                                                data-request-id="{{ request.id }}"
+                                                data-client-name="{{ request.user.get_full_name|default:request.user.username }}"
+                                                data-description="{{ request.description|truncatewords:20 }}"
+                                                title="Accept this request">
+                                                <i class="fas fa-check me-1"></i>Accept
+                                            </button>
+                                            <button type="button" 
+                                                class="btn btn-danger decline-request-btn"
+                                                data-request-id="{{ request.id }}"
+                                                data-client-name="{{ request.user.get_full_name|default:request.user.username }}"
+                                                data-description="{{ request.description|truncatewords:20 }}"
+                                                title="Decline this request">
+                                                <i class="fas fa-times me-1"></i>Decline
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -83,8 +154,9 @@
                 </div>
             </div>
             {% else %}
-            <div class="alert alert-info">
-                <strong>No pending requests</strong> - You're all caught up!
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong>No pending requests</strong> - You're all caught up! New requests will appear here.
             </div>
             {% endif %}
 
@@ -249,7 +321,143 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
     }
+    
+    /* Pulse animation for action required badge */
+    .pulse-badge {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+    
+    /* Pending request card highlight */
+    .border-warning {
+        border-width: 2px !important;
+    }
+    
+    /* Accept/Decline button styles */
+    .accept-request-btn, .decline-request-btn {
+        transition: all 0.3s ease;
+    }
+    
+    .accept-request-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+    
+    .decline-request-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Urgent row highlight animation */
+    .table-danger {
+        animation: urgentPulse 3s infinite;
+    }
+    
+    @keyframes urgentPulse {
+        0%, 100% {
+            background-color: #f8d7da;
+        }
+        50% {
+            background-color: #f5c6cb;
+        }
+    }
+    
+    /* Avatar style */
+    .avatar-sm {
+        font-weight: bold;
+    }
+    
+    /* Action buttons vertical group */
+    .btn-group-vertical .btn {
+        border-radius: 4px !important;
+    }
 </style>
+
+<!-- Accept Request Modal -->
+<div class="modal fade" id="acceptRequestModal" tabindex="-1" aria-labelledby="acceptRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="acceptRequestModalLabel">
+                    <i class="fas fa-check-circle me-2"></i>Accept Request
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to accept this service request?</p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Client:</strong> <span id="acceptClientName"></span><br>
+                    <strong>Request:</strong> <span id="acceptDescription"></span>
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Note:</strong> By accepting this request, you agree to provide the service. The client will be notified immediately.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirmAcceptBtn">
+                    <i class="fas fa-check me-1"></i>Accept Request
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Decline Request Modal -->
+<div class="modal fade" id="declineRequestModal" tabindex="-1" aria-labelledby="declineRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="declineRequestModalLabel">
+                    <i class="fas fa-times-circle me-2"></i>Decline Request
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please provide a reason for declining this request:</p>
+                <div class="alert alert-info mb-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Client:</strong> <span id="declineClientName"></span><br>
+                    <strong>Request:</strong> <span id="declineDescription"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="declineReason" class="form-label">Reason for Declining <span class="text-danger">*</span></label>
+                    <select class="form-select" id="declineReason" name="decline_reason" required>
+                        <option value="">Select a reason...</option>
+                        <option value="price">Price too low</option>
+                        <option value="distance">Too far away</option>
+                        <option value="time">Schedule conflict</option>
+                        <option value="other">Other reason</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="declineMessage" class="form-label">Additional Message (Optional)</label>
+                    <textarea class="form-control" id="declineMessage" name="decline_message" rows="3" 
+                        placeholder="Provide any additional information for the client..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeclineBtn">
+                    <i class="fas fa-times me-1"></i>Decline Request
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Job Completion Modal -->
 <div class="modal fade" id="completeJobModal" tabindex="-1" aria-labelledby="completeJobModalLabel" aria-hidden="true">
@@ -289,6 +497,148 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // =====================
+    // Accept Request Handler
+    // =====================
+    const acceptButtons = document.querySelectorAll('.accept-request-btn');
+    const acceptModal = new bootstrap.Modal(document.getElementById('acceptRequestModal'));
+    const confirmAcceptBtn = document.getElementById('confirmAcceptBtn');
+    const acceptClientNameSpan = document.getElementById('acceptClientName');
+    const acceptDescriptionSpan = document.getElementById('acceptDescription');
+    
+    let currentAcceptRequestId = null;
+
+    // Handle accept button clicks
+    acceptButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentAcceptRequestId = this.dataset.requestId;
+            acceptClientNameSpan.textContent = this.dataset.clientName;
+            acceptDescriptionSpan.textContent = this.dataset.description;
+            acceptModal.show();
+        });
+    });
+
+    // Handle confirm accept
+    confirmAcceptBtn.addEventListener('click', function() {
+        if (!currentAcceptRequestId) return;
+        
+        // Disable button and show loading
+        confirmAcceptBtn.disabled = true;
+        confirmAcceptBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Accepting...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Send accept request
+        fetch(`/requests/api/${currentAcceptRequestId}/accept/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', 'Request accepted successfully! The client has been notified.');
+                acceptModal.hide();
+                setTimeout(() => { window.location.reload(); }, 1500);
+            } else {
+                showAlert('danger', data.error || 'Failed to accept request. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error accepting request:', error);
+            showAlert('danger', 'Network error. Please check your connection and try again.');
+        })
+        .finally(() => {
+            confirmAcceptBtn.disabled = false;
+            confirmAcceptBtn.innerHTML = '<i class="fas fa-check me-1"></i>Accept Request';
+        });
+    });
+
+    // =====================
+    // Decline Request Handler
+    // =====================
+    const declineButtons = document.querySelectorAll('.decline-request-btn');
+    const declineModal = new bootstrap.Modal(document.getElementById('declineRequestModal'));
+    const confirmDeclineBtn = document.getElementById('confirmDeclineBtn');
+    const declineClientNameSpan = document.getElementById('declineClientName');
+    const declineDescriptionSpan = document.getElementById('declineDescription');
+    const declineReasonSelect = document.getElementById('declineReason');
+    const declineMessageTextarea = document.getElementById('declineMessage');
+    
+    let currentDeclineRequestId = null;
+
+    // Handle decline button clicks
+    declineButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentDeclineRequestId = this.dataset.requestId;
+            declineClientNameSpan.textContent = this.dataset.clientName;
+            declineDescriptionSpan.textContent = this.dataset.description;
+            declineReasonSelect.value = '';
+            declineMessageTextarea.value = '';
+            declineModal.show();
+        });
+    });
+
+    // Handle confirm decline
+    confirmDeclineBtn.addEventListener('click', function() {
+        if (!currentDeclineRequestId) return;
+        
+        const declineReason = declineReasonSelect.value;
+        const declineMessage = declineMessageTextarea.value;
+        
+        // Validate reason selection
+        if (!declineReason) {
+            showAlert('warning', 'Please select a reason for declining.');
+            declineReasonSelect.focus();
+            return;
+        }
+        
+        // Disable button and show loading
+        confirmDeclineBtn.disabled = true;
+        confirmDeclineBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Declining...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        // Send decline request
+        fetch(`/requests/api/${currentDeclineRequestId}/decline/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify({
+                decline_reason: declineReason,
+                decline_message: declineMessage
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('success', 'Request declined. The client has been notified.');
+                declineModal.hide();
+                setTimeout(() => { window.location.reload(); }, 1500);
+            } else {
+                showAlert('danger', data.error || 'Failed to decline request. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error declining request:', error);
+            showAlert('danger', 'Network error. Please check your connection and try again.');
+        })
+        .finally(() => {
+            confirmDeclineBtn.disabled = false;
+            confirmDeclineBtn.innerHTML = '<i class="fas fa-times me-1"></i>Decline Request';
+        });
+    });
+
+    // =====================
+    // Complete Job Handler
+    // =====================
     const completeButtons = document.querySelectorAll('.complete-job-btn');
     const completeModal = new bootstrap.Modal(document.getElementById('completeJobModal'));
     const confirmBtn = document.getElementById('confirmCompleteBtn');
@@ -362,6 +712,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // =====================
+    // Alert Helper Function
+    // =====================
     function showAlert(type, message) {
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
