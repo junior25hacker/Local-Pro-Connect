@@ -491,7 +491,7 @@ def logout_view(request):
     logger.info(f'User logged out: {username}')
     messages.success(request, 'You have been successfully logged out.')
     # UXA: after logout, redirect to static homepage
-    return redirect('http://127.0.0.1:5501/index.html')
+    return redirect('/index.html')
 
 
 @require_http_methods(['POST'])
@@ -506,7 +506,7 @@ def api_logout(request):
         logger.info(f'User logged out via API: {username}')
         return JsonResponse({
             'success': 'You have been successfully logged out.',
-            'redirect': '/pages/login.html'
+            'redirect': '/index.html'
         }, status=200)
     return JsonResponse({'error': 'Not authenticated.'}, status=401)
 
