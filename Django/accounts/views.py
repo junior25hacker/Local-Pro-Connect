@@ -360,31 +360,42 @@ def provider_dashboard(request):
     - Displays provider's service requests and comprehensive statistics
     
     Shows:
-    - Pending requests (awaiting provider response)
+    - New Requests (pending - awaiting provider response, not yet verified via email)
     - Accepted requests (in progress)
     - Declined requests (rejected by provider)
     - Completed requests (finished jobs)
+    
+    Providers can now accept/decline requests directly from the dashboard
+    without needing to use the email verification link.
     """
     try:
         provider_profile = request.user.provider_profile
     except ProviderProfile.DoesNotExist:
         logger.error(f'Provider profile not found for user: {request.user.username}')
         messages.error(request, 'Provider profile not found.')
-        return redirect('http://127.0.0.1:5501/index.html')
+        return redirect('/index.html')
     
     # Get provider's service requests from requests app
     from requests.models import ServiceRequest
     from requests.completion_models import JobCompletion
     
-    # Get all requests for this provider
+    # Get all requests for this provider (including pending ones that haven't been verified via email)
     all_requests = ServiceRequest.objects.filter(
         provider=request.user
     ).select_related('user', 'user__user_profile').prefetch_related('photos').order_by('-created_at')
     
     # Categorize requests by status
-    pending_requests = all_requests.filter(status='pending')
-    accepted_requests = all_requests.filter(status='accepted')
-    declined_requests = all_requests.filter(status='declined')
+    # Pending requests are new requests awaiting provider's decision (accept/decline)
+    # These are shown prominently so providers can respond directly from dashboard
+    pending_requests = all_requests.filter(status='pending').order_by('-urgent', '-created_at')
+    
+    # Accepted requests (in progress - provider has agreed to do the work)
+    accepted_requests = all_requests.filter(status='accepted').order_by('-accepted_at')
+    
+    # Declined requests (rejected by provider)
+    declined_requests = all_requests.filter(status='declined').order_by('-declined_at')
+    
+    # Completed requests
     completed_requests = all_requests.filter(status='completed')
     
     # Get jobs that have been marked as done (have JobCompletion records)
@@ -398,7 +409,10 @@ def provider_dashboard(request):
     total_requests = all_requests.count()
     total_completed = done_requests.count()
     
-    logger.info(f'Provider dashboard accessed by {request.user.username}: {total_requests} total requests')
+    # Count new (unverified) pending requests for notification badge
+    new_pending_count = pending_requests.count()
+    
+    logger.info(f'Provider dashboard accessed by {request.user.username}: {total_requests} total requests, {new_pending_count} pending')
     
     context = {
         'provider_profile': provider_profile,
@@ -408,13 +422,15 @@ def provider_dashboard(request):
         'declined_requests': declined_requests,
         'completed_requests': completed_requests,
         'done_requests': done_requests,
-        'pending_count': pending_requests.count(),
+        'pending_count': new_pending_count,
         'accepted_count': accepted_requests.count(),
         'declined_count': declined_requests.count(),
         'completed_count': completed_requests.count(),
         'done_count': done_requests.count(),
         'total_requests': total_requests,
         'total_completed': total_completed,
+        # Pass decline reason choices for the rejection modal
+        'decline_reason_choices': ServiceRequest.DECLINE_REASON_CHOICES,
     }
     
     return render(request, 'requests/provider_dashboard.html', context)
@@ -440,7 +456,7 @@ def edit_provider_profile(request, provider_id=None):
             provider_profile = request.user.provider_profile
         except ProviderProfile.DoesNotExist:
             messages.error(request, 'Provider profile not found.')
-            return redirect('http://127.0.0.1:5501/index.html')
+            return redirect('/index.html')
     
     # Check ownership - only provider owner can edit
     if provider_profile.user != request.user:
