@@ -50,4 +50,10 @@ if settings.DEBUG:
 else:
     # In production, also serve static files through Django for the static homepage assets
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Note: static() returns empty list when DEBUG=False
+
+# Always serve media files explicitly (for platforms without separate media storage)
+# This ensures uploaded profile photos and request photos are accessible
+urlpatterns += [
+    re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+]
